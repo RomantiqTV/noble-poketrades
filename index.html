@@ -689,7 +689,7 @@
         window.generateMissingReport = async function() {
             const btn = document.getElementById('exportBtn');
             const originalText = btn.innerText;
-            btn.innerText = "Processing...";
+            btn.innerText = "Preparing Assets...";
             btn.disabled = true;
 
             try {
@@ -701,53 +701,89 @@
                     return;
                 }
 
-                // Create a temporary hidden container for the PDF content
-                const container = document.createElement('div');
-                container.style.width = '800px';
-                container.style.background = '#0a0a0c';
-                container.style.color = '#fff';
-                container.style.fontFamily = 'sans-serif';
+                // Helper to convert images to Base64 to bypass CORS and loading issues in PDF
+                const toBase64 = url => fetch(url)
+                    .then(response => response.blob())
+                    .then(blob => new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = () => resolve(reader.result);
+                        reader.onerror = reject;
+                        reader.readAsDataURL(blob);
+                    })).catch(() => null);
 
-                // 1. COVER PAGE
+                // Fetch missing images and convert to base64
+                btn.innerText = "Loading Images...";
+                const b64Images = {};
+                for (const d of missing) {
+                    b64Images[d.uid] = await toBase64(d.image);
+                }
+
+                btn.innerText = "Building PDF...";
+
+                const container = document.createElement('div');
+                container.style.width = '794px'; // A4 width at 96dpi
+                container.style.background = 'linear-gradient(135deg, #f0f7ff 0%, #ffffff 100%)';
+                container.style.color = '#334155';
+                container.style.fontFamily = "'Inter', sans-serif";
+                
+                // 1. COVER PAGE (AESTHETIC LIGHT VERSION)
                 const cover = document.createElement('div');
-                cover.style.height = '1120px'; // A4 height at 96dpi
+                cover.style.height = '1120px';
                 cover.style.display = 'flex';
                 cover.style.flexDirection = 'column';
                 cover.style.alignItems = 'center';
                 cover.style.justifyContent = 'center';
                 cover.style.textAlign = 'center';
-                cover.style.border = '15px solid #1a1a20';
+                cover.style.position = 'relative';
+                cover.style.overflow = 'hidden';
+                cover.style.border = '20px solid #e2e8f0';
                 cover.innerHTML = `
-                    <img src="assets/logo.jpg" style="width: 200px; border-radius: 20px; margin-bottom: 30px;">
-                    <h1 style="font-family: 'Cinzel', serif; font-size: 3.5em; color: var(--accent); margin: 0;">NOBLE POKETRADES</h1>
-                    <div style="width: 80px; height: 3px; background: var(--accent); margin: 30px auto;"></div>
-                    <h2 style="font-weight: 300; letter-spacing: 5px; color: #888;">MISSING CARDS REPORT</h2>
-                    <p style="margin-top: 40px; color: #555;">Collector: ${loggedInUser || 'Guest'}<br>Set: ${currentSet === 'po' ? 'Mega Evolutions' : 'Scarlet & Violet: 151'}</p>
+                    <div style="position: absolute; top: -100px; right: -100px; width: 300px; height: 300px; background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 70%); border-radius: 50%;"></div>
+                    <div style="position: absolute; bottom: -50px; left: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(56, 189, 248, 0.1) 0%, transparent 70%); border-radius: 50%;"></div>
+                    <img src="assets/logo.jpg" style="width: 180px; border-radius: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); margin-bottom: 40px; border: 4px solid #fff;">
+                    <h1 style="font-family: 'Cinzel', serif; font-size: 3.8em; color: #0c4a6e; margin: 0; letter-spacing: 2px;">NOBLE POKETRADES</h1>
+                    <div style="width: 120px; height: 6px; background: #38bdf8; border-radius: 3px; margin: 30px auto;"></div>
+                    <h2 style="font-weight: 300; letter-spacing: 8px; color: #64748b; font-size: 1.1em; margin-bottom: 50px;">COLLECTION NEEDS REPORT</h2>
+                    <div style="background: rgba(255,255,255,0.6); backdrop-filter: blur(10px); padding: 30px 60px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.8); box-shadow: 0 10px 25px rgba(0,0,0,0.02);">
+                        <p style="margin: 5px 0; color: #94a3b8; font-size: 0.8em; text-transform: uppercase; letter-spacing: 2px;">Collector Identity</p>
+                        <p style="margin: 0; font-size: 1.4em; color: #0f172a; font-weight: bold;">${loggedInUser || 'Independent Collector'}</p>
+                        <div style="height: 1px; background: #e2e8f0; margin: 20px 0;"></div>
+                        <p style="margin: 5px 0; color: #94a3b8; font-size: 0.8em; text-transform: uppercase; letter-spacing: 2px;">Target Collection</p>
+                        <p style="margin: 0; font-size: 1.2em; color: #334155;">${currentSet === 'po' ? 'Mega Evolutions: Perfect Order' : 'Scarlet & Violet: 151'}</p>
+                    </div>
                 `;
                 container.appendChild(cover);
 
-                // 2. LIST PAGE
+                // 2. CHECKLIST PAGE
                 const listPage = document.createElement('div');
                 listPage.style.minHeight = '1120px';
-                listPage.style.padding = '60px';
+                listPage.style.padding = '80px 60px';
                 listPage.style.boxSizing = 'border-box';
+                listPage.style.position = 'relative';
                 listPage.innerHTML = `
-                    <h2 style="color: var(--accent); border-bottom: 2px solid #222; padding-bottom: 10px; font-family: 'Cinzel', serif;">Checklist</h2>
-                    <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                        <tr style="text-align: left; color: #888; border-bottom: 1px solid #333; font-size: 0.8em;">
-                            <th style="padding: 10px;">#</th>
-                            <th style="padding: 10px;">Name</th>
-                            <th style="padding: 10px;">Variant</th>
-                            <th style="padding: 10px; text-align: right;">Estimated Value</th>
-                        </tr>
-                        ${missing.map(d => `
-                            <tr style="border-bottom: 1px solid #1a1a20; font-size: 0.9em;">
-                                <td style="padding: 10px; color: #444;">${d.id}</td>
-                                <td style="padding: 10px; font-weight: bold;">${d.name}</td>
-                                <td style="padding: 10px; color: var(--accent);">${d.variant}</td>
-                                <td style="padding: 10px; text-align: right; color: #66bb6a;">A$${prices[d.name + d.rarity + d.variant] || '?.??'}</td>
+                    <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 40px; border-bottom: 2px solid #38bdf8; padding-bottom: 15px;">
+                        <h2 style="color: #0c4a6e; margin: 0; font-family: 'Cinzel', serif;">Checklist</h2>
+                        <span style="color: #94a3b8; font-size: 0.8em;">Missing: ${missing.length} Variants</span>
+                    </div>
+                    <table style="width: 100%; border-collapse: collapse;">
+                        <thead>
+                            <tr style="text-align: left; color: #64748b; font-size: 0.75em; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px solid #e2e8f0;">
+                                <th style="padding: 15px 10px;">ID</th>
+                                <th style="padding: 15px 10px;">Card Name</th>
+                                <th style="padding: 15px 10px;">Variant</th>
+                                <th style="padding: 15px 10px; text-align: right;">Value</th>
                             </tr>
-                        `).join('')}
+                        </thead>
+                        <tbody>
+                            ${missing.map(d => `
+                                <tr style="border-bottom: 1px solid #f1f5f9; font-size: 0.9em;">
+                                    <td style="padding: 15px 10px; color: #94a3b8;">#${d.id}</td>
+                                    <td style="padding: 15px 10px; font-weight: 600; color: #1e293b;">${d.name}</td>
+                                    <td style="padding: 15px 10px;"><span style="background: #f0f9ff; color: #0369a1; padding: 4px 10px; border-radius: 6px; font-size: 0.8em; font-weight: bold; border: 1px solid #e0f2fe;">${d.variant}</span></td>
+                                    <td style="padding: 15px 10px; text-align: right; color: #059669; font-weight: bold;">A$${prices[d.name + d.rarity + d.variant] || '?.??'}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
                     </table>
                 `;
                 container.appendChild(listPage);
@@ -758,27 +794,30 @@
                     const chunk = missing.slice(i, i + perPage);
                     const galleryPage = document.createElement('div');
                     galleryPage.style.minHeight = '1120px';
-                    galleryPage.style.padding = '60px';
+                    galleryPage.style.padding = '80px 60px';
                     galleryPage.style.boxSizing = 'border-box';
-                    galleryPage.innerHTML = `<h2 style="color: var(--accent); border-bottom: 2px solid #222; padding-bottom: 10px; font-family: 'Cinzel', serif; margin-bottom: 30px;">Visual Gallery</h2>`;
+                    galleryPage.style.background = 'linear-gradient(to bottom, #ffffff, #f8fafc)';
+                    galleryPage.innerHTML = `<h2 style="color: #0c4a6e; border-bottom: 2px solid #38bdf8; padding-bottom: 15px; font-family: 'Cinzel', serif; margin-bottom: 40px;">Visual Gallery</h2>`;
                     
                     const grid = document.createElement('div');
                     grid.style.display = 'grid';
                     grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                    grid.style.gap = '25px';
+                    grid.style.gap = '30px';
                     
                     chunk.forEach(d => {
+                        const b64 = b64Images[d.uid];
                         const item = document.createElement('div');
                         item.style.textAlign = 'center';
-                        item.style.background = '#111';
-                        item.style.padding = '10px';
-                        item.style.borderRadius = '10px';
-                        item.style.border = '1px solid #222';
+                        item.style.background = '#fff';
+                        item.style.padding = '15px';
+                        item.style.borderRadius = '16px';
+                        item.style.boxShadow = '0 4px 15px rgba(0,0,0,0.03)';
+                        item.style.border = '1px solid #e2e8f0';
                         item.innerHTML = `
-                            <img src="${d.image}" style="width: 100%; border-radius: 5px; margin-bottom: 8px;">
-                            <div style="font-size: 0.8em; font-weight: bold;">${d.name}</div>
-                            <div style="font-size: 0.6em; color: var(--accent);">${d.variant}</div>
-                            <div style="font-size: 0.7em; color: #66bb6a; margin-top: 5px;">A$${prices[d.name + d.rarity + d.variant] || '?.??'}</div>
+                            <img src="${b64 || d.image}" style="width: 100%; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                            <div style="font-size: 0.85em; font-weight: bold; color: #1e293b; margin-bottom: 4px;">${d.name}</div>
+                            <div style="font-size: 0.7em; color: #0ea5e9; font-weight: 800; text-transform: uppercase;">${d.variant}</div>
+                            <div style="font-size: 0.8em; color: #10b981; margin-top: 8px; font-weight: bold; background: #f0fdf4; padding: 4px; border-radius: 6px;">A$${prices[d.name + d.rarity + d.variant] || '?.??'}</div>
                         `;
                         grid.appendChild(item);
                     });
@@ -789,17 +828,24 @@
 
                 const opt = {
                     margin: 0,
-                    filename: `Missing_Report_${currentSet}.pdf`,
+                    filename: `Noble_Missing_${currentSet}_${new Date().toISOString().slice(0,10)}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#0a0a0c' },
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' }
+                    html2canvas: { 
+                        scale: 2, 
+                        useCORS: true, 
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        letterRendering: true
+                    },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+                    pagebreak: { mode: ['avoid-all', 'css', 'legacy'] }
                 };
 
                 await html2pdf().set(opt).from(container).save();
 
             } catch (err) {
                 console.error(err);
-                alert("Report failed to generate.");
+                alert("Report failed to generate. Check console.");
             } finally {
                 btn.innerText = originalText;
                 btn.disabled = false;
