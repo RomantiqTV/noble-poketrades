@@ -77,6 +77,7 @@ const server = http.createServer(async (req, res) => {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Signup successful' }));
             } catch (e) {
+                console.error("Signup error:", e);
                 res.writeHead(500); res.end();
             }
         });
@@ -105,6 +106,7 @@ const server = http.createServer(async (req, res) => {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Login successful' }));
             } catch (e) {
+                console.error("Login error:", e);
                 res.writeHead(500); res.end();
             }
         });
@@ -125,6 +127,7 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(200, { 'Content-Type': 'application/json' });
             res.end(JSON.stringify(data));
         } catch (e) {
+            console.error("Get-data error:", e);
             res.writeHead(500); res.end();
         }
     } else if (req.method === 'POST' && req.url === '/save-data') {
@@ -145,6 +148,7 @@ const server = http.createServer(async (req, res) => {
                 res.writeHead(200, { 'Content-Type': 'application/json' });
                 res.end(JSON.stringify({ message: 'Data saved' }));
             } catch (e) {
+                console.error("Save-data error:", e);
                 res.writeHead(500); res.end();
             }
         });
