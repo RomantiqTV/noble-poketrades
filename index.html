@@ -462,26 +462,71 @@
             }
         };
 
+        let partnerCollection = null;
+        window.loadPartnerData = async function() {
+            const partnerName = document.getElementById('partnerUsername').value.trim();
+            if (!partnerName) return;
+            
+            const btn = event.target;
+            btn.innerText = "Loading...";
+            btn.disabled = true;
+
+            try {
+                const r = await fetch(`${API_URL}/get-data?username=${partnerName}`);
+                if (!r.ok) throw new Error("Could not find user");
+                const cloudData = await r.json();
+                partnerCollection = cloudData[currentSet] || {};
+                
+                document.getElementById('poolTitle').innerText = `${partnerName}'s Collection`;
+                document.getElementById('poolSubtitle').innerText = "Select cards to trade with them";
+                
+                // Refresh pool grid to show their ownership
+                const query = document.getElementById('searchInput').value.toLowerCase();
+                let filtered = DATA;
+                if (query) filtered = filtered.filter(d => d.name.toLowerCase().includes(query) || d.rarity.toLowerCase().includes(query) || d.id.toString().includes(query));
+                
+                document.getElementById('poolGrid').innerHTML = filtered.map(d => {
+                    // Create temporary copy with partner's ownership for rendering
+                    const tempCard = {...d, owned: partnerCollection[d.uid] || 0};
+                    return window.renderCard(tempCard, true, false);
+                }).join('');
+                
+                btn.innerText = "Reload Collection";
+            } catch (e) {
+                alert("Could not load partner: " + e.message);
+                btn.innerText = "Load Collection";
+            } finally {
+                btn.disabled = false;
+            }
+        };
+
         async function renderCalcWrapper(filteredPool) {
             const container = document.getElementById('content');
             if (!document.getElementById('poolGrid')) {
                 container.innerHTML = `
-                    <div class="calc-summary-bar">
-                        <div class="calc-total-box">
-                            <div class="label">Your Trade-ins</div>
-                            <div class="value" id="tT">A$0.00</div>
+                    <div class="calc-summary-bar" style="flex-direction: column; gap: 15px;">
+                        <div style="display: flex; align-items: center; gap: 15px; width: 100%; justify-content: center;">
+                            <span style="font-size: 0.8em; color: #888;">Trading with:</span>
+                            <input type="text" id="partnerUsername" class="search-input" placeholder="Enter User ID..." style="max-width: 200px; flex: none;">
+                            <button class="tab-btn" style="background: var(--accent); color: white;" onclick="loadPartnerData()">Load Collection</button>
                         </div>
-                        <div class="calc-total-box" style="border-left: 1px solid #333; padding-left: 20px;">
-                            <div class="label">Their Cards</div>
-                            <div class="value" id="mT">A$0.00</div>
-                        </div>
-                        <div class="calc-diff-box">
-                            <div class="label">Balance Difference (AUD)</div>
-                            <div class="diff" id="fD">A$0.00</div>
-                            <div class="status" id="fT">Select cards to start trade</div>
-                        </div>
-                        <div style="margin-left: auto; display: flex; gap: 10px;">
-                            <button class="tab-btn" onclick="trade=[];want=[];window.handleRefresh()" style="background:#333; font-size: 0.7em;">Clear All</button>
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; width: 100%;">
+                            <div class="calc-total-box">
+                                <div class="label">Your Trade-ins</div>
+                                <div class="value" id="tT">A$0.00</div>
+                            </div>
+                            <div class="calc-total-box" style="border-left: 1px solid #333; padding-left: 20px;">
+                                <div class="label">Their Cards</div>
+                                <div class="value" id="mT">A$0.00</div>
+                            </div>
+                            <div class="calc-diff-box">
+                                <div class="label">Balance Difference (AUD)</div>
+                                <div class="diff" id="fD">A$0.00</div>
+                                <div class="status" id="fT">Select cards to start trade</div>
+                            </div>
+                            <div style="margin-left: auto; display: flex; gap: 10px;">
+                                <button class="tab-btn" onclick="trade=[];want=[];window.handleRefresh()" style="background:#333; font-size: 0.7em;">Clear All</button>
+                            </div>
                         </div>
                     </div>
                     
@@ -503,8 +548,8 @@
                     </div>
 
                     <div class="section-title" style="display:flex; justify-content: space-between; align-items: center;">
-                        <span>Selection Pool</span>
-                        <div style="font-size: 0.6em; color: #888;">Duplicates & Missing</div>
+                        <span id="poolTitle">Selection Pool</span>
+                        <div style="font-size: 0.6em; color: #888;" id="poolSubtitle">Duplicates & Missing</div>
                     </div>
                     <div class="grid" id="poolGrid"></div>
                 `;
@@ -517,7 +562,15 @@
 
         window.handleCardClick = function(uid) {
             const d = DATA.find(i => i.uid === uid);
-            showModal(d);
+            // If we are in calc mode and have a partner's collection loaded,
+            // show the partner's ownership in the modal instead of the user's
+            if (view === 'calc' && partnerCollection) {
+                const partnerOwned = partnerCollection[d.uid] || 0;
+                const tempCard = {...d, owned: partnerOwned};
+                showModal(tempCard);
+            } else {
+                showModal(d);
+            }
         };
 
         let currentModalCard = null;
@@ -536,6 +589,11 @@
 
         window.updateQty = async function(delta) {
             if (!currentModalCard) return;
+            // Prevent modifying partner's quantities in calc mode
+            if (view === 'calc' && partnerCollection) {
+                alert("Cannot edit partner's collection quantities.");
+                return;
+            }
             currentModalCard.owned = Math.max(0, currentModalCard.owned + delta);
             document.getElementById('modalQty').innerText = currentModalCard.owned;
             
