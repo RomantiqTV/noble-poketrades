@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Perfect Order - Collection Manager</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@700&display=swap" rel="stylesheet">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <style>
         :root {
@@ -234,8 +234,6 @@
         </div>
     </div>
 
-    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <script src="data.js"></script>
     <script src="data-151.js"></script>
     <script>
@@ -743,7 +741,104 @@
 
         window.handleExcelImport = function(e) {
             const file = e.target.files[0];
-            // ... (rest of the handleExcelImport code)
+            if (!file) return;
+
+            const reader = new FileReader();
+            const status = document.getElementById('importStatus');
+            status.style.display = 'block';
+            status.innerText = "Reading file...";
+            status.style.color = "#66bb6a";
+
+            reader.onload = async function(evt) {
+                try {
+                    const data = new Uint8Array(evt.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    let totalImported = 0;
+
+                    const setMappings = [
+                        { name: 'po', sheetKeywords: ['Perfect Order'], data: window.CARD_DATA },
+                        { name: '151', sheetKeywords: ['151'], data: window.DATA_151 }
+                    ];
+
+                    for (const mapping of setMappings) {
+                        const sheetName = workbook.SheetNames.find(s => 
+                            mapping.sheetKeywords.some(k => s.toLowerCase().includes(k.toLowerCase()))
+                        );
+
+                        if (sheetName) {
+                            console.log("Found sheet:", sheetName, "for set:", mapping.name);
+                            const sheet = workbook.Sheets[sheetName];
+                            const rows = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+                            const localOverrides = JSON.parse(localStorage.getItem('por_qty_' + mapping.name) || '{}');
+
+                            rows.forEach(row => {
+                                const name = row[0];
+                                const num = row[2];
+                                if (!name || num === undefined) return;
+
+                                // Match cards in this set
+                                mapping.data.forEach(card => {
+                                    // Match by number and name (allowing for minor differences)
+                                    if (card.id == num && (name.toString().toLowerCase().includes(card.name.toLowerCase()))) {
+                                        let qty = 0;
+                                        if (card.variant === 'Standard' || card.variant === 'Non-Holo') qty = parseInt(row[15]) || 0;
+                                        else if (card.variant === 'Reverse Holo') qty = parseInt(row[16]) || 0;
+                                        else if (card.variant === 'Holo Rare') qty = parseInt(row[17]) || 0;
+
+                                        if (qty > 0) {
+                                            card.owned = qty;
+                                            localOverrides[card.uid] = qty;
+                                            totalImported++;
+                                        }
+                                    }
+                                });
+                            });
+
+                            localStorage.setItem('por_qty_' + mapping.name, JSON.stringify(localOverrides));
+                        }
+                    }
+
+                    status.innerText = `✅ Success! Imported ${totalImported} cards across detected sets.`;
+                    
+                    // Sync to cloud if logged in
+                    if (loggedInUser) {
+                        status.innerText += " Syncing to cloud...";
+                        try {
+                            const r = await fetch(`${API_URL}/get-data?username=${loggedInUser}`);
+                            let allData = {};
+                            if (r.ok) allData = await r.json();
+                            
+                            setMappings.forEach(m => {
+                                allData[m.name] = JSON.parse(localStorage.getItem('por_qty_' + m.name) || '{}');
+                            });
+
+                            await fetch(`${API_URL}/save-data`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ username: loggedInUser, data: allData })
+                            });
+                            status.innerText = `✅ Success! Imported ${totalImported} cards and synced to cloud.`;
+                        } catch (cloudErr) {
+                            console.error("Cloud sync failed during import:", cloudErr);
+                            status.innerText += " (Cloud sync failed, data saved locally)";
+                        }
+                    }
+
+                    setTimeout(() => {
+                        window.handleRefresh();
+                    }, 1500);
+
+                } catch (err) {
+                    console.error("Import error:", err);
+                    status.innerText = "❌ Error: Could not parse Excel file. Make sure it's a valid checklist.";
+                    status.style.color = "#ef5350";
+                }
+            };
+            reader.onerror = function() {
+                status.innerText = "❌ Error: Could not read file.";
+                status.style.color = "#ef5350";
+            };
+            reader.readAsArrayBuffer(file);
         };
 
         window.generateMissingReport = async function() {
