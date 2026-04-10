@@ -131,27 +131,34 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(500); res.end();
         }
     } else if (req.method === 'POST' && req.url === '/save-data') {
-        let body = '';
-        req.on('data', chunk => { body += chunk.toString(); });
-        req.on('end', async () => {
-            try {
-                const { username, data } = JSON.parse(body);
-                
-                if (useDB) {
-                    await client.query('UPDATE users SET data = $1 WHERE username = $2', [JSON.stringify(data), username]);
-                } else {
-                    const userData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8') || '{}');
-                    userData[username] = data;
-                    fs.writeFileSync(DATA_FILE, JSON.stringify(userData, null, 2));
-                }
-                
-                res.writeHead(200, { 'Content-Type': 'application/json' });
-                res.end(JSON.stringify({ message: 'Data saved' }));
-            } catch (e) {
-                console.error("Save-data error:", e);
-                res.writeHead(500); res.end();
+        // ... (existing code)
+    } else if (req.method === 'GET' && req.url.startsWith('/proxy-image')) {
+        try {
+            const url = new URL(req.url, `http://${req.headers.host}`);
+            const imageUrl = url.searchParams.get('url');
+            if (!imageUrl) {
+                res.writeHead(400); res.end(); return;
             }
-        });
+
+            const protocol = imageUrl.startsWith('https') ? require('https') : require('http');
+            protocol.get(imageUrl, (imageRes) => {
+                if (imageRes.statusCode !== 200) {
+                    res.writeHead(imageRes.statusCode);
+                    res.end();
+                    return;
+                }
+                res.writeHead(200, { 
+                    'Content-Type': imageRes.headers['content-type'],
+                    'Access-Control-Allow-Origin': '*' 
+                });
+                imageRes.pipe(res);
+            }).on('error', (e) => {
+                console.error("Proxy error:", e);
+                res.writeHead(500); res.end();
+            });
+        } catch (e) {
+            res.writeHead(500); res.end();
+        }
     } else {
         // Serve static files for simple hosting where frontend and backend are on same domain
         let filePath = '.' + req.url;

@@ -702,14 +702,23 @@
                 }
 
                 // Helper to convert images to Base64 to bypass CORS and loading issues in PDF
-                const toBase64 = url => fetch(url)
-                    .then(response => response.blob())
-                    .then(blob => new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = () => resolve(reader.result);
-                        reader.onerror = reject;
-                        reader.readAsDataURL(blob);
-                    })).catch(() => null);
+                const toBase64 = url => {
+                    const proxyUrl = `${API_URL}/proxy-image?url=${encodeURIComponent(url)}`;
+                    return fetch(proxyUrl)
+                        .then(response => {
+                            if (!response.ok) throw new Error('Proxy fetch failed');
+                            return response.blob();
+                        })
+                        .then(blob => new Promise((resolve, reject) => {
+                            const reader = new FileReader();
+                            reader.onloadend = () => resolve(reader.result);
+                            reader.onerror = reject;
+                            reader.readAsDataURL(blob);
+                        })).catch(err => {
+                            console.warn("Image proxy failed for:", url, err);
+                            return null;
+                        });
+                };
 
                 // Fetch missing images and convert to base64
                 btn.innerText = "Loading Images...";
