@@ -56,7 +56,65 @@
         .calc-total-box .value { font-size: 1.5em; font-weight: 800; }
         .calc-diff-box { text-align: center; padding-left: 40px; border-left: 1px solid #333; }
         .calc-diff-box .diff { font-size: 2.2em; font-weight: 900; }
-        .calc-diff-box .status { font-size: 0.8em; font-weight: bold; margin-top: 5px; }
+        /* Two-Column Comparison Layout */
+        .comparison-layout { 
+            display: flex; 
+            gap: 20px; 
+            margin-top: 10px; 
+            height: calc(100vh - 250px); 
+            overflow: hidden;
+        }
+        .comparison-col { 
+            flex: 1; 
+            display: flex; 
+            flex-direction: column; 
+            background: #0a0a0c;
+            border: 1px solid #222;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .col-header {
+            padding: 15px;
+            background: #16161a;
+            border-bottom: 2px solid var(--accent);
+            text-align: center;
+        }
+        .scroll-sync-container {
+            flex: 1;
+            overflow-y: auto;
+            padding: 15px;
+        }
+        .comp-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+            gap: 15px;
+        }
+        .comp-card {
+            background: var(--card-bg);
+            border-radius: 8px;
+            padding: 5px;
+            border: 1px solid #333;
+            text-align: center;
+            font-size: 0.7em;
+            cursor: pointer;
+        }
+        .comp-card img { width: 100%; border-radius: 4px; aspect-ratio: 0.73; object-fit: cover; }
+        .comp-card.missing img { filter: grayscale(1) brightness(0.3); }
+
+        /* Large Preview in Modal */
+        .large-preview-container {
+            margin-bottom: 15px;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+            background: #000;
+        }
+        .large-preview-container img {
+            width: 100%;
+            max-width: 280px;
+            display: block;
+            margin: 0 auto;
+        }
 
         .sheen { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; z-index: 1; opacity: 0; transition: opacity 0.3s; }
         .card:hover .sheen { opacity: 1; }
@@ -460,12 +518,11 @@
             }
         };
 
-        let partnerCollection = null;
         window.loadPartnerData = async function() {
             const partnerName = document.getElementById('partnerUsername').value.trim();
             if (!partnerName) return;
             
-            const btn = event.target;
+            const btn = document.getElementById('loadPartnerBtn');
             btn.innerText = "Loading...";
             btn.disabled = true;
 
@@ -475,24 +532,11 @@
                 const cloudData = await r.json();
                 partnerCollection = cloudData[currentSet] || {};
                 
-                document.getElementById('poolTitle').innerText = `${partnerName}'s Collection`;
-                document.getElementById('poolSubtitle').innerText = "Select cards to trade with them";
-                
-                // Refresh pool grid to show their ownership
-                const query = document.getElementById('searchInput').value.toLowerCase();
-                let filtered = DATA;
-                if (query) filtered = filtered.filter(d => d.name.toLowerCase().includes(query) || d.rarity.toLowerCase().includes(query) || d.id.toString().includes(query));
-                
-                document.getElementById('poolGrid').innerHTML = filtered.map(d => {
-                    // Create temporary copy with partner's ownership for rendering
-                    const tempCard = {...d, owned: partnerCollection[d.uid] || 0};
-                    return window.renderCard(tempCard, true, false);
-                }).join('');
-                
-                btn.innerText = "Reload Collection";
+                await window.handleRefresh();
+                btn.innerText = "Reload";
             } catch (e) {
                 alert("Could not load partner: " + e.message);
-                btn.innerText = "Load Collection";
+                btn.innerText = "Load";
             } finally {
                 btn.disabled = false;
             }
@@ -500,63 +544,101 @@
 
         async function renderCalcWrapper(filteredPool) {
             const container = document.getElementById('content');
-            if (!document.getElementById('poolGrid')) {
-                container.innerHTML = `
-                    <div class="calc-summary-bar" style="flex-direction: column; gap: 15px;">
-                        <div style="display: flex; align-items: center; gap: 15px; width: 100%; justify-content: center;">
+            container.innerHTML = `
+                <div class="calc-summary-bar" style="margin-bottom: 10px; padding: 15px;">
+                    <div style="display: flex; align-items: center; gap: 15px; width: 100%; justify-content: space-between; flex-wrap: wrap;">
+                        <div style="display: flex; align-items: center; gap: 10px;">
                             <span style="font-size: 0.8em; color: #888;">Trading with:</span>
-                            <input type="text" id="partnerUsername" class="search-input" placeholder="Enter User ID..." style="max-width: 200px; flex: none;">
-                            <button class="tab-btn" style="background: var(--accent); color: white;" onclick="loadPartnerData()">Load Collection</button>
+                            <input type="text" id="partnerUsername" class="search-input" placeholder="User ID..." style="max-width: 130px;">
+                            <button id="loadPartnerBtn" class="tab-btn" style="background: var(--accent); color: white; padding: 6px 15px;" onclick="loadPartnerData()">Load</button>
                         </div>
-                        <div style="display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; width: 100%;">
-                            <div class="calc-total-box">
-                                <div class="label">Your Trade-ins</div>
-                                <div class="value" id="tT">A$0.00</div>
-                            </div>
-                            <div class="calc-total-box" style="border-left: 1px solid #333; padding-left: 20px;">
-                                <div class="label">Their Cards</div>
-                                <div class="value" id="mT">A$0.00</div>
-                            </div>
-                            <div class="calc-diff-box">
-                                <div class="label">Balance Difference (AUD)</div>
-                                <div class="diff" id="fD">A$0.00</div>
-                                <div class="status" id="fT">Select cards to start trade</div>
-                            </div>
-                            <div style="margin-left: auto; display: flex; gap: 10px;">
-                                <button class="tab-btn" onclick="trade=[];want=[];window.handleRefresh()" style="background:#333; font-size: 0.7em;">Clear All</button>
-                            </div>
+                        <div style="display: flex; gap: 20px;">
+                            <div class="calc-total-box"><div class="label">You</div><div class="value" id="tT" style="font-size:1em">A$0.00</div></div>
+                            <div class="calc-total-box"><div class="label">Them</div><div class="value" id="mT" style="font-size:1em">A$0.00</div></div>
+                        </div>
+                        <div class="calc-diff-box" style="padding-left: 20px; border-left: 1px solid #333;">
+                            <div class="label">Balance</div>
+                            <div class="diff" id="fD" style="font-size: 1.2em;">A$0.00</div>
                         </div>
                     </div>
-                    
-                    <div class="calc-container">
-                        <div class="calc-column">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <h3 style="margin:0;">Trade-in (You Give)</h3>
-                                <span class="variant-label" id="tradeCount" style="background: #2e7d32; color: white;">×0</span>
-                            </div>
-                            <div id="tL" style="max-height: 400px; overflow-y: auto; padding-right: 5px;"></div>
+                </div>
+
+                <div class="comparison-layout">
+                    <!-- Left: Your Collection -->
+                    <div class="comparison-col">
+                        <div class="col-header">
+                            <div style="font-family: 'Cinzel'; font-size: 0.9em;">Your Collection</div>
+                            <div style="font-size: 0.7em; color: #888;">Items to Give: <span id="tradeCount" style="color: #2e7d32">0</span></div>
                         </div>
-                        <div class="calc-column">
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
-                                <h3 style="margin:0;">Wants (You Get)</h3>
-                                <span class="variant-label" id="wantCount" style="background: var(--accent); color: white;">×0</span>
-                            </div>
-                            <div id="mL" style="max-height: 400px; overflow-y: auto; padding-right: 5px;"></div>
+                        <div class="scroll-sync-container" id="scrollLeft">
+                            <div class="comp-grid" id="gridLeft"></div>
                         </div>
                     </div>
 
-                    <div class="section-title" style="display:flex; justify-content: space-between; align-items: center;">
-                        <span id="poolTitle">Selection Pool</span>
-                        <div style="font-size: 0.6em; color: #888;" id="poolSubtitle">Duplicates & Missing</div>
+                    <!-- Right: Partner Collection -->
+                    <div class="comparison-col">
+                        <div class="col-header">
+                            <div style="font-family: 'Cinzel'; font-size: 0.9em;" id="partnerHeader">${partnerCollection ? document.getElementById('partnerUsername').value : 'Partner Collection'}</div>
+                            <div style="font-size: 0.7em; color: #888;">Items to Get: <span id="wantCount" style="color: var(--accent)">0</span></div>
+                        </div>
+                        <div class="scroll-sync-container" id="scrollRight">
+                            <div class="comp-grid" id="gridRight"></div>
+                        </div>
                     </div>
-                    <div class="grid" id="poolGrid"></div>
-                `;
-            }
+                </div>
+            `;
+
+            const gridLeft = document.getElementById('gridLeft');
+            const gridRight = document.getElementById('gridRight');
             
-            const poolGrid = document.getElementById('poolGrid');
-            poolGrid.innerHTML = filteredPool.map(d => window.renderCard(d, true, false)).join('');
+            gridLeft.innerHTML = filteredPool.map(d => renderCompCard(d, false)).join('');
+            gridRight.innerHTML = filteredPool.map(d => {
+                const partnerOwned = partnerCollection ? (partnerCollection[d.uid] || 0) : 0;
+                return renderCompCard({...d, owned: partnerOwned}, true);
+            }).join('');
+
+            // Scroll Sync Logic
+            const left = document.getElementById('scrollLeft');
+            const right = document.getElementById('scrollRight');
+            let isSyncingLeft = false;
+            let isSyncingRight = false;
+
+            left.onscroll = () => {
+                if (!isSyncingLeft) {
+                    isSyncingRight = true;
+                    right.scrollTop = left.scrollTop;
+                }
+                isSyncingLeft = false;
+            };
+
+            right.onscroll = () => {
+                if (!isSyncingRight) {
+                    isSyncingLeft = true;
+                    left.scrollTop = right.scrollTop;
+                }
+                isSyncingRight = false;
+            };
+
             await updateP();
         }
+
+        function renderCompCard(d, isPartner) {
+            const isSel = isPartner ? want.some(i => i.uid === d.uid) : trade.some(i => i.uid === d.uid);
+            const isM = d.owned === 0;
+            return `
+                <div class="comp-card ${isM ? 'missing' : ''} ${isSel ? 'selected' : ''}" style="${isSel ? 'border-color:var(--accent)' : ''}" onclick="handleCompClick(${d.uid}, ${isPartner})">
+                    <img src="${d.image}" loading="lazy">
+                    <div style="margin-top:4px; font-weight:bold; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${d.name}</div>
+                    <div style="color:${isM ? '#666' : '#2e7d32'}; font-size:0.9em;">×${d.owned}</div>
+                </div>`;
+        }
+
+        window.handleCompClick = function(uid, isPartner) {
+            const d = DATA.find(i => i.uid === uid);
+            const pOwned = partnerCollection ? (partnerCollection[d.uid] || 0) : 0;
+            const cardToUse = isPartner ? {...d, owned: pOwned} : d;
+            showModal(cardToUse, isPartner);
+        };
 
         window.handleCardClick = function(uid) {
             const d = DATA.find(i => i.uid === uid);
@@ -572,23 +654,48 @@
         };
 
         let currentModalCard = null;
-        function showModal(d) {
+        let isPartnerModal = false;
+        function showModal(d, isPartner) {
             currentModalCard = d;
+            isPartnerModal = isPartner;
             document.getElementById('modalCardName').innerText = d.name;
             document.getElementById('modalCardDetails').innerText = `${d.variant} · ${d.rarity}`;
             document.getElementById('modalQty').innerText = d.owned;
             
-            // Only show trade buttons if in Trade or Calc views
+            // Add Large Preview
+            const previewContainer = document.getElementById('qtyControls');
+            if (!document.getElementById('largeCardPreview')) {
+                const preview = document.createElement('div');
+                preview.className = 'large-preview-container';
+                preview.id = 'largeCardPreview';
+                previewContainer.parentNode.insertBefore(preview, previewContainer);
+            }
+            document.getElementById('largeCardPreview').innerHTML = `<img src="${d.image}" onerror="this.src='${d.fallbackImage}'">`;
+
+            // Adjust buttons for Trade view vs Normal view
             const isTradeView = (view === 'calc' || view === 'trade');
-            document.getElementById('tradeBtns').style.display = isTradeView ? 'flex' : 'none';
+            const btns = document.getElementById('tradeBtns');
+            btns.style.display = isTradeView ? 'flex' : 'none';
+            
+            // If in calculator mode, only show the relevant button (Give vs Get)
+            if (view === 'calc') {
+                btns.innerHTML = isPartner 
+                    ? `<button class="modal-btn btn-get" style="width:100%" onclick="addToTrade('get')">${want.some(i => i.uid === d.uid) ? 'Remove from Wants' : 'I Get This'}</button>`
+                    : `<button class="modal-btn btn-give" style="width:100%" onclick="addToTrade('give')">${trade.some(i => i.uid === d.uid) ? 'Remove from Trade-ins' : 'I Give This'}</button>`;
+            } else {
+                btns.innerHTML = `
+                    <button class="modal-btn btn-give" onclick="addToTrade('give')">I Give This</button>
+                    <button class="modal-btn btn-get" onclick="addToTrade('get')">I Get This</button>
+                `;
+            }
             
             document.getElementById('tradeModal').style.display = 'flex';
         }
 
         window.updateQty = async function(delta) {
             if (!currentModalCard) return;
-            // Prevent modifying partner's quantities in calc mode
-            if (view === 'calc' && partnerCollection) {
+            // Prevent modifying partner's quantities
+            if (isPartnerModal) {
                 alert("Cannot edit partner's collection quantities.");
                 return;
             }
@@ -1070,52 +1177,28 @@
 
         async function updateP() {
             let tt = 0, mt = 0;
-            const tL = document.getElementById('tL'), mL = document.getElementById('mL');
-            if (!tL || !mL) return;
-
-            tL.innerHTML = trade.length ? "" : '<div style="color:#444; font-size:0.9em; padding:10px;">Select duplicates below</div>';
-            mL.innerHTML = want.length ? "" : '<div style="color:#444; font-size:0.9em; padding:10px;">Select missing cards below</div>';
-
+            
             for (const d of trade) { 
                 const p = await getP(d); 
                 tt += parseFloat(p); 
-                tL.innerHTML += '<div class="calc-item"><span>' + d.name + ' (' + d.variant + ')</span><span class="price-badge">A$' + p + '</span></div>'; 
             }
             for (const d of want) { 
                 const p = await getP(d); 
                 mt += parseFloat(p); 
-                mL.innerHTML += '<div class="calc-item"><span>' + d.name + ' (' + d.variant + ')</span><span class="price-badge">A$' + p + '</span></div>'; 
             }
             
             const diff = (tt - mt).toFixed(2);
             const fD = document.getElementById('fD');
-            const fT = document.getElementById('fT');
             
             if (fD) {
                 fD.innerText = (diff >= 0 ? '+' : '-') + 'A$' + Math.abs(diff).toFixed(2);
                 fD.style.color = diff >= 0 ? '#66bb6a' : '#ef5350';
             }
             
-            if (fT) {
-                if (trade.length === 0 && want.length === 0) fT.innerText = "Select cards below to trade...";
-                else if (diff == 0) fT.innerText = "Even Trade";
-                else if (diff > 0) fT.innerText = "You are overpaying";
-                else fT.innerText = "You need to add cash";
-            }
-            
             if (document.getElementById('tT')) document.getElementById('tT').innerText = 'A$' + tt.toFixed(2);
             if (document.getElementById('mT')) document.getElementById('mT').innerText = 'A$' + mt.toFixed(2);
-            if (document.getElementById('tradeCount')) document.getElementById('tradeCount').innerText = '×' + trade.length;
-            if (document.getElementById('wantCount')) document.getElementById('wantCount').innerText = '×' + want.length;
-
-            document.querySelectorAll('#poolGrid .card').forEach(card => {
-                const uidAttr = card.getAttribute('onclick');
-                if (uidAttr) {
-                    const uid = parseInt(uidAttr.match(/\d+/)[0]);
-                    const isSel = trade.some(i => i.uid === uid) || want.some(i => i.uid === uid);
-                    card.classList.toggle('selected', isSel);
-                }
-            });
+            if (document.getElementById('tradeCount')) document.getElementById('tradeCount').innerText = trade.length;
+            if (document.getElementById('wantCount')) document.getElementById('wantCount').innerText = want.length;
         }
 
         function getB(d) {
