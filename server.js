@@ -141,7 +141,12 @@ const server = http.createServer(async (req, res) => {
             }
 
             const protocol = imageUrl.startsWith('https') ? require('https') : require('http');
-            protocol.get(imageUrl, (imageRes) => {
+            protocol.get(imageUrl, {
+                headers: {
+                    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
+                    'Referer': 'https://pkmncards.com/'
+                }
+            }, (imageRes) => {
                 if (imageRes.statusCode !== 200) {
                     res.writeHead(imageRes.statusCode);
                     res.end();
@@ -149,7 +154,8 @@ const server = http.createServer(async (req, res) => {
                 }
                 res.writeHead(200, { 
                     'Content-Type': imageRes.headers['content-type'],
-                    'Access-Control-Allow-Origin': '*' 
+                    'Access-Control-Allow-Origin': '*',
+                    'Cache-Control': 'public, max-age=86400'
                 });
                 imageRes.pipe(res);
             }).on('error', (e) => {
