@@ -239,7 +239,9 @@
     <script src="data.js"></script>
     <script src="data-151.js"></script>
     <script>
-        const API_URL = 'http://localhost:3001';
+        const API_URL = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+            ? 'http://localhost:3001' 
+            : window.location.origin;
         let loggedInUser = localStorage.getItem('por_user') || null;
         let authMode = 'login';
 
@@ -716,7 +718,7 @@
                             reader.readAsDataURL(blob);
                         })).catch(err => {
                             console.warn("Image proxy failed for:", url, err);
-                            return null;
+                            return null; // Fallback handled in template
                         });
                 };
 
@@ -823,7 +825,7 @@
                         item.style.boxShadow = '0 4px 15px rgba(0,0,0,0.03)';
                         item.style.border = '1px solid #e2e8f0';
                         item.innerHTML = `
-                            <img src="${b64 || d.image}" style="width: 100%; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
+                            <img src="${b64 || 'assets/placeholder.jpg'}" style="width: 100%; border-radius: 8px; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.08);">
                             <div style="font-size: 0.85em; font-weight: bold; color: #1e293b; margin-bottom: 4px;">${d.name}</div>
                             <div style="font-size: 0.7em; color: #0ea5e9; font-weight: 800; text-transform: uppercase;">${d.variant}</div>
                             <div style="font-size: 0.8em; color: #10b981; margin-top: 8px; font-weight: bold; background: #f0fdf4; padding: 4px; border-radius: 6px;">A$${prices[d.name + d.rarity + d.variant] || '?.??'}</div>

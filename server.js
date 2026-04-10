@@ -131,7 +131,27 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(500); res.end();
         }
     } else if (req.method === 'POST' && req.url === '/save-data') {
-        // ... (existing code)
+        let body = '';
+        req.on('data', chunk => { body += chunk.toString(); });
+        req.on('end', async () => {
+            try {
+                const { username, data } = JSON.parse(body);
+                
+                if (useDB) {
+                    await client.query('UPDATE users SET data = $1 WHERE username = $2', [JSON.stringify(data), username]);
+                } else {
+                    const userData = JSON.parse(fs.readFileSync(DATA_FILE, 'utf8') || '{}');
+                    userData[username] = data;
+                    fs.writeFileSync(DATA_FILE, JSON.stringify(userData, null, 2));
+                }
+                
+                res.writeHead(200, { 'Content-Type': 'application/json' });
+                res.end(JSON.stringify({ message: 'Data saved' }));
+            } catch (e) {
+                console.error("Save-data error:", e);
+                res.writeHead(500); res.end();
+            }
+        });
     } else if (req.method === 'GET' && req.url.startsWith('/proxy-image')) {
         try {
             const url = new URL(req.url, `http://${req.headers.host}`);
@@ -166,11 +186,12 @@ const server = http.createServer(async (req, res) => {
             res.writeHead(500); res.end();
         }
     } else {
-        // Serve static files for simple hosting where frontend and backend are on same domain
+        // Serve static files
         let filePath = '.' + req.url;
         if (filePath === './') filePath = './index.html';
         
-        const extname = path.extname(filePath);
+        const fullPath = path.join(__dirname, filePath);
+        const extname = path.extname(fullPath);
         const contentType = {
             '.html': 'text/html',
             '.js': 'text/javascript',
@@ -181,7 +202,7 @@ const server = http.createServer(async (req, res) => {
             '.gif': 'image/gif',
         }[extname] || 'text/plain';
 
-        fs.readFile(path.join(__dirname, filePath), (error, content) => {
+        fs.readFile(fullPath, (error, content) => {
             if (error) {
                 res.writeHead(404);
                 res.end('Not found');
