@@ -1,0 +1,7 @@
+# Ignore local storage and node_modules
+node_modules/
+.env
+
+# Ignore local JSON data (if you want users to start fresh)
+users.json
+user_data.json

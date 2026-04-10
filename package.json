@@ -1,0 +1,17 @@
+{
+  "name": "noble-poketrades",
+  "version": "1.0.0",
+  "description": "Pokemon TCG Collection Manager with Cloud Sync",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js --dev"
+  },
+  "dependencies": {
+    "pg": "^8.11.3",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
