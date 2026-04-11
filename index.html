@@ -221,7 +221,7 @@
             </div>
             <div class="set-switcher" style="display: flex; gap: 10px; align-items: center;">
                 <div id="userDisplay" style="font-size: 0.8em; color: #888; display: none;">
-                    Hello, <span id="currentUserName" style="color: var(--accent); font-weight: bold;"></span>
+                    Hello,&nbsp;<span id="currentUserName" style="color: var(--accent); font-weight: bold;"></span>
                     <button onclick="logout()" style="background: none; border: 1px solid #444; color: #888; border-radius: 4px; padding: 2px 8px; margin-left: 8px; cursor: pointer; font-size: 0.9em;">Logout</button>
                 </div>
                 <button id="loginBtn" onclick="openLoginModal()" style="background: var(--accent); color: white; border: none; border-radius: 20px; padding: 6px 15px; cursor: pointer; font-weight: bold; font-size: 0.8em;">Login / Sign Up</button>
@@ -231,13 +231,16 @@
                 </select>
             </div>
         </div>
-        <div class="nav-tabs">
-            <button class="tab-btn active" id="btn-collection" onclick="switchView('collection')">Collection</button>
-            <button class="tab-btn" id="btn-missing" onclick="switchView('missing')">Missing</button>
-            <button class="tab-btn" id="btn-trade" onclick="switchView('trade')">Tradeable</button>
-            <button class="tab-btn" id="btn-calc" onclick="switchView('calc')">Calculator</button>
-            <button class="tab-btn" id="btn-import" onclick="switchView('import')">Import</button>
-            <button class="tab-btn" style="background: var(--accent); color: white; border: none; font-weight: bold;" onclick="generateMissingReport()" id="exportBtn">Export Missing</button>
+        <div class="nav-tabs" style="justify-content: space-between; max-width: 1000px; margin: 0 auto 15px;">
+            <div style="display: flex; gap: 10px;">
+                <button class="tab-btn active" id="btn-collection" onclick="switchView('collection')">Collection</button>
+                <button class="tab-btn" id="btn-missing" onclick="switchView('missing')">Missing</button>
+                <button class="tab-btn" id="btn-calc" onclick="switchView('calc')">Trading</button>
+            </div>
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="tab-btn" id="btn-import" onclick="switchView('import')" style="background: #1e293b; color: #94a3b8; border: 1px solid #334155;">Import</button>
+                <button class="tab-btn" style="background: var(--accent); color: white; border: none; font-weight: bold;" onclick="generateMissingReport()" id="exportBtn">Export Missing</button>
+            </div>
         </div>
         <div class="search-sort-bar">
             <input type="text" id="searchInput" class="search-input" placeholder="Search..." oninput="handleRefresh()">
