@@ -161,7 +161,7 @@
             background-image: url('assets/parallax/Ocean/4oceanbackmountain.png'); 
             z-index: 12; 
             background-size: auto 120%; 
-            background-position: center bottom 15%; /* Shifted down slightly */
+            background-position: center bottom -100px; /* Start much lower */
         }
 
         /* 3. The Sea block - Everything is pinned to this to prevent gaps */
@@ -515,21 +515,8 @@
         <div class="scene-layer layer-2" data-speed="0.04"></div>
         <div class="scene-layer layer-3" data-speed="0.04"></div>
         
-        /* Waves - Faster than ocean, slower than sand */
-        <div class="scene-layer layer-6" data-speed="0.06"></div>
-        
-        <!-- Sand Layer - Faster than waves -->
-        <div class="scene-layer layer-5" data-speed="0.09">
-            <div class="scene-ground-fill" data-speed="0.12"></div>
-        </div>
-        
-        <div class="scene-layer" id="scene-mew-layer" data-speed="0.05" style="z-index:55;">
-            <div class="scene-mew-container" style="left: 30%; top: 35%;">
-                <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
-            </div>
-        </div>
-        
-        <!-- Wave layer: Very slow speed to keep it from rising too high -->
+        <!-- Waves - Faster than sand -->
+        <div class="scene-layer layer-6" data-speed="0.12">
             <!-- Pokemon GIFs on the waves/front -->
             <!-- Jigglypuff -->
             <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:12%; --d:3.1s; z-index: 70;">
@@ -542,6 +529,17 @@
             <!-- Chansey -->
             <div class="scene-pokemon-idle" style="position:absolute; bottom:10%; right:15%; --d:3.5s; z-index: 70;">
                 <img src="https://projectpokemon.org/images/normal-sprite/chansey.gif" class="scene-pokemon-gif" style="width: 70px;">
+            </div>
+        </div>
+        
+        <!-- Sand Layer - Slower than waves -->
+        <div class="scene-layer layer-5" data-speed="0.09">
+            <div class="scene-ground-fill" data-speed="0.09"></div>
+        </div>
+        
+        <div class="scene-layer" id="scene-mew-layer" data-speed="0.05" style="z-index:55;">
+            <div class="scene-mew-container" style="left: 30%; top: 35%;">
+                <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
             </div>
         </div>
     </div>
