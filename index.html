@@ -50,12 +50,50 @@
         .calc-column { flex: 1; min-width: 300px; background: #111; padding: 20px; border-radius: 12px; border: 1px solid #222; }
         .calc-column h3 { margin-top: 0; font-size: 1.1em; color: var(--accent); border-bottom: 1px solid #222; padding-bottom: 10px; }
         .calc-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px dashed #222; font-size: 0.85em; }
-        .calc-summary-bar { background: #1a1a20; padding: 20px; border-radius: 12px; border: 2px solid var(--accent); margin: 20px 0; display: flex; align-items: center; justify-content: center; gap: 40px; flex-wrap: wrap; }
+        .calc-summary-bar { background: #1a1a20; padding: 12px 25px; border-radius: 12px; border: 1px solid #333; margin: 15px 0; display: flex; align-items: center; justify-content: center; gap: 30px; flex-wrap: wrap; box-shadow: 0 4px 15px rgba(0,0,0,0.3); }
         .calc-total-box { text-align: center; }
-        .calc-total-box .label { font-size: 0.7em; text-transform: uppercase; color: #888; margin-bottom: 4px; }
-        .calc-total-box .value { font-size: 1.5em; font-weight: 800; }
-        .calc-diff-box { text-align: center; padding-left: 40px; border-left: 1px solid #333; }
-        .calc-diff-box .diff { font-size: 2.2em; font-weight: 900; }
+        .calc-total-box .label { font-size: 0.65em; text-transform: uppercase; color: #888; margin-bottom: 2px; letter-spacing: 1px; }
+        .calc-total-box .value { font-size: 1.3em; font-weight: 800; }
+        .calc-total-box .value.collection { color: #4caf50; }
+        .calc-total-box .value.missing { color: #ef5350; }
+        .calc-diff-box { text-align: center; padding-left: 25px; border-left: 1px solid #333; }
+        .calc-diff-box .diff { font-size: 1.8em; font-weight: 900; }
+
+        /* Themes */
+        body.theme-light {
+            --bg: #f5f7f9; --card-bg: #ffffff; --text: #2c3e50; --accent: #e74c3c;
+            --border-none: #dcdde1;
+        }
+        body.theme-light .sticky-controls { background: rgba(245, 247, 249, 0.95); border-bottom: 1px solid #dcdde1; }
+        body.theme-light .logo-text, body.theme-light .section-title, body.theme-light .logo-sub { color: #2c3e50; }
+        body.theme-light .tab-btn { background: #fff; border: 1px solid #dcdde1; color: #7f8c8d; }
+        body.theme-light .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
+        body.theme-light .search-input, body.theme-light .select-input { background: #fff; border: 1px solid #dcdde1; color: #2c3e50; }
+        body.theme-light .calc-summary-bar { background: #fff; border-color: #dcdde1; }
+        body.theme-light .calc-column, body.theme-light .comparison-col { background: #fff; border-color: #dcdde1; }
+        body.theme-light .col-header { background: #f8f9fa; border-bottom-color: var(--accent); }
+        body.theme-light .comp-card { background: #fff; border-color: #eee; }
+        body.theme-light .modal { background: #fff; border-color: #eee; color: #2c3e50; }
+        body.theme-light #qtyControls { background: #f8f9fa; border-color: #eee; }
+
+        body.theme-pokemon {
+            --bg: #3b4cca; --card-bg: #ffffff; --text: #212529; --accent: #ff0000;
+            --border-none: #cc0000;
+        }
+        body.theme-pokemon .logo-text { color: #ffcb05; text-shadow: 2px 2px #2a75bb, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; font-family: 'Cinzel', serif; }
+        body.theme-pokemon .logo-sub { color: #ffcb05; text-shadow: 1px 1px #2a75bb; }
+        body.theme-pokemon .sticky-controls { background: #3b4cca; border-bottom: 4px solid #ffcb05; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
+        body.theme-pokemon .tab-btn { background: #2a75bb; border-color: #3b4cca; color: #fff; }
+        body.theme-pokemon .tab-btn.active { background: #ffcb05; color: #3b4cca; border-color: #ffcb05; font-weight: bold; }
+        body.theme-pokemon .section-title { border-bottom: 3px solid #ffcb05; color: #ffcb05; text-transform: uppercase; letter-spacing: 2px; text-shadow: 1px 1px #000; }
+        body.theme-pokemon .calc-summary-bar { background: #ffffff; border: 3px solid #ffcb05; color: #3b4cca; }
+        body.theme-pokemon .calc-total-box .label { color: #555; }
+        body.theme-pokemon .card { border-width: 3px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        body.theme-pokemon .search-input, body.theme-pokemon .select-input { border: 2px solid #ffcb05; background: #fff; color: #3b4cca; }
+        body.theme-pokemon #loadingOverlay { background: rgba(59, 76, 202, 0.9); }
+        body.theme-pokemon .modal { border: 4px solid #ffcb05; }
+
+        .theme-dot { width: 20px; height: 20px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 10px; border: 1px solid #444; }
         /* Two-Column Comparison Layout */
         .comparison-layout { 
             display: flex; 
@@ -225,6 +263,7 @@
                     <button onclick="logout()" style="background: none; border: 1px solid #444; color: #888; border-radius: 4px; padding: 2px 8px; margin-left: 8px; cursor: pointer; font-size: 0.9em;">Logout</button>
                 </div>
                 <button id="loginBtn" onclick="openLoginModal()" style="background: var(--accent); color: white; border: none; border-radius: 20px; padding: 6px 15px; cursor: pointer; font-weight: bold; font-size: 0.8em;">Login / Sign Up</button>
+                <button onclick="openSettingsModal()" style="background: #222; color: #888; border: 1px solid #333; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.1em;">⚙️</button>
                 <select id="setSelect" class="select-input" onchange="window.changeSet(this.value)" style="border-color: #ffd700; color: #ffd700; font-family: 'Cinzel', serif; font-size: 0.8em; letter-spacing: 1px;">
                     <option value="po">Perfect Order</option>
                     <option value="151">S&V: 151</option>
@@ -296,6 +335,27 @@
         </div>
     </div>
 
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal" style="max-width: 400px;">
+            <h2 style="font-family: 'Cinzel'; font-size: 1.2em;">Settings</h2>
+            <div style="text-align: left; margin-top: 20px;">
+                <div style="font-size: 0.8em; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Theme Selection</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('dark')">
+                        <span class="theme-dot" style="background: #050507;"></span> Dark Theme (Default)
+                    </button>
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('light')">
+                        <span class="theme-dot" style="background: #f5f7f9;"></span> Light Theme
+                    </button>
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('pokemon')">
+                        <span class="theme-dot" style="background: #3b4cca;"></span> Pokémon Theme
+                    </button>
+                </div>
+            </div>
+            <button class="modal-btn btn-cancel" style="width:100%; margin-top:30px;" onclick="closeSettingsModal()">Close</button>
+        </div>
+    </div>
+
     <script src="data.js"></script>
     <script src="data-151.js"></script>
     <script>
@@ -315,9 +375,22 @@
         }
         document.addEventListener('DOMContentLoaded', () => { 
             if(document.getElementById('setSelect')) document.getElementById('setSelect').value = currentSet; 
+            const savedTheme = localStorage.getItem('por_theme') || 'dark';
+            setTheme(savedTheme);
             updateUserUI();
             initData();
         });
+
+        function setTheme(theme) {
+            document.body.classList.remove('theme-light', 'theme-pokemon');
+            if (theme !== 'dark') {
+                document.body.classList.add('theme-' + theme);
+            }
+            localStorage.setItem('por_theme', theme);
+        }
+
+        function openSettingsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
+        function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
 
         async function initData() {
             const DATA = currentSet === 'po' ? window.CARD_DATA : window.DATA_151;
@@ -496,13 +569,13 @@
                         const p = prices[k] || ({0:0.25, 1:0.50, 2:1.00, 5:5.00, 6:15.00, 7:20.00, 8:40.00, 9:80.00}[d.rarity_rank] || 1.00);
                         totalVal += parseFloat(p) * (view === 'collection' ? d.owned : 1);
                     }
-                    html += `<div class="calc-summary-bar" style="margin-bottom: 20px; flex-direction: column; gap: 15px;">
+                    html += `<div class="calc-summary-bar" style="margin-bottom: 20px; flex-direction: column; gap: 12px;">
                                 <div class="calc-total-box">
                                     <div class="label">Total ${view === 'collection' ? 'Collection' : 'Missing'} Value (Est. AUD)</div>
-                                    <div class="value" style="color:var(--accent)">A$${totalVal.toFixed(2)}</div>
+                                    <div class="value ${view === 'collection' ? 'collection' : 'missing'}">A$${totalVal.toFixed(2)}</div>
                                     <div style="font-size:0.5em; color:#666; margin-top:5px;">Using bulk market data + rarity estimates</div>
                                 </div>
-                                <button class="tab-btn" style="background:#222; font-size:0.7em;" onclick="reevaluatePrices()">↻ Re-evaluate Prices</button>
+                                <button class="tab-btn" style="background:rgba(0,0,0,0.2); font-size:0.7em; padding: 5px 15px;" onclick="reevaluatePrices()">↻ Re-evaluate Prices</button>
                              </div>`;
                 }
 
@@ -558,8 +631,8 @@
                             <button id="loadPartnerBtn" class="tab-btn" style="background: var(--accent); color: white; padding: 6px 15px;" onclick="loadPartnerData()">Load</button>
                         </div>
                         <div style="display: flex; gap: 20px;">
-                            <div class="calc-total-box"><div class="label">You</div><div class="value" id="tT" style="font-size:1em">A$0.00</div></div>
-                            <div class="calc-total-box"><div class="label">Them</div><div class="value" id="mT" style="font-size:1em">A$0.00</div></div>
+                            <div class="calc-total-box"><div class="label">You</div><div class="value collection" id="tT" style="font-size:1em">A$0.00</div></div>
+                            <div class="calc-total-box"><div class="label">Them</div><div class="value missing" id="mT" style="font-size:1em">A$0.00</div></div>
                         </div>
                         <div class="calc-diff-box" style="padding-left: 20px; border-left: 1px solid #333;">
                             <div class="label">Balance</div>
