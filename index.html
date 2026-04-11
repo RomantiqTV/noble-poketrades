@@ -996,36 +996,30 @@
                 const container = document.createElement('div');
                 container.id = 'pdf-export-container';
                 container.style.cssText = `
-                    width: 750px;
+                    width: 790px;
                     background: #ffffff;
                     color: #334155;
                     font-family: 'Inter', sans-serif;
-                    padding: 40px;
-                    position: fixed;
-                    left: 50%;
-                    top: 50%;
-                    transform: translate(-50%, -50%);
-                    z-index: 9999;
-                    box-shadow: 0 0 100px rgba(0,0,0,0.5);
-                    border: 1px solid #e2e8f0;
-                    overflow-y: auto;
-                    max-height: 90vh;
+                    padding: 0;
+                    margin: 0;
                 `;
                 
-                // Add a visible "Generating..." overlay since we're showing the container
+                // Add a visible "Generating..." overlay
                 const overlay = document.createElement('div');
+                overlay.id = 'pdf-overlay';
                 overlay.style.cssText = `
                     position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-                    background: rgba(15, 23, 42, 0.9); z-index: 9998;
+                    background: #ffffff; z-index: 99999;
                     display: flex; flex-direction: column; align-items: center; justify-content: center;
-                    color: white; font-family: 'Inter', sans-serif;
+                    color: #0c4a6e; font-family: 'Inter', sans-serif;
                 `;
                 overlay.innerHTML = `
-                    <div style="font-size: 2em; margin-bottom: 10px;">Generating PDF Report</div>
-                    <div style="opacity: 0.7;">Please wait while we capture high-res card images...</div>
+                    <div style="font-size: 2em; font-weight: bold; margin-bottom: 10px;">Generating PDF Report</div>
+                    <div style="margin-bottom: 30px; color: #64748b;">Please wait while we stabilize the layout...</div>
+                    <div id="pdf-preview-host" style="box-shadow: 0 0 50px rgba(0,0,0,0.1); border: 1px solid #e2e8f0; transform: scale(0.6); transform-origin: top center; overflow: hidden; height: 500px; width: 790px;"></div>
                 `;
                 document.body.appendChild(overlay);
-                document.body.appendChild(container);
+                document.getElementById('pdf-preview-host').appendChild(container);
                 
                 // 1. HEADER / COVER (ONE PIECE)
                 const header = document.createElement('div');
@@ -1188,38 +1182,27 @@
                 container.appendChild(footer);
 
                 const opt = {
-                    margin: 0.5,
+                    margin: 0,
                     filename: `Noble_Needs_${currentSet}_${new Date().toISOString().slice(0,10)}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
-                        scale: 1.5, 
+                        scale: 2, 
                         useCORS: true, 
                         backgroundColor: '#ffffff',
-                        logging: true,
-                        width: 750,
-                        windowWidth: 750,
-                        onclone: (clonedDoc) => {
-                            // Ensure the container is visible in the clone
-                            const clonedContainer = clonedDoc.getElementById('pdf-export-container');
-                            if (clonedContainer) {
-                                clonedContainer.style.position = 'static';
-                                clonedContainer.style.transform = 'none';
-                                clonedContainer.style.opacity = '1';
-                                clonedContainer.style.display = 'block';
-                            }
-                        }
+                        width: 790,
+                        scrollY: 0,
+                        scrollX: 0
                     },
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+                    jsPDF: { unit: 'px', format: [790, 1120], hotfixes: ['px_scaling'] },
                     pagebreak: { mode: ['css', 'legacy'] }
                 };
 
                 // Added small delay to ensure DOM is fully painted before capture
                 await new Promise(r => setTimeout(r, 2000));
                 
-                // Use a manual worker-based approach with explicit steps
-                await html2pdf().set(opt).from(container).toContainer().toCanvas().toPdf().save();
+                // Using the most basic, stable call pattern for html2pdf
+                await html2pdf().from(container).set(opt).save();
                 
-                document.body.removeChild(container);
                 document.body.removeChild(overlay);
 
             } catch (err) {
