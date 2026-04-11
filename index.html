@@ -188,10 +188,10 @@
         
         .ice-layer { 
             position: absolute; width: 100%; height: 100vh; left: 0; top: 0; 
-            will-change: transform; background-position: top left; background-repeat: no-repeat; background-size: 100% 100%;
+            will-change: transform; background-position: center bottom; background-repeat: no-repeat; background-size: 100% auto;
         }
 
-        .ice-sky { background-image: url('assets/parallax/Iceberg/1-Sky.png'); z-index: 5; }
+        .ice-sky { background-image: url('assets/parallax/Iceberg/1-Sky.png'); z-index: 5; background-size: cover; background-position: center; }
         .ice-mountain { background-image: url('assets/parallax/Iceberg/3-mountains.png'); z-index: 10; opacity: 1; }
         .ice-cloud { background-image: url('assets/parallax/Iceberg/2-cloud.png'); z-index: 15; opacity: 1; }
         .ice-water-back { background-image: url('assets/parallax/Iceberg/0-water.png'); z-index: 20; opacity: 0.6; }
@@ -636,7 +636,7 @@
                 <img src="https://projectpokemon.org/images/normal-sprite/articuno.gif" class="ice-pokemon-gif" style="width: 120px;">
             </div>
         </div>
-        <div class="ice-layer ice-iceberg-reflex" data-speed="0.08"></div>
+        <div class="ice-layer ice-iceberg-reflex" data-speed="0.1"></div>
         <div class="ice-layer ice-iceberg" data-speed="0.1">
             <!-- Regice on the left iceberg -->
             <div class="scene-pokemon-idle" style="position:absolute; bottom:18%; left:15%; --d:3.5s; z-index: 50;">
@@ -648,7 +648,7 @@
             </div>
             <div class="ice-ground-fill"></div>
         </div>
-        <div class="ice-layer ice-reflex-front" data-speed="0.12"></div>
+        <div class="ice-layer ice-reflex-front" data-speed="0.1"></div>
     </div>
     <div id="scene-background">
         <div class="scene-layer layer-0" data-speed="0"></div>
