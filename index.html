@@ -122,16 +122,38 @@
             background-size: auto 100%;
         }
 
+        /* Fixed Parallax Strategy */
+        .scene-layer { 
+            position: absolute; 
+            width: 100%; 
+            height: 100vh; 
+            left: 0; 
+            top: 0; 
+            will-change: transform; 
+            background-position: bottom; 
+            background-repeat: repeat-x;
+            background-size: auto 100%;
+        }
+
+        /* 1. Background sky is fixed */
         .layer-0 { background-image: url('assets/parallax/Ocean/0oceanskyandsun.png'); background-size: cover; z-index: 10; }
-        .layer-1 { background-image: url('assets/parallax/Ocean/1oceansea.png'); z-index: 20; }
-        .layer-2 { background-image: url('assets/parallax/Ocean/2oceansunlight.png'); z-index: 25; mix-blend-mode: screen; opacity: 0.5; }
-        .layer-3 { background-image: url('assets/parallax/Ocean/3oceanclouds.png'); z-index: 30; opacity: 0.3; filter: blur(2px); }
+        
+        /* 2. Distant mountains move very slowly behind the sea horizon */
         .layer-4 { 
             background-image: url('assets/parallax/Ocean/4oceanbackmountain.png'); 
-            z-index: 15; /* Behind ocean sea */
-            background-size: auto 150%; /* Make them much bigger */
-            background-position: center 20%; /* Shift position down */
+            z-index: 12; 
+            background-size: auto 120%; 
+            background-position: center bottom 20%;
         }
+
+        /* 3. The Sea block - Everything is pinned to this to prevent gaps */
+        .layer-1 { background-image: url('assets/parallax/Ocean/1oceansea.png'); z-index: 20; }
+        
+        /* Overlays on sea (no independent speed to prevent drift) */
+        .layer-2 { background-image: url('assets/parallax/Ocean/2oceansunlight.png'); z-index: 25; mix-blend-mode: screen; opacity: 0.5; }
+        .layer-3 { background-image: url('assets/parallax/Ocean/3oceanclouds.png'); z-index: 30; opacity: 0.3; filter: blur(2px); }
+
+        /* Foreground anchor layers */
         .layer-5 { background-image: url('assets/parallax/Ocean/5oceansand.png'); z-index: 50; }
         .layer-6 { background-image: url('assets/parallax/Ocean/6oceanwave.png'); z-index: 60; }
 
@@ -466,17 +488,23 @@
     <div id="scene-background">
         <div class="scene-layer layer-0" data-speed="0"></div>
         <div class="scene-layer" id="scene-stars" data-speed="0.01" style="z-index:15;"></div>
-        <div class="scene-layer layer-1" data-speed="0.05"></div>
+        <!-- Distant mountains move very slowly -->
+        <div class="scene-layer layer-4" data-speed="0.03"></div>
+        
+        <!-- Main scenery block moving at a unified speed to prevent gap separation -->
+        <div class="scene-layer layer-1" data-speed="0.08"></div>
         <div class="scene-layer layer-2" data-speed="0.08"></div>
-        <div class="scene-layer layer-3" data-speed="0.12"></div>
-        <div class="scene-layer layer-4" data-speed="0.18"></div>
-        <div class="scene-layer layer-5" data-speed="0.3"></div>
-        <div class="scene-layer" id="scene-mew-layer" data-speed="0.35" style="z-index:55;">
+        <div class="scene-layer layer-3" data-speed="0.08"></div>
+        <div class="scene-layer layer-5" data-speed="0.08"></div>
+        
+        <div class="scene-layer" id="scene-mew-layer" data-speed="0.15" style="z-index:55;">
             <div class="scene-mew-container" style="left: 30%; top: 35%;">
                 <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
             </div>
         </div>
-        <div class="scene-layer layer-6" data-speed="0.5">
+        
+        <!-- The Wave and Sand Floor move together as the foreground anchor -->
+        <div class="scene-layer layer-6" data-speed="0.15">
             <!-- Pokemon GIFs on the waves/front -->
             <!-- Jigglypuff -->
             <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:12%; --d:3.1s; z-index: 70;">
