@@ -1000,12 +1000,31 @@
                     background: #ffffff;
                     color: #334155;
                     font-family: 'Inter', sans-serif;
-                    padding: 0;
-                    position: absolute;
-                    left: -9999px;
-                    top: 0;
-                    z-index: -1;
+                    padding: 40px;
+                    position: fixed;
+                    left: 50%;
+                    top: 50%;
+                    transform: translate(-50%, -50%);
+                    z-index: 9999;
+                    box-shadow: 0 0 100px rgba(0,0,0,0.5);
+                    border: 1px solid #e2e8f0;
+                    overflow-y: auto;
+                    max-height: 90vh;
                 `;
+                
+                // Add a visible "Generating..." overlay since we're showing the container
+                const overlay = document.createElement('div');
+                overlay.style.cssText = `
+                    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+                    background: rgba(15, 23, 42, 0.9); z-index: 9998;
+                    display: flex; flex-direction: column; align-items: center; justify-content: center;
+                    color: white; font-family: 'Inter', sans-serif;
+                `;
+                overlay.innerHTML = `
+                    <div style="font-size: 2em; margin-bottom: 10px;">Generating PDF Report</div>
+                    <div style="opacity: 0.7;">Please wait while we capture high-res card images...</div>
+                `;
+                document.body.appendChild(overlay);
                 document.body.appendChild(container);
                 
                 // 1. HEADER / COVER (ONE PIECE)
@@ -1173,21 +1192,24 @@
                     filename: `Noble_Needs_${currentSet}_${new Date().toISOString().slice(0,10)}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
-                        scale: 2, 
+                        scale: 1, 
                         useCORS: true, 
                         backgroundColor: '#ffffff',
                         logging: true,
                         width: 750,
-                        windowWidth: 750,
-                        scrollX: 0,
-                        scrollY: 0
+                        windowWidth: 750
                     },
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait', compress: true },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
                     pagebreak: { mode: ['css', 'legacy'] }
                 };
 
+                // Added small delay to ensure DOM is fully painted before capture
+                await new Promise(r => setTimeout(r, 500));
+                
                 await html2pdf().set(opt).from(container).save();
+                
                 document.body.removeChild(container);
+                document.body.removeChild(overlay);
 
             } catch (err) {
                 console.error(err);
