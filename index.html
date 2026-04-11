@@ -1087,43 +1087,62 @@
                 });
 
                 sortedRarities.forEach(rarity => {
-                    const rarityGroup = document.createElement('div');
-                    rarityGroup.className = 'rarity-group';
-                    rarityGroup.style.padding = '0 40px';
-                    rarityGroup.style.breakInside = 'avoid';
-                    rarityGroup.style.pageBreakInside = 'avoid';
-                    rarityGroup.innerHTML = `
-                        <h3 class="rarity-header" style="color: #64748b; font-size: 0.8em; text-transform: uppercase; letter-spacing: 2px; margin: 30px 0 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 5px;">
-                            ${rarity} (${grouped[rarity].length})
-                        </h3>
+                    const rarityHeader = document.createElement('h3');
+                    rarityHeader.style.cssText = `
+                        color: #64748b; 
+                        font-size: 0.8em; 
+                        text-transform: uppercase; 
+                        letter-spacing: 2px; 
+                        margin: 30px 40px 15px; 
+                        border-bottom: 1px dashed #e2e8f0; 
+                        padding-bottom: 5px;
+                        break-after: avoid;
                     `;
+                    rarityHeader.innerHTML = `${rarity} (${grouped[rarity].length})`;
+                    container.appendChild(rarityHeader);
                     
-                    const grid = document.createElement('div');
-                    grid.style.display = 'grid';
-                    grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-                    grid.style.gap = '20px';
-                    grid.style.marginBottom = '40px';
-                    
-                    grouped[rarity].forEach(d => {
-                        const b64 = b64Images[d.uid];
-                        const item = document.createElement('div');
-                        item.style.background = '#fff';
-                        item.style.padding = '12px';
-                        item.style.borderRadius = '12px';
-                        item.style.border = '1px solid #f1f5f9';
-                        item.style.textAlign = 'center';
-                        item.style.breakInside = 'avoid';
-                        item.style.pageBreakInside = 'avoid';
-                        item.innerHTML = `
-                            <img src="${b64 || 'assets/placeholder.jpg'}" style="width: 100%; height: auto; display: block; border-radius: 6px; margin-bottom: 8px;">
-                            <div style="font-size: 0.8em; font-weight: bold; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${d.name}</div>
-                            <div style="font-size: 0.65em; color: #0ea5e9; font-weight: 800; text-transform: uppercase;">${d.variant}</div>
+                    const cards = grouped[rarity];
+                    for (let i = 0; i < cards.length; i += 3) {
+                        const rowCards = cards.slice(i, i + 3);
+                        const row = document.createElement('div');
+                        row.style.cssText = `
+                            display: flex;
+                            gap: 20px;
+                            padding: 0 40px;
+                            margin-bottom: 20px;
+                            break-inside: avoid;
+                            page-break-inside: avoid;
                         `;
-                        grid.appendChild(item);
-                    });
-                    
-                    rarityGroup.appendChild(grid);
-                    container.appendChild(rarityGroup);
+                        
+                        rowCards.forEach(d => {
+                            const b64 = b64Images[d.uid];
+                            const item = document.createElement('div');
+                            item.style.cssText = `
+                                flex: 1;
+                                background: #fff;
+                                padding: 12px;
+                                border-radius: 12px;
+                                border: 1px solid #f1f5f9;
+                                text-align: center;
+                                min-width: 0;
+                            `;
+                            item.innerHTML = `
+                                <img src="${b64 || 'assets/placeholder.jpg'}" style="width: 100%; height: auto; display: block; border-radius: 6px; margin-bottom: 8px;">
+                                <div style="font-size: 0.8em; font-weight: bold; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${d.name}</div>
+                                <div style="font-size: 0.65em; color: #0ea5e9; font-weight: 800; text-transform: uppercase;">${d.variant}</div>
+                            `;
+                            row.appendChild(item);
+                        });
+
+                        // Spacer for rows with < 3 cards to keep layout consistent
+                        for (let j = rowCards.length; j < 3; j++) {
+                            const spacer = document.createElement('div');
+                            spacer.style.flex = '1';
+                            row.appendChild(spacer);
+                        }
+
+                        container.appendChild(row);
+                    }
                 });
 
                 // FOOTER
