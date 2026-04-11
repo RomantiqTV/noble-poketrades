@@ -796,7 +796,31 @@
         </div>
     </div>
 
-    <div id="settingsModal" class="modal-overlay">
+    <div id="devModeControls" style="display: none; position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.9); border: 2px solid #ffd700; padding: 20px; border-radius: 15px; z-index: 9999; color: white; width: 250px; box-shadow: 0 0 30px rgba(0,0,0,0.5);">
+        <div style="font-family: 'Cinzel'; font-size: 0.9em; margin-bottom: 15px; color: #ffd700; border-bottom: 1px solid #333; padding-bottom: 10px;">Parallax Dev Tools</div>
+        <div style="margin-bottom: 15px;">
+            <label style="font-size: 0.7em; color: #888; display: block; margin-bottom: 5px;">SELECT LAYER</label>
+            <select id="devLayerSelect" class="select-input" style="width: 100%; font-size: 0.8em; background: #111;">
+                <option value="ice-sky">1-Sky</option>
+                <option value="ice-water-back">0-water</option>
+                <option value="ice-reflex-back">2-2-reflex-back</option>
+                <option value="ice-mountain">3-mountains</option>
+                <option value="ice-cloud">2-cloud</option>
+                <option value="ice-iceberg-reflex">4-icebergreflex</option>
+                <option value="ice-iceberg">5-iceberg</option>
+                <option value="ice-reflex-front">2-1-reflex-front</option>
+            </select>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+            <button class="tab-btn" style="flex: 1;" onclick="adjustLayer(-1)">DOWN</button>
+            <button class="tab-btn" style="flex: 1;" onclick="adjustLayer(1)">UP</button>
+        </div>
+        <div id="devLayerInfo" style="font-size: 0.7em; color: #aaa; margin-bottom: 15px; background: #1a1a1a; padding: 10px; border-radius: 5px;">
+            Offset: <span id="devOffsetVal">0</span>vh
+        </div>
+        <button class="modal-btn btn-get" style="width: 100%; font-size: 0.8em;" onclick="exportDevSettings()">EXPORT SETTINGS</button>
+        <button class="modal-btn btn-cancel" style="width: 100%; font-size: 0.8em; margin-top: 10px;" onclick="toggleDevMode()">CLOSE</button>
+    </div>
         <div class="modal" style="max-width: 400px;">
             <h2 style="font-family: 'Cinzel'; font-size: 1.2em;">Settings</h2>
             <div style="text-align: left; margin-top: 20px;">
@@ -816,6 +840,9 @@
                     </button>
                     <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('articuno-ice')">
                         <span class="theme-dot" style="background: #0f172a; border-color: #38bdf8;"></span> Articuno Ice (New!)
+                    </button>
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center; border-color: #ffd700;" onclick="toggleDevMode()">
+                        🛠️ Parallax Dev Mode
                     </button>
                 </div>
             </div>
@@ -1045,6 +1072,58 @@
 
         function openSettingsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
         function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
+
+        // Parallax Dev Mode
+        let devOffsets = {
+            'ice-sky': 0,
+            'ice-water-back': 15,
+            'ice-reflex-back': 15,
+            'ice-mountain': 15,
+            'ice-cloud': 25,
+            'ice-iceberg-reflex': 15,
+            'ice-iceberg': 15,
+            'ice-reflex-front': 15
+        };
+
+        function toggleDevMode() {
+            const controls = document.getElementById('devModeControls');
+            const isVisible = controls.style.display === 'block';
+            controls.style.display = isVisible ? 'none' : 'block';
+            if (!isVisible) {
+                setTheme('articuno-ice');
+                closeSettingsModal();
+                updateDevUI();
+            }
+        }
+
+        function adjustLayer(delta) {
+            const layer = document.getElementById('devLayerSelect').value;
+            devOffsets[layer] += delta;
+            
+            const el = document.querySelector('.' + layer);
+            if (el) {
+                const basePos = layer === 'ice-sky' ? 'center top' : 'center bottom';
+                el.style.backgroundPosition = `${basePos} ${devOffsets[layer]}vh`;
+            }
+            updateDevUI();
+        }
+
+        function updateDevUI() {
+            const layer = document.getElementById('devLayerSelect').value;
+            document.getElementById('devOffsetVal').innerText = devOffsets[layer];
+        }
+
+        document.getElementById('devLayerSelect').addEventListener('change', updateDevUI);
+
+        function exportDevSettings() {
+            let output = "PARALLAX CONFIG EXPORT:\n\n";
+            for (const [layer, offset] of Object.entries(devOffsets)) {
+                output += `${layer}: ${offset}vh\n`;
+            }
+            output += "\nSend this back to Claude to update!";
+            console.log(output);
+            alert("Settings exported to Console (F12)!\n\nCheck the console and copy the block to send back.");
+        }
 
         async function initData() {
             const DATA = currentSet === 'po' ? window.CARD_DATA : window.DATA_151;
