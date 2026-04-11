@@ -1149,9 +1149,9 @@
                                 min-width: 0;
                             `;
                             item.innerHTML = `
-                                <img src="${b64 || 'assets/placeholder.jpg'}" style="width: 100%; height: auto; display: block; border-radius: 6px; margin-bottom: 8px;">
-                                <div style="font-size: 0.8em; font-weight: bold; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${d.name}</div>
-                                <div style="font-size: 0.65em; color: #0ea5e9; font-weight: 800; text-transform: uppercase;">${d.variant}</div>
+                                <img src="${b64 || 'assets/placeholder.jpg'}" style="width: 140px; height: auto; display: block; margin: 0 auto 8px; border-radius: 6px;">
+                                <div style="font-size: 0.75em; font-weight: bold; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${d.name}</div>
+                                <div style="font-size: 0.6em; color: #0ea5e9; font-weight: 800; text-transform: uppercase;">${d.variant}</div>
                             `;
                             row.appendChild(item);
                         });
@@ -1182,7 +1182,7 @@
                 container.appendChild(footer);
 
                 const opt = {
-                    margin: 0,
+                    margin: [40, 0, 60, 0], // Top, Right, Bottom, Left in px
                     filename: `Noble_Needs_${currentSet}_${new Date().toISOString().slice(0,10)}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
