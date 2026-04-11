@@ -77,21 +77,57 @@
         body.theme-light #qtyControls { background: #f8f9fa; border-color: #eee; }
 
         body.theme-pokemon {
-            --bg: #3b4cca; --card-bg: #ffffff; --text: #212529; --accent: #ff0000;
-            --border-none: #cc0000;
+            --bg: #fff0f3; --card-bg: #ffffff; --text: #4a4a4a; --accent: #ff85a2;
+            --border-none: #ffcad4;
         }
-        body.theme-pokemon .logo-text { color: #ffcb05; text-shadow: 2px 2px #2a75bb, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000; font-family: 'Cinzel', serif; }
-        body.theme-pokemon .logo-sub { color: #ffcb05; text-shadow: 1px 1px #2a75bb; }
-        body.theme-pokemon .sticky-controls { background: #3b4cca; border-bottom: 4px solid #ffcb05; box-shadow: 0 4px 10px rgba(0,0,0,0.3); }
-        body.theme-pokemon .tab-btn { background: #2a75bb; border-color: #3b4cca; color: #fff; }
-        body.theme-pokemon .tab-btn.active { background: #ffcb05; color: #3b4cca; border-color: #ffcb05; font-weight: bold; }
-        body.theme-pokemon .section-title { border-bottom: 3px solid #ffcb05; color: #ffcb05; text-transform: uppercase; letter-spacing: 2px; text-shadow: 1px 1px #000; }
-        body.theme-pokemon .calc-summary-bar { background: #ffffff; border: 3px solid #ffcb05; color: #3b4cca; }
-        body.theme-pokemon .calc-total-box .label { color: #555; }
-        body.theme-pokemon .card { border-width: 3px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        body.theme-pokemon .search-input, body.theme-pokemon .select-input { border: 2px solid #ffcb05; background: #fff; color: #3b4cca; }
-        body.theme-pokemon #loadingOverlay { background: rgba(59, 76, 202, 0.9); }
-        body.theme-pokemon .modal { border: 4px solid #ffcb05; }
+        body.theme-pokemon::before {
+            content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(255, 182, 193, 0.1) 0%, transparent 20%),
+                radial-gradient(circle at 90% 80%, rgba(255, 182, 193, 0.1) 0%, transparent 20%);
+            z-index: -2;
+        }
+        .parallax-bg {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none; z-index: -1; overflow: hidden;
+            display: none;
+        }
+        body.theme-pokemon .parallax-bg { display: block; }
+        .falling-card {
+            position: absolute; width: 80px; height: 110px;
+            background: rgba(255, 255, 255, 0.2);
+            border: 2px solid rgba(255, 133, 162, 0.3);
+            border-radius: 8px;
+            background-size: cover;
+            opacity: 0.4;
+            filter: blur(1px);
+            animation: fall linear infinite;
+        }
+        @keyframes fall {
+            0% { transform: translateY(-120px) rotate(0deg) translateX(0); opacity: 0; }
+            10% { opacity: 0.4; }
+            90% { opacity: 0.4; }
+            100% { transform: translateY(110vh) rotate(360deg) translateX(50px); opacity: 0; }
+        }
+        body.theme-pokemon .logo-text { color: #ff85a2; text-shadow: 2px 2px #ffcad4; font-family: 'Cinzel', serif; }
+        body.theme-pokemon .logo-sub { color: #ff85a2; text-shadow: 1px 1px #ffcad4; }
+        body.theme-pokemon .sticky-controls { background: rgba(255, 240, 243, 0.9); backdrop-filter: blur(10px); border-bottom: 2px solid #ffcad4; box-shadow: 0 4px 15px rgba(255, 133, 162, 0.1); }
+        body.theme-pokemon .tab-btn { background: #fff; border-color: #ffcad4; color: #ff85a2; }
+        body.theme-pokemon .tab-btn.active { background: #ff85a2; color: #fff; border-color: #ff85a2; font-weight: bold; box-shadow: 0 0 15px rgba(255, 133, 162, 0.3); }
+        body.theme-pokemon .section-title { border-bottom: 2px solid #ff85a2; color: #ff85a2; text-transform: uppercase; letter-spacing: 2px; }
+        body.theme-pokemon .calc-summary-bar { background: #ffffff; border: 1px solid #ffcad4; color: #4a4a4a; box-shadow: 0 8px 25px rgba(255, 133, 162, 0.1); }
+        body.theme-pokemon .card { border-width: 2px; border-color: #ffcad4; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        body.theme-pokemon .card:hover { transform: translateY(-10px) scale(1.05) rotate(2deg); box-shadow: 0 15px 35px rgba(255, 133, 162, 0.3); }
+        body.theme-pokemon .search-input, body.theme-pokemon .select-input { border: 1px solid #ffcad4; background: #fff; color: #4a4a4a; }
+        body.theme-pokemon #loadingOverlay { background: rgba(255, 240, 243, 0.9); }
+        body.theme-pokemon .modal { border: 2px solid #ff85a2; background: #fff; }
+        body.theme-pokemon .btn-get { background: #ff85a2; }
+
+        body.theme-pokemon .card { animation: float 6s ease-in-out infinite; }
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0); }
+            50% { transform: translateY(-5px) rotate(1deg); }
+        }
 
         .theme-dot { width: 20px; height: 20px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 10px; border: 1px solid #444; }
         /* Two-Column Comparison Layout */
@@ -190,6 +226,10 @@
         }
         .pokeball::before, .pokeball::after { content: ""; position: absolute; }
         .pokeball::before { background: #ef5350; width: 100%; height: 50%; border-bottom: 3px solid #000; }
+        
+        body.theme-pokemon .pokeball::before { background: #ff85a2; border-bottom-color: #ffcad4; }
+        body.theme-pokemon .pokeball { border-color: #ffcad4; }
+        body.theme-pokemon .pokeball::after { border-color: #ffcad4; }
         .pokeball::after {
             top: calc(50% - 6px); left: calc(50% - 6px); width: 12px; height: 12px;
             background: #fff; border: 3px solid #000; border-radius: 50%; z-index: 10;
@@ -243,6 +283,7 @@
     </style>
 </head>
 <body>
+    <div class="parallax-bg" id="parallaxBg"></div>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="pokeball"></div>
         <div style="font-weight: bold; letter-spacing: 1px;">Loading prices, please wait a moment...</div>
@@ -348,7 +389,7 @@
                         <span class="theme-dot" style="background: #f5f7f9;"></span> Light Theme
                     </button>
                     <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('pokemon')">
-                        <span class="theme-dot" style="background: #3b4cca;"></span> Pokémon Theme
+                        <span class="theme-dot" style="background: #ff85a2;"></span> Pokémon Theme (Mew/Pink)
                     </button>
                 </div>
             </div>
@@ -377,6 +418,7 @@
             if(document.getElementById('setSelect')) document.getElementById('setSelect').value = currentSet; 
             const savedTheme = localStorage.getItem('por_theme') || 'dark';
             setTheme(savedTheme);
+            if (savedTheme === 'pokemon') initPokemonTheme();
             updateUserUI();
             initData();
         });
@@ -387,7 +429,39 @@
                 document.body.classList.add('theme-' + theme);
             }
             localStorage.setItem('por_theme', theme);
+            if (theme === 'pokemon') initPokemonTheme();
         }
+
+        function initPokemonTheme() {
+            const bg = document.getElementById('parallaxBg');
+            if (!bg) return;
+            bg.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const card = document.createElement('div');
+                card.className = 'falling-card';
+                card.style.left = Math.random() * 100 + '%';
+                card.style.top = (Math.random() * -100) + 'px';
+                card.style.animationDuration = (Math.random() * 15 + 15) + 's';
+                card.style.animationDelay = (Math.random() * 10) + 's';
+                
+                // Use random cards from the current dataset for the background
+                const randomCard = DATA[Math.floor(Math.random() * DATA.length)];
+                if (randomCard) {
+                    card.style.backgroundImage = `url(${randomCard.image})`;
+                    card.style.backgroundPosition = 'center';
+                    card.style.backgroundSize = 'cover';
+                }
+                bg.appendChild(card);
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            if (document.body.classList.contains('theme-pokemon')) {
+                const scrolled = window.pageYOffset;
+                const bg = document.getElementById('parallaxBg');
+                if (bg) bg.style.top = (scrolled * 0.2) + 'px';
+            }
+        });
 
         function openSettingsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
         function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
@@ -445,7 +519,8 @@
             const p = prices[d.name + d.rarity + d.variant] || ({0:0.25, 1:0.50, 2:1.00, 5:5.00, 6:15.00, 7:20.00, 8:40.00, 9:80.00}[d.rarity_rank] || 1.00);
             const isM = d.owned === 0;
             const s = isM && (shade || view === 'calc');
-            return `<div class="card ${getB(d)} ${s ? 'missing shaded' : ''} ${isSel ? 'selected' : ''}" onclick="handleCardClick(${d.uid})">
+            const randomDelay = (Math.random() * 5).toFixed(2) + 's';
+            return `<div class="card ${getB(d)} ${s ? 'missing shaded' : ''} ${isSel ? 'selected' : ''}" style="animation-delay: ${randomDelay}" onclick="handleCardClick(${d.uid})">
                     <div class="sheen ${getS(d)}"></div>
                     <div class="qty">×${d.owned}</div>
                     <img src="${d.image}" onerror="this.src='${d.fallbackImage}'" loading="lazy">
