@@ -135,13 +135,35 @@
         }
 
         .scene-ground-container {
-            position: absolute; bottom: 0; width: 100%; height: 45%;
-            background: linear-gradient(to top, rgba(26, 16, 96, 0.8) 0%, transparent 100%);
+            position: absolute; bottom: 0; width: 100%; height: 50%;
+            background: linear-gradient(to top, rgba(13, 8, 48, 0.9) 0%, transparent 100%);
         }
+        
+        /* Forest/Tree details */
+        .scene-tree {
+            position: absolute; bottom: 15%; fill: #0a0520; opacity: 0.8;
+        }
+        
+        .scene-pokemon-gif {
+            position: absolute; image-rendering: pixelated;
+            filter: drop-shadow(0 0 5px rgba(255,133,162,0.3));
+        }
+        
         .scene-pokemon-idle { animation: scene-pkmn-bob var(--d) ease-in-out infinite; }
         @keyframes scene-pkmn-bob {
             0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-4px); }
+            50% { transform: translateY(-8px); }
+        }
+        
+        /* Clouds */
+        .scene-cloud {
+            position: absolute; background: rgba(255, 255, 255, 0.05);
+            border-radius: 50px; filter: blur(20px);
+            animation: scene-cloud-drift var(--d) linear infinite;
+        }
+        @keyframes scene-cloud-drift {
+            from { transform: translateX(-200px); }
+            to { transform: translateX(100vw); }
         }
         
         .scene-orb {
@@ -413,93 +435,62 @@
     <div id="scene-background">
         <div class="scene-layer scene-sky-gradient" data-speed="0.25"></div>
         <div class="scene-layer" id="scene-stars" data-speed="0.1"></div>
+        <div class="scene-layer" id="scene-clouds" data-speed="0.2"></div>
         <div class="scene-layer" id="scene-moon" data-speed="0.15">
-            <svg style="position:absolute; top:10%; right:10%; width:150px; height:150px;" viewBox="0 0 100 100">
+            <svg style="position:absolute; top:8%; right:15%; width:180px; height:180px;" viewBox="0 0 100 100">
                 <defs>
                     <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
                         <stop offset="0%" style="stop-color:#fffdf0; stop-opacity:1" />
-                        <stop offset="70%" style="stop-color:#fffdf0; stop-opacity:0.4" />
+                        <stop offset="60%" style="stop-color:#fffdf0; stop-opacity:0.6" />
                         <stop offset="100%" style="stop-color:#fffdf0; stop-opacity:0" />
                     </radialGradient>
+                    <filter id="moonBlur">
+                        <feGaussianBlur in="SourceGraphic" stdDeviation="2" />
+                    </filter>
                 </defs>
-                <circle cx="50" cy="50" r="45" fill="url(#moonGlow)" />
-                <circle cx="50" cy="50" r="30" fill="#fffdf0" />
-                <circle cx="40" cy="40" r="5" fill="#f4f1de" opacity="0.4" />
-                <circle cx="60" cy="55" r="8" fill="#f4f1de" opacity="0.4" />
+                <circle cx="50" cy="50" r="48" fill="url(#moonGlow)" />
+                <circle cx="50" cy="50" r="32" fill="#fffdf0" filter="url(#moonBlur)" />
+                <circle cx="42" cy="42" r="6" fill="#e9e5c9" opacity="0.3" />
+                <circle cx="58" cy="56" r="10" fill="#e9e5c9" opacity="0.3" />
+                <circle cx="35" cy="55" r="4" fill="#e9e5c9" opacity="0.3" />
             </svg>
         </div>
-        <div class="scene-layer" id="scene-mew-layer" data-speed="0.2">
-            <div class="scene-mew-container">
-                <svg width="100" height="100" viewBox="0 0 100 100">
-                    <!-- Mew's Body -->
-                    <path d="M50 30 C30 30, 20 50, 25 70 C30 85, 70 85, 75 70 C80 50, 70 30, 50 30" fill="#ffdae9" />
-                    <!-- Tail -->
-                    <path d="M75 75 Q95 75, 95 40 T70 20" fill="none" stroke="#ffdae9" stroke-width="3" />
-                    <!-- Eyes -->
-                    <ellipse cx="40" cy="55" rx="5" ry="7" fill="#4fc3f7" />
-                    <ellipse cx="60" cy="55" rx="5" ry="7" fill="#4fc3f7" />
-                    <!-- Paws -->
-                    <circle cx="35" cy="75" r="4" fill="#ffdae9" />
-                    <circle cx="65" cy="75" r="4" fill="#ffdae9" />
-                    <!-- Ears -->
-                    <path d="M40 35 L30 20 L45 32 Z" fill="#ffdae9" />
-                    <path d="M60 35 L70 20 L55 32 Z" fill="#ffdae9" />
-                </svg>
+        <div class="scene-layer" id="scene-mew-layer" data-speed="0.22">
+            <div class="scene-mew-container" style="left: 30%; top: 20%;">
+                <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
             </div>
         </div>
-        <div class="scene-layer" id="scene-ground" data-speed="0.4">
+        <div class="scene-layer" id="scene-ground" data-speed="0.45">
             <div class="scene-ground-container">
-                <!-- Rocky Ledge -->
-                <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1000 300" style="position:absolute; bottom:0;">
-                    <path d="M0 250 Q250 200, 500 250 T1000 250 L1000 300 L0 300 Z" fill="#2a1b3d" />
-                    <!-- Grass and Plants -->
+                <!-- Silhouette Forest/Ledge -->
+                <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1000 400" style="position:absolute; bottom:0;">
+                    <defs>
+                        <linearGradient id="groundGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+                            <stop offset="0%" style="stop-color:#1a1060; stop-opacity:0" />
+                            <stop offset="100%" style="stop-color:#0a0520; stop-opacity:1" />
+                        </linearGradient>
+                    </defs>
+                    <!-- Distant Trees -->
+                    <path d="M100 300 L120 250 L140 300 Z M200 300 L230 220 L260 300 Z M800 300 L840 200 L880 300 Z" fill="#0a0520" />
+                    <!-- Main Ledge -->
+                    <path d="M0 320 Q200 280, 400 320 T800 300 T1000 340 L1000 400 L0 400 Z" fill="url(#groundGrad)" />
+                    <!-- Flowers/Sparkles -->
+                    <g id="scene-detail-group"></g>
                     <g id="scene-grass-group"></g>
-                    <!-- Orbs -->
-                    <g id="scene-orb-group"></g>
                 </svg>
                 
-                <!-- Pokemon -->
-                <!-- Jigglypuff (Far Left) -->
-                <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:10%; width:80px; height:80px; --d:2.5s;">
-                    <svg viewBox="0 0 100 100">
-                        <circle cx="50" cy="55" r="35" fill="#ffc1e3" />
-                        <circle cx="38" cy="50" r="10" fill="white" />
-                        <circle cx="38" cy="50" r="7" fill="#00acc1" />
-                        <circle cx="62" cy="50" r="10" fill="white" />
-                        <circle cx="62" cy="50" r="7" fill="#00acc1" />
-                        <path d="M45 25 Q50 15, 55 25" fill="#ffc1e3" stroke="#ff80ab" stroke-width="1" />
-                        <path d="M30 30 L20 15 L40 35 Z" fill="#ffc1e3" />
-                        <path d="M70 30 L80 15 L60 35 Z" fill="#ffc1e3" />
-                    </svg>
+                <!-- Pokemon GIFs -->
+                <!-- Jigglypuff -->
+                <div class="scene-pokemon-idle" style="position:absolute; bottom:18%; left:12%; --d:3.1s;">
+                    <img src="https://projectpokemon.org/images/normal-sprite/jigglypuff.gif" class="scene-pokemon-gif" style="width: 50px;">
                 </div>
-
-                <!-- Clefairy (Centre Left) -->
-                <div class="scene-pokemon-idle" style="position:absolute; bottom:12%; left:30%; width:90px; height:90px; --d:3s;">
-                    <svg viewBox="0 0 100 100">
-                        <ellipse cx="50" cy="60" rx="35" ry="30" fill="#ffc1e3" />
-                        <path d="M25 40 L15 20 L35 35 Z" fill="#4a332d" />
-                        <path d="M75 40 L85 20 L65 35 Z" fill="#4a332d" />
-                        <path d="M30 45 L22 25 L40 40 Z" fill="#ffc1e3" />
-                        <path d="M70 45 L78 25 L60 40 Z" fill="#ffc1e3" />
-                        <circle cx="42" cy="55" r="3" fill="#333" />
-                        <circle cx="58" cy="55" r="3" fill="#333" />
-                        <ellipse cx="38" cy="65" rx="5" ry="3" fill="#ff80ab" opacity="0.6" />
-                        <ellipse cx="62" cy="65" rx="5" ry="3" fill="#ff80ab" opacity="0.6" />
-                    </svg>
+                <!-- Clefairy -->
+                <div class="scene-pokemon-idle" style="position:absolute; bottom:16%; left:28%; --d:2.8s;">
+                    <img src="https://projectpokemon.org/images/normal-sprite/clefairy.gif" class="scene-pokemon-gif" style="width: 55px;">
                 </div>
-
-                <!-- Clefable (Centre Right) -->
-                <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; right:25%; width:110px; height:110px; --d:2.2s;">
-                    <svg viewBox="0 0 100 100">
-                        <!-- Wings -->
-                        <path d="M20 50 Q0 30, 30 40" fill="#ffc1e3" opacity="0.8" />
-                        <path d="M80 50 Q100 30, 70 40" fill="#ffc1e3" opacity="0.8" />
-                        <ellipse cx="50" cy="60" rx="30" ry="35" fill="#ffc1e3" />
-                        <path d="M35 30 L25 10 L45 25 Z" fill="#ffc1e3" />
-                        <path d="M65 30 L75 10 L55 25 Z" fill="#ffc1e3" />
-                        <circle cx="45" cy="55" r="3" fill="#333" />
-                        <circle cx="55" cy="55" r="3" fill="#333" />
-                    </svg>
+                <!-- Chansey -->
+                <div class="scene-pokemon-idle" style="position:absolute; bottom:14%; right:15%; --d:3.5s;">
+                    <img src="https://projectpokemon.org/images/normal-sprite/chansey.gif" class="scene-pokemon-gif" style="width: 70px;">
                 </div>
             </div>
         </div>
@@ -689,17 +680,32 @@
 
             const grassGroup = document.getElementById('scene-grass-group');
             if (grassGroup && !grassGroup.children.length) {
-                for (let i = 0; i < 30; i++) {
+                for (let i = 0; i < 40; i++) {
                     const x = Math.random() * 1000;
-                    const h = Math.random() * 20 + 20;
+                    const h = Math.random() * 25 + 15;
                     const rect = document.createElementNS("http://www.w3.org/2000/svg", "path");
-                    const shimmer = Math.random() > 0.7 ? " scene-shimmer" : "";
+                    const shimmer = Math.random() > 0.6 ? " scene-shimmer" : "";
                     rect.setAttribute("class", "scene-grass-tuft" + shimmer);
-                    rect.setAttribute("d", `M${x} 250 Q${x + 5} ${250 - h}, ${x + 10} 250`);
+                    rect.setAttribute("d", `M${x} 320 Q${x + 5} ${320 - h}, ${x + 10} 320`);
                     rect.setAttribute("fill", i % 2 === 0 ? "#1a4d2e" : "#0f2c1a");
                     rect.setAttribute("stroke", "#2d5a3b");
                     rect.setAttribute("stroke-width", "1");
                     grassGroup.appendChild(rect);
+                }
+            }
+            
+            const cloudLayer = document.getElementById('scene-clouds');
+            if (cloudLayer && !cloudLayer.children.length) {
+                for (let i = 0; i < 6; i++) {
+                    const cloud = document.createElement('div');
+                    cloud.className = 'scene-cloud';
+                    cloud.style.width = (Math.random() * 200 + 150) + 'px';
+                    cloud.style.height = (Math.random() * 40 + 30) + 'px';
+                    cloud.style.top = (Math.random() * 40 + 10) + '%';
+                    cloud.style.left = (Math.random() * 100) + '%';
+                    cloud.style.setProperty('--d', (Math.random() * 40 + 40) + 's');
+                    cloud.style.animationDelay = (Math.random() * -60) + 's';
+                    cloudLayer.appendChild(cloud);
                 }
             }
         }
