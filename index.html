@@ -117,7 +117,39 @@
         body.theme-pokemon .search-input, body.theme-pokemon .select-input { border: 1px solid #ffcad4; background: #fff; color: #4a4a4a; }
         body.theme-pokemon #loadingOverlay { background: rgba(255, 240, 243, 0.9); }
         body.theme-pokemon .modal { border: 2px solid #ff85a2; background: #fff; }
-        body.theme-pokemon .btn-get { background: #ff85a2; }
+        body.theme-pokemon .card.missing.shaded img { filter: grayscale(1) brightness(0.6) sepia(1) hue-rotate(-50deg) saturate(1.5); opacity: 0.8; }
+        
+        /* Star Animations */
+        .star {
+            position: fixed; background: white; border-radius: 50%;
+            pointer-events: none; z-index: -1; opacity: 0;
+            display: none;
+        }
+        body.theme-pokemon .star { display: block; }
+        
+        .shining-star {
+            width: 2px; height: 2px;
+            animation: twinkle var(--duration) ease-in-out infinite;
+        }
+        
+        .shooting-star {
+            width: 3px; height: 3px;
+            background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
+            box-shadow: 0 0 10px white, 0 0 20px #ff85a2;
+            animation: shoot var(--duration) linear infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 0.8; transform: scale(1.2); box-shadow: 0 0 5px white; }
+        }
+        
+        @keyframes shoot {
+            0% { transform: translateX(-100px) translateY(0) rotate(-45deg) scaleX(0); opacity: 0; }
+            10% { opacity: 1; scaleX(10); }
+            50% { opacity: 1; }
+            100% { transform: translateX(120vw) translateY(120vh) rotate(-45deg) scaleX(10); opacity: 0; }
+        }
 
         .theme-dot { width: 20px; height: 20px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 10px; border: 1px solid #444; }
         /* Two-Column Comparison Layout */
@@ -427,7 +459,7 @@
             if (!bg) return;
             bg.innerHTML = '';
             
-            // Cute pink pokemon assets
+            // 1. Falling Cute Pokemon
             const pinkPokemon = [
                 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/151.png', // Mew
                 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/35.png',  // Clefairy
@@ -435,18 +467,37 @@
                 'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/36.png'   // Clefable
             ];
 
-            for (let i = 0; i < 15; i++) {
+            for (let i = 0; i < 12; i++) {
                 const sprite = document.createElement('div');
                 sprite.className = 'falling-pokemon';
                 sprite.style.left = Math.random() * 100 + '%';
                 sprite.style.top = (Math.random() * -100) + 'px';
-                sprite.style.animationDuration = (Math.random() * 10 + 10) + 's';
-                sprite.style.animationDelay = (Math.random() * 8) + 's';
-                
-                const randomPkmn = pinkPokemon[Math.floor(Math.random() * pinkPokemon.length)];
-                sprite.style.backgroundImage = `url(${randomPkmn})`;
-                
+                sprite.style.animationDuration = (Math.random() * 10 + 12) + 's';
+                sprite.style.animationDelay = (Math.random() * 10) + 's';
+                sprite.style.backgroundImage = `url(${pinkPokemon[Math.floor(Math.random() * pinkPokemon.length)]})`;
                 bg.appendChild(sprite);
+            }
+
+            // 2. Twinkling Stars
+            for (let i = 0; i < 40; i++) {
+                const star = document.createElement('div');
+                star.className = 'star shining-star';
+                star.style.left = Math.random() * 100 + 'vw';
+                star.style.top = Math.random() * 100 + 'vh';
+                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.animationDelay = Math.random() * 5 + 's';
+                bg.appendChild(star);
+            }
+
+            // 3. Shooting Stars
+            for (let i = 0; i < 3; i++) {
+                const star = document.createElement('div');
+                star.className = 'star shooting-star';
+                star.style.left = (Math.random() * 50) + 'vw';
+                star.style.top = (Math.random() * 50) + 'vh';
+                star.style.setProperty('--duration', (Math.random() * 2 + 3) + 's');
+                star.style.animationDelay = (Math.random() * 15) + 's';
+                bg.appendChild(star);
             }
         }
 
