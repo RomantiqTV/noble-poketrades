@@ -177,16 +177,21 @@
         /* Wave Layer - Slower movement to keep it low on screen */
         .layer-6 { background-image: url('assets/parallax/Ocean/6oceanwave.png'); z-index: 60; }
 
-        /* Bottom Sand Fill - Matches the tan color of 5oceansand.png */
+        /* Bottom Sand Fill - Matches requested color #DC9D90 */
         .scene-ground-fill {
             position: absolute; 
-            bottom: 0; /* Closed the gap */
+            bottom: 0;
             left: 0;
             width: 100%; 
             height: 1000vh; 
-            background: #b89f7a; /* Sampled deeper sand tan to match the image */
+            background: #DC9D90; 
             transform: translateY(100%);
             z-index: 55;
+        }
+
+        .scene-layer.layer-6 {
+            transition: opacity 0.3s ease-out;
+            will-change: transform, opacity;
         }
         
         .scene-star-particle {
@@ -765,11 +770,21 @@
 
         function updateParallax() {
             const layers = document.querySelectorAll('.scene-layer[data-speed]');
+            const waveLayer = document.querySelector('.layer-6');
+            
             layers.forEach(layer => {
                 const speed = parseFloat(layer.getAttribute('data-speed'));
                 const yPos = -(scrollY * speed);
                 layer.style.transform = `translateY(${yPos}px)`;
             });
+
+            // Fade out waves rapidly when scrolling down
+            if (waveLayer) {
+                // Fades out completely by 400px of scroll
+                const opacity = Math.max(0, 1 - (scrollY / 400));
+                waveLayer.style.opacity = opacity;
+            }
+
             ticking = false;
         }
 
