@@ -76,9 +76,82 @@
         body.theme-light .modal { background: #fff; border-color: #eee; color: #2c3e50; }
         body.theme-light #qtyControls { background: #f8f9fa; border-color: #eee; }
 
-        body.theme-pokemon {
-            --bg: #fff0f3; --card-bg: #ffffff; --text: #4a4a4a; --accent: #ff85a2;
-            --border-none: #ffcad4;
+        body.theme-mew-nighttime {
+            --bg: #0a0520; --card-bg: rgba(26, 16, 96, 0.6); --text: #eef2ff; --accent: #ff85a2;
+            --border-none: rgba(255, 255, 255, 0.1);
+        }
+        body.theme-mew-nighttime .sticky-controls { background: rgba(10, 5, 32, 0.85); backdrop-filter: blur(15px); border-bottom-color: rgba(255, 133, 162, 0.2); }
+        body.theme-mew-nighttime .tab-btn { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.1); color: #94a3b8; }
+        body.theme-mew-nighttime .tab-btn.active { background: var(--accent); color: white; }
+        body.theme-mew-nighttime .search-input, body.theme-mew-nighttime .select-input { background: rgba(0,0,0,0.2); border-color: rgba(255,255,255,0.1); color: white; }
+        body.theme-mew-nighttime .card { background: var(--card-bg); backdrop-filter: blur(5px); border-color: rgba(255,255,255,0.05); }
+        body.theme-mew-nighttime .card:hover { border-color: var(--accent); }
+        body.theme-mew-nighttime .section-title { color: #cbd5e1; border-bottom-color: rgba(255, 133, 162, 0.3); text-shadow: 0 0 10px rgba(255, 133, 162, 0.3); }
+
+        #scene-background {
+            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+            z-index: -1; overflow: hidden; pointer-events: none;
+            display: none;
+        }
+        body.theme-mew-nighttime #scene-background { display: block; }
+        .scene-layer { position: absolute; width: 100%; height: 100%; left: 0; top: 0; will-change: transform; }
+        
+        .scene-sky-gradient {
+            background: linear-gradient(to bottom, #0a0520 0%, #1a1060 60%, #2e1a80 100%);
+            height: 120vh;
+        }
+        
+        .scene-star-particle {
+            position: absolute; background: white; border-radius: 50%;
+            animation: scene-twinkle var(--d) ease-in-out infinite;
+        }
+        .scene-star-sparkle {
+            position: absolute; fill: white;
+            animation: scene-twinkle var(--d) ease-in-out infinite;
+        }
+        @keyframes scene-twinkle {
+            0%, 100% { opacity: 0.3; transform: scale(0.8); }
+            50% { opacity: 1; transform: scale(1.2); }
+        }
+
+        .scene-mew-container {
+            position: absolute; top: 15%; left: 40%; width: 120px;
+            animation: scene-mew-drift 8s ease-in-out infinite, scene-mew-bob 5s ease-in-out infinite;
+        }
+        @keyframes scene-mew-drift {
+            0%, 100% { transform: translateX(-50px); }
+            50% { transform: translateX(50px); }
+        }
+        @keyframes scene-mew-bob {
+            0%, 100% { top: 15%; }
+            50% { top: 18%; }
+        }
+
+        .scene-ground-container {
+            position: absolute; bottom: 0; width: 100%; height: 45%;
+            background: linear-gradient(to top, rgba(26, 16, 96, 0.8) 0%, transparent 100%);
+        }
+        .scene-pokemon-idle { animation: scene-pkmn-bob var(--d) ease-in-out infinite; }
+        @keyframes scene-pkmn-bob {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-4px); }
+        }
+        
+        .scene-orb {
+            position: absolute; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(200,255,255,0) 70%);
+            border-radius: 50%; animation: scene-orb-float 10s linear infinite;
+        }
+        @keyframes scene-orb-float {
+            0% { transform: translateY(0); opacity: 0; }
+            20% { opacity: 0.4; }
+            80% { opacity: 0.4; }
+            100% { transform: translateY(-300px); opacity: 0; }
+        }
+
+        .scene-shimmer { animation: scene-shimmer-anim 3s ease-in-out infinite; }
+        @keyframes scene-shimmer-anim {
+            0%, 100% { filter: brightness(1) drop-shadow(0 0 2px rgba(100,255,255,0.3)); }
+            50% { filter: brightness(1.3) drop-shadow(0 0 8px rgba(100,255,255,0.6)); }
         }
         body.theme-pokemon::before {
             content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
@@ -330,6 +403,100 @@
     </style>
 </head>
 <body>
+    <div id="scene-background">
+        <div class="scene-layer scene-sky-gradient" data-speed="0.25"></div>
+        <div class="scene-layer" id="scene-stars" data-speed="0.1"></div>
+        <div class="scene-layer" id="scene-moon" data-speed="0.15">
+            <svg style="position:absolute; top:10%; right:10%; width:150px; height:150px;" viewBox="0 0 100 100">
+                <defs>
+                    <radialGradient id="moonGlow" cx="50%" cy="50%" r="50%">
+                        <stop offset="0%" style="stop-color:#fffdf0; stop-opacity:1" />
+                        <stop offset="70%" style="stop-color:#fffdf0; stop-opacity:0.4" />
+                        <stop offset="100%" style="stop-color:#fffdf0; stop-opacity:0" />
+                    </radialGradient>
+                </defs>
+                <circle cx="50" cy="50" r="45" fill="url(#moonGlow)" />
+                <circle cx="50" cy="50" r="30" fill="#fffdf0" />
+                <circle cx="40" cy="40" r="5" fill="#f4f1de" opacity="0.4" />
+                <circle cx="60" cy="55" r="8" fill="#f4f1de" opacity="0.4" />
+            </svg>
+        </div>
+        <div class="scene-layer" id="scene-mew-layer" data-speed="0.2">
+            <div class="scene-mew-container">
+                <svg width="100" height="100" viewBox="0 0 100 100">
+                    <!-- Mew's Body -->
+                    <path d="M50 30 C30 30, 20 50, 25 70 C30 85, 70 85, 75 70 C80 50, 70 30, 50 30" fill="#ffdae9" />
+                    <!-- Tail -->
+                    <path d="M75 75 Q95 75, 95 40 T70 20" fill="none" stroke="#ffdae9" stroke-width="3" />
+                    <!-- Eyes -->
+                    <ellipse cx="40" cy="55" rx="5" ry="7" fill="#4fc3f7" />
+                    <ellipse cx="60" cy="55" rx="5" ry="7" fill="#4fc3f7" />
+                    <!-- Paws -->
+                    <circle cx="35" cy="75" r="4" fill="#ffdae9" />
+                    <circle cx="65" cy="75" r="4" fill="#ffdae9" />
+                    <!-- Ears -->
+                    <path d="M40 35 L30 20 L45 32 Z" fill="#ffdae9" />
+                    <path d="M60 35 L70 20 L55 32 Z" fill="#ffdae9" />
+                </svg>
+            </div>
+        </div>
+        <div class="scene-layer" id="scene-ground" data-speed="0.4">
+            <div class="scene-ground-container">
+                <!-- Rocky Ledge -->
+                <svg width="100%" height="100%" preserveAspectRatio="none" viewBox="0 0 1000 300" style="position:absolute; bottom:0;">
+                    <path d="M0 250 Q250 200, 500 250 T1000 250 L1000 300 L0 300 Z" fill="#2a1b3d" />
+                    <!-- Grass and Plants -->
+                    <g id="scene-grass-group"></g>
+                    <!-- Orbs -->
+                    <g id="scene-orb-group"></g>
+                </svg>
+                
+                <!-- Pokemon -->
+                <!-- Jigglypuff (Far Left) -->
+                <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:10%; width:80px; height:80px; --d:2.5s;">
+                    <svg viewBox="0 0 100 100">
+                        <circle cx="50" cy="55" r="35" fill="#ffc1e3" />
+                        <circle cx="38" cy="50" r="10" fill="white" />
+                        <circle cx="38" cy="50" r="7" fill="#00acc1" />
+                        <circle cx="62" cy="50" r="10" fill="white" />
+                        <circle cx="62" cy="50" r="7" fill="#00acc1" />
+                        <path d="M45 25 Q50 15, 55 25" fill="#ffc1e3" stroke="#ff80ab" stroke-width="1" />
+                        <path d="M30 30 L20 15 L40 35 Z" fill="#ffc1e3" />
+                        <path d="M70 30 L80 15 L60 35 Z" fill="#ffc1e3" />
+                    </svg>
+                </div>
+
+                <!-- Clefairy (Centre Left) -->
+                <div class="scene-pokemon-idle" style="position:absolute; bottom:12%; left:30%; width:90px; height:90px; --d:3s;">
+                    <svg viewBox="0 0 100 100">
+                        <ellipse cx="50" cy="60" rx="35" ry="30" fill="#ffc1e3" />
+                        <path d="M25 40 L15 20 L35 35 Z" fill="#4a332d" />
+                        <path d="M75 40 L85 20 L65 35 Z" fill="#4a332d" />
+                        <path d="M30 45 L22 25 L40 40 Z" fill="#ffc1e3" />
+                        <path d="M70 45 L78 25 L60 40 Z" fill="#ffc1e3" />
+                        <circle cx="42" cy="55" r="3" fill="#333" />
+                        <circle cx="58" cy="55" r="3" fill="#333" />
+                        <ellipse cx="38" cy="65" rx="5" ry="3" fill="#ff80ab" opacity="0.6" />
+                        <ellipse cx="62" cy="65" rx="5" ry="3" fill="#ff80ab" opacity="0.6" />
+                    </svg>
+                </div>
+
+                <!-- Clefable (Centre Right) -->
+                <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; right:25%; width:110px; height:110px; --d:2.2s;">
+                    <svg viewBox="0 0 100 100">
+                        <!-- Wings -->
+                        <path d="M20 50 Q0 30, 30 40" fill="#ffc1e3" opacity="0.8" />
+                        <path d="M80 50 Q100 30, 70 40" fill="#ffc1e3" opacity="0.8" />
+                        <ellipse cx="50" cy="60" rx="30" ry="35" fill="#ffc1e3" />
+                        <path d="M35 30 L25 10 L45 25 Z" fill="#ffc1e3" />
+                        <path d="M65 30 L75 10 L55 25 Z" fill="#ffc1e3" />
+                        <circle cx="45" cy="55" r="3" fill="#333" />
+                        <circle cx="55" cy="55" r="3" fill="#333" />
+                    </svg>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="parallax-bg" id="parallaxBg"></div>
     <div id="loadingOverlay" class="loading-overlay">
         <div class="pokeball"></div>
@@ -435,8 +602,8 @@
                     <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('light')">
                         <span class="theme-dot" style="background: #f5f7f9;"></span> Light Theme
                     </button>
-                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('pokemon')">
-                        <span class="theme-dot" style="background: #ff85a2;"></span> Pokémon Theme (Mew/Pink)
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('mew-nighttime')">
+                        <span class="theme-dot" style="background: #0a0520; border-color: #ff85a2;"></span> Mew Nighttime (Animated)
                     </button>
                 </div>
             </div>
@@ -471,13 +638,83 @@
         });
 
         function setTheme(theme) {
-            document.body.classList.remove('theme-light', 'theme-pokemon');
+            document.body.classList.remove('theme-light', 'theme-pokemon', 'theme-mew-nighttime');
             if (theme !== 'dark') {
                 document.body.classList.add('theme-' + theme);
             }
             localStorage.setItem('por_theme', theme);
             if (theme === 'pokemon') initPokemonTheme();
+            if (theme === 'mew-nighttime') initMewNighttime();
         }
+
+        function initMewNighttime() {
+            const starLayer = document.getElementById('scene-stars');
+            if (starLayer && !starLayer.children.length) {
+                for (let i = 0; i < 40; i++) {
+                    const isSparkle = Math.random() > 0.5;
+                    const el = document.createElementNS("http://www.w3.org/2000/svg", isSparkle ? "svg" : "div");
+                    const x = Math.random() * 100;
+                    const y = Math.random() * 70;
+                    const dur = (Math.random() * 3 + 2) + "s";
+                    const del = (Math.random() * 5) + "s";
+
+                    if (isSparkle) {
+                        el.setAttribute("class", "scene-star-sparkle");
+                        el.setAttribute("viewBox", "0 0 20 20");
+                        el.style.width = "10px";
+                        el.style.height = "10px";
+                        el.innerHTML = '<path d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z" />';
+                    } else {
+                        el.className = "scene-star-particle";
+                        el.style.width = (Math.random() * 3 + 1) + "px";
+                        el.style.height = el.style.width;
+                    }
+                    el.style.left = x + "%";
+                    el.style.top = y + "%";
+                    el.style.setProperty("--d", dur);
+                    el.style.animationDelay = del;
+                    starLayer.appendChild(el);
+                }
+            }
+
+            const grassGroup = document.getElementById('scene-grass-group');
+            if (grassGroup && !grassGroup.children.length) {
+                for (let i = 0; i < 30; i++) {
+                    const x = Math.random() * 1000;
+                    const h = Math.random() * 20 + 20;
+                    const rect = document.createElementNS("http://www.w3.org/2000/svg", "path");
+                    const shimmer = Math.random() > 0.7 ? " scene-shimmer" : "";
+                    rect.setAttribute("class", "scene-grass-tuft" + shimmer);
+                    rect.setAttribute("d", `M${x} 250 Q${x + 5} ${250 - h}, ${x + 10} 250`);
+                    rect.setAttribute("fill", i % 2 === 0 ? "#1a4d2e" : "#0f2c1a");
+                    rect.setAttribute("stroke", "#2d5a3b");
+                    rect.setAttribute("stroke-width", "1");
+                    grassGroup.appendChild(rect);
+                }
+            }
+        }
+
+        // Parallax Scroll Handler
+        let scrollY = 0;
+        let ticking = false;
+
+        function updateParallax() {
+            const layers = document.querySelectorAll('.scene-layer');
+            layers.forEach(layer => {
+                const speed = parseFloat(layer.getAttribute('data-speed'));
+                const yPos = -(scrollY * speed);
+                layer.style.transform = `translateY(${yPos}px)`;
+            });
+            ticking = false;
+        }
+
+        window.addEventListener('scroll', () => {
+            scrollY = window.pageYOffset;
+            if (!ticking) {
+                window.requestAnimationFrame(updateParallax);
+                ticking = true;
+            }
+        });
 
         function initPokemonTheme() {
             const bg = document.getElementById('parallaxBg');
