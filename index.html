@@ -208,8 +208,30 @@
         }
 
         .scene-mew-container {
-            position: absolute; top: 35%; left: 30%; width: 120px;
+            position: absolute; top: 35%; left: 70%; width: 120px;
             animation: scene-mew-drift 12s ease-in-out infinite, scene-mew-bob 6s ease-in-out infinite;
+        }
+        /* Latias & Latios Flyby */
+        .eon-duo-container {
+            position: absolute;
+            top: 20%;
+            left: -200px;
+            display: flex;
+            gap: 40px;
+            z-index: 35;
+            animation: eon-flyby 25s linear infinite;
+            animation-delay: 5s;
+        }
+        .eon-sprite {
+            width: 80px;
+            height: 80px;
+            transform: scaleX(-1); /* Mirror them to face right */
+            filter: drop-shadow(0 0 10px rgba(255,255,255,0.2));
+        }
+        @keyframes eon-flyby {
+            0% { left: -300px; transform: translateY(0); }
+            10% { left: 120vw; transform: translateY(-50px); }
+            100% { left: 120vw; transform: translateY(-50px); }
         }
         @keyframes scene-mew-drift {
             0%, 100% { transform: translateX(-80px); }
@@ -514,6 +536,14 @@
         <div class="scene-layer" id="scene-stars" data-speed="0.01" style="z-index:15;"></div>
         <!-- Distant mountains move very slowly -->
         <div class="scene-layer layer-4" data-speed="0.03"></div>
+        
+        <!-- Eon Duo Flyby -->
+        <div class="scene-layer" data-speed="0.02" style="z-index: 18;">
+            <div class="eon-duo-container">
+                <img src="https://projectpokemon.org/images/normal-sprite/latias.gif" class="eon-sprite">
+                <img src="https://projectpokemon.org/images/normal-sprite/latios.gif" class="eon-sprite">
+            </div>
+        </div>
         
         <!-- Main Sea - Slowest scenery -->
         <div class="scene-layer layer-1" data-speed="0.04"></div>
