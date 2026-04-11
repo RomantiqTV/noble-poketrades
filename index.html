@@ -638,6 +638,7 @@
         </div>
         <div class="ice-layer ice-reflex-front" data-speed="0.15"></div>
     </div>
+    <div id="scene-background">
         <div class="scene-layer layer-0" data-speed="0"></div>
         <div class="scene-layer" id="scene-stars" data-speed="0.01" style="z-index:15;"></div>
         <!-- Distant mountains move very slowly -->
@@ -679,7 +680,7 @@
         </div>
         
         <div class="scene-layer" id="scene-mew-layer" data-speed="0.05" style="z-index:55;">
-            <div class="scene-mew-container" style="left: 30%; top: 35%;">
+            <div class="scene-mew-container" style="left: 70%; top: 35%;">
                 <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
             </div>
         </div>
@@ -836,9 +837,28 @@
                 document.body.classList.add('theme-' + theme);
             }
             localStorage.setItem('por_theme', theme);
-            if (theme === 'pokemon') initPokemonTheme();
-            if (theme === 'mew-nighttime') initMewNighttime();
-            if (theme === 'articuno-ice') initArticunoIce();
+            
+            // Clean up both background systems
+            const sceneBg = document.getElementById('scene-background');
+            const iceBg = document.getElementById('ice-background');
+            const parallaxBg = document.getElementById('parallaxBg');
+            
+            if (sceneBg) sceneBg.style.display = 'none';
+            if (iceBg) iceBg.style.display = 'none';
+            if (parallaxBg) parallaxBg.style.display = 'none';
+
+            if (theme === 'pokemon') {
+                if (parallaxBg) parallaxBg.style.display = 'block';
+                initPokemonTheme();
+            }
+            if (theme === 'mew-nighttime') {
+                if (sceneBg) sceneBg.style.display = 'block';
+                initMewNighttime();
+            }
+            if (theme === 'articuno-ice') {
+                if (iceBg) iceBg.style.display = 'block';
+                initArticunoIce();
+            }
         }
 
         function initArticunoIce() {
