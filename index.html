@@ -109,55 +109,36 @@
             background-repeat: repeat-x;
         }
         
-        /* Ocean Parallax Dusk Vibe */
-        .scene-sky {
-            background: url('assets/parallax/Ocean/0oceanskyandsun.png') center/cover no-repeat;
-            filter: hue-rotate(20deg) brightness(0.8) saturate(1.2);
-            height: 100vh;
-        }
-        .scene-sun-light {
-            background-image: url('assets/parallax/Ocean/2oceansunlight.png');
+        /* Ocean Parallax System (Layers 0-6) */
+        .scene-layer { 
+            position: absolute; 
+            width: 100%; 
+            height: 100vh; 
+            left: 0; 
+            top: 0; 
+            will-change: transform; 
+            background-position: bottom; 
+            background-repeat: repeat-x;
             background-size: auto 100%;
-            mix-blend-mode: screen;
-            opacity: 0.6;
-        }
-        .scene-ocean-clouds {
-            background-image: url('assets/parallax/Ocean/3oceanclouds.png');
-            background-size: auto 50%;
-            opacity: 0.4;
-            filter: blur(1px) brightness(0.8);
-        }
-        .scene-ocean-mountains {
-            background-image: url('assets/parallax/Ocean/4oceanbackmountain.png');
-            background-size: auto 60%;
-            filter: hue-rotate(240deg) brightness(0.4);
-        }
-        .scene-sea {
-            background-image: url('assets/parallax/Ocean/1oceansea.png');
-            background-size: auto 70%;
-            filter: hue-rotate(220deg) brightness(0.3);
-        }
-        .scene-sand {
-            background-image: url('assets/parallax/Ocean/5oceansand.png');
-            background-size: auto 80%;
-            filter: hue-rotate(220deg) brightness(0.25);
-        }
-        .scene-wave {
-            background-image: url('assets/parallax/Ocean/6oceanwave.png');
-            background-size: auto 100%;
-            filter: hue-rotate(220deg) brightness(0.2);
         }
 
-        /* The Ground Fill: Ensure it covers everything below the ocean layers */
+        .layer-0 { background-image: url('assets/parallax/Ocean/0oceanskyandsun.png'); background-size: cover; z-index: 10; }
+        .layer-1 { background-image: url('assets/parallax/Ocean/1oceansea.png'); z-index: 20; filter: hue-rotate(220deg) brightness(0.4); }
+        .layer-2 { background-image: url('assets/parallax/Ocean/2oceansunlight.png'); z-index: 25; mix-blend-mode: screen; opacity: 0.5; }
+        .layer-3 { background-image: url('assets/parallax/Ocean/3oceanclouds.png'); z-index: 30; opacity: 0.3; filter: blur(2px); }
+        .layer-4 { background-image: url('assets/parallax/Ocean/4oceanbackmountain.png'); z-index: 40; filter: hue-rotate(240deg) brightness(0.3); }
+        .layer-5 { background-image: url('assets/parallax/Ocean/5oceansand.png'); z-index: 50; filter: hue-rotate(220deg) brightness(0.2); }
+        .layer-6 { background-image: url('assets/parallax/Ocean/6oceanwave.png'); z-index: 60; filter: hue-rotate(220deg) brightness(0.15); }
+
         .scene-ground-fill {
             position: absolute; 
-            bottom: 0; 
+            bottom: -5px; /* Slight overlap to prevent seam */
             left: 0;
             width: 100%; 
-            height: 1000vh; /* Extremely long to cover all content */
-            background: #04030a;
+            height: 1000vh; 
+            background: #020105; /* Deepest ocean color */
             transform: translateY(100%);
-            z-index: -1;
+            z-index: 55;
         }
         
         .scene-star-particle {
@@ -476,41 +457,30 @@
 </head>
 <body>
     <div id="scene-background">
-        <div class="scene-layer scene-sky" data-speed="0"></div>
-        <div class="scene-layer" id="scene-stars" data-speed="0.02"></div>
-        <div class="scene-layer" id="scene-sun-light" data-speed="0.03">
-            <div class="scene-layer scene-sun-light"></div>
-        </div>
-        <div class="scene-layer" id="scene-mountains-back" data-speed="0.05">
-            <div class="scene-layer scene-ocean-mountains"></div>
-        </div>
-        <div class="scene-layer" id="scene-clouds" data-speed="0.08">
-            <div class="scene-layer scene-ocean-clouds"></div>
-        </div>
-        <div class="scene-layer" id="scene-sea" data-speed="0.12">
-            <div class="scene-layer scene-sea"></div>
-        </div>
-        <div class="scene-layer" id="scene-sand" data-speed="0.2">
-            <div class="scene-layer scene-sand"></div>
-        </div>
-        <div class="scene-layer" id="scene-mew-layer" data-speed="0.25">
+        <div class="scene-layer layer-0" data-speed="0"></div>
+        <div class="scene-layer" id="scene-stars" data-speed="0.01" style="z-index:15;"></div>
+        <div class="scene-layer layer-1" data-speed="0.05"></div>
+        <div class="scene-layer layer-2" data-speed="0.08"></div>
+        <div class="scene-layer layer-3" data-speed="0.12"></div>
+        <div class="scene-layer layer-4" data-speed="0.18"></div>
+        <div class="scene-layer layer-5" data-speed="0.3"></div>
+        <div class="scene-layer" id="scene-mew-layer" data-speed="0.35" style="z-index:55;">
             <div class="scene-mew-container" style="left: 30%; top: 35%;">
                 <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
             </div>
         </div>
-        <div class="scene-layer" id="scene-ground" data-speed="0.5">
-            <div class="scene-layer scene-wave"></div>
-            <!-- Pokemon GIFs -->
+        <div class="scene-layer layer-6" data-speed="0.5">
+            <!-- Pokemon GIFs on the waves/front -->
             <!-- Jigglypuff -->
-            <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:12%; --d:3.1s; z-index: 60;">
+            <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:12%; --d:3.1s; z-index: 70;">
                 <img src="https://projectpokemon.org/images/normal-sprite/jigglypuff.gif" class="scene-pokemon-gif" style="width: 50px;">
             </div>
             <!-- Clefairy -->
-            <div class="scene-pokemon-idle" style="position:absolute; bottom:12%; left:28%; --d:2.8s; z-index: 60;">
+            <div class="scene-pokemon-idle" style="position:absolute; bottom:12%; left:28%; --d:2.8s; z-index: 70;">
                 <img src="https://projectpokemon.org/images/normal-sprite/clefairy.gif" class="scene-pokemon-gif" style="width: 55px;">
             </div>
             <!-- Chansey -->
-            <div class="scene-pokemon-idle" style="position:absolute; bottom:10%; right:15%; --d:3.5s; z-index: 60;">
+            <div class="scene-pokemon-idle" style="position:absolute; bottom:10%; right:15%; --d:3.5s; z-index: 70;">
                 <img src="https://projectpokemon.org/images/normal-sprite/chansey.gif" class="scene-pokemon-gif" style="width: 70px;">
             </div>
             <div class="scene-ground-fill"></div>
