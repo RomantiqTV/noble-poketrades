@@ -191,7 +191,13 @@
             will-change: transform; background-position: center bottom; background-repeat: no-repeat; background-size: 100% auto;
         }
 
-        .ice-sky { background-image: url('assets/parallax/Iceberg/1-Sky.png'); z-index: 5; background-size: cover; background-position: center; }
+        .ice-sky { 
+            background-image: url('assets/parallax/Iceberg/1-Sky.png'); 
+            z-index: 5; 
+            background-size: cover; 
+            background-position: center; 
+            background-repeat: no-repeat !important;
+        }
         .ice-water-back { background-image: url('assets/parallax/Iceberg/0-water.png'); z-index: 10; opacity: 0.8; }
         .ice-reflex-back { background-image: url('assets/parallax/Iceberg/2-2-water-reflex-back.png'); z-index: 12; mix-blend-mode: screen; opacity: 0.4; }
         .ice-mountain { background-image: url('assets/parallax/Iceberg/3-mountains.png'); z-index: 15; opacity: 1; background-position: center bottom 15vh; }
@@ -233,7 +239,7 @@
             top: 0; 
             will-change: transform; 
             background-position: bottom; 
-            background-repeat: repeat-x;
+            background-repeat: no-repeat;
         }
         
         /* Ocean Parallax System (Layers 0-6) */
@@ -245,7 +251,7 @@
             top: 0; 
             will-change: transform; 
             background-position: bottom; 
-            background-repeat: repeat-x;
+            background-repeat: no-repeat;
             background-size: auto 100%;
         }
 
@@ -258,7 +264,7 @@
             top: 0; 
             will-change: transform; 
             background-position: bottom; 
-            background-repeat: repeat-x;
+            background-repeat: no-repeat;
             background-size: auto 100%;
         }
 
