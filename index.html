@@ -99,14 +99,26 @@
         
         .scene-sky-gradient {
             background: linear-gradient(to bottom, #0a0520 0%, #1a1060 60%, #2e1a80 100%);
-            height: 120vh;
+            height: 100vh;
             z-index: 10;
         }
         
-        .scene-layer[id="scene-stars"] { z-index: 20; }
+        /* Extend scenery for long pages */
+        body.theme-mew-nighttime {
+            background: #0a0520; /* fallback/base */
+        }
+        
+        .scene-layer[id="scene-stars"] { z-index: 20; height: 200vh; }
+        .scene-layer[id="scene-clouds"] { z-index: 25; height: 200vh; }
         .scene-layer[id="scene-moon"] { z-index: 30; }
         .scene-layer[id="scene-mew-layer"] { z-index: 40; }
-        .scene-layer[id="scene-ground"] { z-index: 50; }
+        .scene-layer[id="scene-ground"] { z-index: 50; height: 100vh; }
+        
+        .scene-ground-fill {
+            position: absolute; bottom: 0; width: 100%; height: 60vh;
+            background: #0a0520;
+            transform: translateY(100%);
+        }
         
         .scene-star-particle {
             position: absolute; background: white; border-radius: 50%;
@@ -122,16 +134,16 @@
         }
 
         .scene-mew-container {
-            position: absolute; top: 15%; left: 40%; width: 120px;
-            animation: scene-mew-drift 8s ease-in-out infinite, scene-mew-bob 5s ease-in-out infinite;
+            position: absolute; top: 35%; left: 30%; width: 120px;
+            animation: scene-mew-drift 12s ease-in-out infinite, scene-mew-bob 6s ease-in-out infinite;
         }
         @keyframes scene-mew-drift {
-            0%, 100% { transform: translateX(-50px); }
-            50% { transform: translateX(50px); }
+            0%, 100% { transform: translateX(-80px); }
+            50% { transform: translateX(80px); }
         }
         @keyframes scene-mew-bob {
-            0%, 100% { top: 15%; }
-            50% { top: 18%; }
+            0%, 100% { top: 35%; }
+            50% { top: 40%; }
         }
 
         .scene-ground-container {
@@ -474,10 +486,11 @@
                     <path d="M100 300 L120 250 L140 300 Z M200 300 L230 220 L260 300 Z M800 300 L840 200 L880 300 Z" fill="#0a0520" />
                     <!-- Main Ledge -->
                     <path d="M0 320 Q200 280, 400 320 T800 300 T1000 340 L1000 400 L0 400 Z" fill="url(#groundGrad)" />
-                    <!-- Flowers/Sparkles -->
+                    <!-- Details will be injected -->
                     <g id="scene-detail-group"></g>
                     <g id="scene-grass-group"></g>
                 </svg>
+                <div class="scene-ground-fill"></div>
                 
                 <!-- Pokemon GIFs -->
                 <!-- Jigglypuff -->
@@ -651,13 +664,14 @@
         function initMewNighttime() {
             const starLayer = document.getElementById('scene-stars');
             if (starLayer && !starLayer.children.length) {
-                for (let i = 0; i < 40; i++) {
-                    const isSparkle = Math.random() > 0.5;
+                // Increased density for longer page
+                for (let i = 0; i < 150; i++) {
+                    const isSparkle = Math.random() > 0.7;
                     const el = document.createElementNS("http://www.w3.org/2000/svg", isSparkle ? "svg" : "div");
                     const x = Math.random() * 100;
-                    const y = Math.random() * 70;
+                    const y = Math.random() * 200; // Extend starfield height
                     const dur = (Math.random() * 3 + 2) + "s";
-                    const del = (Math.random() * 5) + "s";
+                    const del = (Math.random() * 10) + "s";
 
                     if (isSparkle) {
                         el.setAttribute("class", "scene-star-sparkle");
