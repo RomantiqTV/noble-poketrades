@@ -994,7 +994,7 @@
                 btn.innerText = "Building PDF...";
 
                 const container = document.createElement('div');
-                container.style.width = '794px'; 
+                container.style.width = '750px'; 
                 container.style.background = '#ffffff';
                 container.style.color = '#334155';
                 container.style.fontFamily = "'Inter', sans-serif";
@@ -1091,6 +1091,7 @@
                     rarityGroup.className = 'rarity-group';
                     rarityGroup.style.padding = '0 40px';
                     rarityGroup.style.breakInside = 'avoid';
+                    rarityGroup.style.pageBreakInside = 'avoid';
                     rarityGroup.innerHTML = `
                         <h3 class="rarity-header" style="color: #64748b; font-size: 0.8em; text-transform: uppercase; letter-spacing: 2px; margin: 30px 0 15px; border-bottom: 1px dashed #e2e8f0; padding-bottom: 5px;">
                             ${rarity} (${grouped[rarity].length})
@@ -1112,8 +1113,9 @@
                         item.style.border = '1px solid #f1f5f9';
                         item.style.textAlign = 'center';
                         item.style.breakInside = 'avoid';
+                        item.style.pageBreakInside = 'avoid';
                         item.innerHTML = `
-                            <img src="${b64 || 'assets/placeholder.jpg'}" style="width: 100%; border-radius: 6px; margin-bottom: 8px;">
+                            <img src="${b64 || 'assets/placeholder.jpg'}" style="width: 100%; height: auto; display: block; border-radius: 6px; margin-bottom: 8px;">
                             <div style="font-size: 0.8em; font-weight: bold; color: #1e293b; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${d.name}</div>
                             <div style="font-size: 0.65em; color: #0ea5e9; font-weight: 800; text-transform: uppercase;">${d.variant}</div>
                         `;
@@ -1139,12 +1141,18 @@
                 container.appendChild(footer);
 
                 const opt = {
-                    margin: 0.4,
+                    margin: [0.5, 0.5],
                     filename: `Noble_Needs_${currentSet}_${new Date().toISOString().slice(0,10)}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+                    html2canvas: { 
+                        scale: 2, 
+                        useCORS: true, 
+                        backgroundColor: '#ffffff',
+                        logging: false,
+                        width: 750
+                    },
                     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
-                    pagebreak: { mode: ['css', 'legacy'], avoid: '.rarity-group' }
+                    pagebreak: { mode: ['css', 'legacy'] }
                 };
 
                 await html2pdf().set(opt).from(container).save();
