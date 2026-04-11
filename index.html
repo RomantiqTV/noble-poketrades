@@ -77,7 +77,7 @@
         body.theme-light #qtyControls { background: #f8f9fa; border-color: #eee; }
 
         body.theme-mew-nighttime {
-            --bg: #0a0520; --card-bg: rgba(26, 16, 96, 0.6); --text: #eef2ff; --accent: #ff85a2;
+            --bg: transparent; --card-bg: rgba(26, 16, 96, 0.6); --text: #eef2ff; --accent: #ff85a2;
             --border-none: rgba(255, 255, 255, 0.1);
         }
         body.theme-mew-nighttime .sticky-controls { background: rgba(10, 5, 32, 0.85); backdrop-filter: blur(15px); border-bottom-color: rgba(255, 133, 162, 0.2); }
@@ -93,13 +93,20 @@
             z-index: -1; overflow: hidden; pointer-events: none;
             display: none;
         }
-        body.theme-mew-nighttime #scene-background { display: block; }
+        body.theme-mew-nighttime #scene-background { display: block; z-index: -1; }
+        body.theme-mew-nighttime .parallax-bg { display: none !important; }
         .scene-layer { position: absolute; width: 100%; height: 100%; left: 0; top: 0; will-change: transform; }
         
         .scene-sky-gradient {
             background: linear-gradient(to bottom, #0a0520 0%, #1a1060 60%, #2e1a80 100%);
             height: 120vh;
+            z-index: 10;
         }
+        
+        .scene-layer[id="scene-stars"] { z-index: 20; }
+        .scene-layer[id="scene-moon"] { z-index: 30; }
+        .scene-layer[id="scene-mew-layer"] { z-index: 40; }
+        .scene-layer[id="scene-ground"] { z-index: 50; }
         
         .scene-star-particle {
             position: absolute; background: white; border-radius: 50%;
@@ -601,6 +608,9 @@
                     </button>
                     <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('light')">
                         <span class="theme-dot" style="background: #f5f7f9;"></span> Light Theme
+                    </button>
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('pokemon')">
+                        <span class="theme-dot" style="background: #ff85a2;"></span> Pokémon Theme (Mew/Pink)
                     </button>
                     <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('mew-nighttime')">
                         <span class="theme-dot" style="background: #0a0520; border-color: #ff85a2;"></span> Mew Nighttime (Animated)
