@@ -965,23 +965,23 @@
                     return;
                 }
 
-                // Helper to convert images to Base64 to bypass CORS and loading issues in PDF
-                const toBase64 = url => {
+                const toBase64 = async url => {
                     const proxyUrl = `${API_URL}/proxy-image?url=${encodeURIComponent(url)}`;
-                    return fetch(proxyUrl)
-                        .then(response => {
-                            if (!response.ok) throw new Error('Proxy fetch failed');
-                            return response.blob();
-                        })
-                        .then(blob => new Promise((resolve, reject) => {
+                    try {
+                        const response = await fetch(proxyUrl);
+                        if (!response.ok) throw new Error('Proxy fetch failed');
+                        const blob = await response.blob();
+                        return await new Promise((resolve, reject) => {
                             const reader = new FileReader();
                             reader.onloadend = () => resolve(reader.result);
                             reader.onerror = reject;
                             reader.readAsDataURL(blob);
-                        })).catch(err => {
-                            console.warn("Image proxy failed for:", url, err);
-                            return null; // Fallback handled in template
                         });
+                    } catch (err) {
+                        console.warn("Image proxy failed for:", url, err);
+                        // If proxy fails, try direct URL as last resort (may hit CORS)
+                        return url;
+                    }
                 };
 
                 // Fetch missing images and convert to base64
@@ -1001,12 +1001,10 @@
                     color: #334155;
                     font-family: 'Inter', sans-serif;
                     padding: 0;
-                    position: fixed;
-                    left: 0;
+                    position: absolute;
+                    left: -9999px;
                     top: 0;
                     z-index: -1;
-                    opacity: 0.01;
-                    pointer-events: none;
                 `;
                 document.body.appendChild(container);
                 
@@ -1180,10 +1178,12 @@
                         backgroundColor: '#ffffff',
                         logging: true,
                         width: 750,
-                        windowWidth: 750
+                        windowWidth: 750,
+                        scrollX: 0,
+                        scrollY: 0
                     },
                     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait', compress: true },
-                    pagebreak: { mode: 'css' }
+                    pagebreak: { mode: ['css', 'legacy'] }
                 };
 
                 await html2pdf().set(opt).from(container).save();
