@@ -194,8 +194,8 @@
         .ice-sky { 
             background-image: url('assets/parallax/Iceberg/1-Sky.png'); 
             z-index: 5; 
-            background-size: 100% 100%; 
-            background-position: center; 
+            background-size: 100% auto; 
+            background-position: center top; 
             background-repeat: no-repeat !important;
         }
         .ice-water-back { background-image: url('assets/parallax/Iceberg/0-water.png'); z-index: 10; opacity: 0.8; background-position: center bottom 5vh; }
@@ -633,17 +633,17 @@
 <body>
     <div id="ice-background">
         <div class="ice-layer ice-sky" data-speed="0"></div>
-        <div class="ice-layer ice-water-back" data-speed="0.01"></div>
-        <div class="ice-layer ice-reflex-back" data-speed="0.01"></div>
-        <div class="ice-layer ice-mountain" data-speed="0.02"></div>
-        <div class="ice-layer ice-cloud" data-speed="0.03"></div>
-        <div class="ice-layer" data-speed="0.05" style="z-index:35;">
+        <div class="ice-layer ice-water-back" data-speed="0.005"></div>
+        <div class="ice-layer ice-reflex-back" data-speed="0.005"></div>
+        <div class="ice-layer ice-mountain" data-speed="0.01"></div>
+        <div class="ice-layer ice-cloud" data-speed="0.015"></div>
+        <div class="ice-layer" data-speed="0.025" style="z-index:35;">
             <div class="articuno-container">
                 <img src="https://projectpokemon.org/images/normal-sprite/articuno.gif" class="ice-pokemon-gif" style="width: 120px;">
             </div>
         </div>
-        <div class="ice-layer ice-iceberg-reflex" data-speed="0.1"></div>
-        <div class="ice-layer ice-iceberg" data-speed="0.1">
+        <div class="ice-layer ice-iceberg-reflex" data-speed="0.04"></div>
+        <div class="ice-layer ice-iceberg" data-speed="0.04">
             <!-- Regice on the left iceberg -->
             <div class="scene-pokemon-idle" style="position:absolute; bottom:18%; left:15%; --d:3.5s; z-index: 50;">
                 <img src="https://projectpokemon.org/images/normal-sprite/regice.gif" class="ice-pokemon-gif" style="width: 70px;">
@@ -654,7 +654,7 @@
             </div>
             <div class="ice-ground-fill"></div>
         </div>
-        <div class="ice-layer ice-reflex-front" data-speed="0.1"></div>
+        <div class="ice-layer ice-reflex-front" data-speed="0.04"></div>
     </div>
     <div id="scene-background">
         <div class="scene-layer layer-0" data-speed="0"></div>
