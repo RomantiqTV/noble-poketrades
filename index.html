@@ -219,7 +219,57 @@
         @keyframes ice-drift { 0%, 100% { transform: translateX(-100px); } 50% { transform: translateX(100px); } }
         @keyframes ice-bob { 0%, 100% { top: 25%; } 50% { top: 32%; } }
         
-        .ice-pokemon-gif { position: absolute; filter: drop-shadow(0 0 10px rgba(56,189,248,0.4)); }
+        .active-theme {
+            border-color: var(--accent) !important;
+            background: rgba(239, 83, 80, 0.1) !important;
+            box-shadow: 0 0 15px rgba(239, 83, 80, 0.2);
+        }
+
+        /* Tutorial Overlay */
+        #tutorial-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            backdrop-filter: blur(8px);
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .tutorial-card {
+            background: rgba(20, 20, 25, 0.95);
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 500px;
+            width: 90%;
+            box-shadow: 0 0 50px rgba(0,0,0,0.8);
+            position: relative;
+        }
+
+        .tutorial-spotlight {
+            position: relative;
+            z-index: 10001;
+            box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
+            pointer-events: auto !important;
+            border-radius: 10px;
+        }
+
+        .tutorial-highlight-box {
+            position: fixed;
+            border: 3px solid var(--accent);
+            border-radius: 15px;
+            box-shadow: 0 0 20px var(--accent);
+            pointer-events: none;
+            z-index: 9999;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: none;
+        }
 
         #scene-background {
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
@@ -802,23 +852,23 @@
             <div style="text-align: left; margin-top: 20px;">
                 <div style="font-size: 0.8em; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Theme Selection</div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
-                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('dark')">
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('dark')">
                         <span class="theme-dot" style="background: #050507;"></span> Dark Theme (Default)
                     </button>
-                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('light')">
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('light')">
                         <span class="theme-dot" style="background: #f5f7f9;"></span> Light Theme
                     </button>
-                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('pokemon')">
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('pokemon')">
                         <span class="theme-dot" style="background: #ff85a2;"></span> Pokémon Theme (Mew/Pink)
                     </button>
-                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('mew-nighttime')">
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('mew-nighttime')">
                         <span class="theme-dot" style="background: #0a0520; border-color: #ff85a2;"></span> Mew Nighttime (Animated)
                     </button>
-                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('articuno-ice')">
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('articuno-ice')">
                         <span class="theme-dot" style="background: #0f172a; border-color: #38bdf8;"></span> Articuno Ice (New!)
                     </button>
-                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center; border-color: #ffd700;" onclick="toggleDevMode()">
-                        🛠️ Parallax Dev Mode
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center; border-color: #ffd700;" onclick="startTutorial()">
+                        📖 Replay Tutorial
                     </button>
                 </div>
             </div>
@@ -852,6 +902,20 @@
         <button class="modal-btn btn-cancel" style="width: 100%; font-size: 0.8em; margin-top: 10px;" onclick="toggleDevMode()">CLOSE</button>
     </div>
 
+    <div id="tutorial-overlay">
+        <div class="tutorial-card">
+            <h2 id="tutorial-title" style="font-family: 'Cinzel'; color: var(--accent); margin-bottom: 15px;">Welcome to Noble Poketrades!</h2>
+            <div id="tutorial-content" style="font-size: 1em; line-height: 1.6; margin-bottom: 25px;">
+                Ready to manage your collection like a Pro? Let's take a quick tour.
+            </div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="modal-btn btn-cancel" onclick="skipTutorial()">Skip</button>
+                <button class="modal-btn btn-get" id="tutorial-next" onclick="nextTutorialStep()">Next Step</button>
+            </div>
+        </div>
+    </div>
+    <div id="tutorial-highlight" class="tutorial-highlight-box"></div>
+
     <script src="data.js"></script>
     <script src="data-151.js"></script>
     <script>
@@ -871,11 +935,16 @@
         }
         document.addEventListener('DOMContentLoaded', () => { 
             if(document.getElementById('setSelect')) document.getElementById('setSelect').value = currentSet; 
-            const savedTheme = localStorage.getItem('por_theme') || 'dark';
+            const savedTheme = localStorage.getItem('por_theme') || 'articuno-ice';
             setTheme(savedTheme);
             if (savedTheme === 'pokemon') initPokemonTheme();
             updateUserUI();
             initData();
+
+            // Tutorial Logic
+            if (!localStorage.getItem('por_tutorial_done')) {
+                startTutorial();
+            }
         });
 
         function setTheme(theme) {
@@ -884,6 +953,14 @@
                 document.body.classList.add('theme-' + theme);
             }
             localStorage.setItem('por_theme', theme);
+
+            // Update Highlight in Settings
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active-theme');
+                if (btn.getAttribute('onclick').includes(`'${theme}'`)) {
+                    btn.classList.add('active-theme');
+                }
+            });
             
             // Clean up both background systems
             const sceneBg = document.getElementById('scene-background');
@@ -1074,6 +1151,95 @@
 
         function openSettingsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
         function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
+
+        // Tutorial System
+        let currentStep = 0;
+        const tutorialSteps = [
+            {
+                title: "Welcome, Trainer!",
+                content: "Noble Poketrades helps you track your TCG collection and calculate trades. First, let's look at the sets.",
+                target: null
+            },
+            {
+                title: "Choose Your Realm",
+                content: "Switch between different card sets like 'Perfect Order' and 'Scarlet & Violet 151' here.",
+                target: "#setSelect"
+            },
+            {
+                title: "Manage Your Collection",
+                content: "Tap any card to increase your owned quantity. The price updates automatically!",
+                target: "#content"
+            },
+            {
+                title: "Smart Search",
+                content: "Find specific cards by name, number, or Pokédex entry in seconds.",
+                target: ".search-container"
+            },
+            {
+                title: "Trade Calculator",
+                content: "Use this to balance trades using live market prices. No more guessing!",
+                target: ".tab-btn:nth-child(2)" // Trade Calculator Tab
+            },
+            {
+                title: "Account & Sync",
+                content: "Login to save your collection to the cloud so you never lose your progress.",
+                target: "#authBtn"
+            },
+            {
+                title: "Kickstart your Collection!",
+                content: `Already have an Excel list? Download our template and import it in the 'Import' tab.<br><br><a href="Pokemon_TCG_Checklist_v1.xlsx" download style="color:var(--accent); font-weight:bold; text-decoration:none;">📥 Download Template (.xlsx)</a>`,
+                target: null
+            }
+        ];
+
+        function startTutorial() {
+            currentStep = 0;
+            document.getElementById('tutorial-overlay').style.display = 'flex';
+            document.getElementById('settingsModal').style.display = 'none';
+            updateTutorialUI();
+        }
+
+        function nextTutorialStep() {
+            currentStep++;
+            if (currentStep >= tutorialSteps.length) {
+                finishTutorial();
+            } else {
+                updateTutorialUI();
+            }
+        }
+
+        function updateTutorialUI() {
+            const step = tutorialSteps[currentStep];
+            document.getElementById('tutorial-title').innerText = step.title;
+            document.getElementById('tutorial-content').innerHTML = step.content;
+            document.getElementById('tutorial-next').innerText = currentStep === tutorialSteps.length - 1 ? "Get Started!" : "Next Step";
+
+            const highlight = document.getElementById('tutorial-highlight');
+            if (step.target) {
+                const targetEl = document.querySelector(step.target);
+                if (targetEl) {
+                    const rect = targetEl.getBoundingClientRect();
+                    highlight.style.display = 'block';
+                    highlight.style.top = (rect.top - 10) + 'px';
+                    highlight.style.left = (rect.left - 10) + 'px';
+                    highlight.style.width = (rect.width + 20) + 'px';
+                    highlight.style.height = (rect.height + 20) + 'px';
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else {
+                highlight.style.display = 'none';
+            }
+        }
+
+        function skipTutorial() {
+            finishTutorial();
+        }
+
+        function finishTutorial() {
+            document.getElementById('tutorial-overlay').style.display = 'none';
+            document.getElementById('tutorial-highlight').style.display = 'none';
+            localStorage.setItem('por_tutorial_done', 'true');
+        }
 
         // Parallax Dev Mode
         let devOffsets = {
