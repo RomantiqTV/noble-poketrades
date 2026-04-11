@@ -994,11 +994,18 @@
                 btn.innerText = "Building PDF...";
 
                 const container = document.createElement('div');
-                container.style.width = '750px'; 
-                container.style.background = '#ffffff';
-                container.style.color = '#334155';
-                container.style.fontFamily = "'Inter', sans-serif";
-                container.style.padding = '0';
+                container.id = 'pdf-export-container';
+                container.style.cssText = `
+                    width: 750px;
+                    background: #ffffff;
+                    color: #334155;
+                    font-family: 'Inter', sans-serif;
+                    padding: 0;
+                    position: absolute;
+                    left: -9999px;
+                    top: 0;
+                `;
+                document.body.appendChild(container);
                 
                 // 1. HEADER / COVER (ONE PIECE)
                 const header = document.createElement('div');
@@ -1180,6 +1187,7 @@
                 };
 
                 await html2pdf().set(opt).from(container).save();
+                document.body.removeChild(container);
 
             } catch (err) {
                 console.error(err);
