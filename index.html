@@ -93,14 +93,10 @@
             display: none;
         }
         body.theme-pokemon .parallax-bg { display: block; }
-        .falling-card {
-            position: absolute; width: 80px; height: 110px;
-            background: rgba(255, 255, 255, 0.2);
-            border: 2px solid rgba(255, 133, 162, 0.3);
-            border-radius: 8px;
-            background-size: cover;
-            opacity: 0.4;
-            filter: blur(1px);
+        .falling-pokemon {
+            position: absolute; width: 100px; height: 100px;
+            background-size: contain; background-repeat: no-repeat;
+            opacity: 0.5; filter: drop-shadow(0 5px 10px rgba(255,133,162,0.2));
             animation: fall linear infinite;
         }
         @keyframes fall {
@@ -116,18 +112,12 @@
         body.theme-pokemon .tab-btn.active { background: #ff85a2; color: #fff; border-color: #ff85a2; font-weight: bold; box-shadow: 0 0 15px rgba(255, 133, 162, 0.3); }
         body.theme-pokemon .section-title { border-bottom: 2px solid #ff85a2; color: #ff85a2; text-transform: uppercase; letter-spacing: 2px; }
         body.theme-pokemon .calc-summary-bar { background: #ffffff; border: 1px solid #ffcad4; color: #4a4a4a; box-shadow: 0 8px 25px rgba(255, 133, 162, 0.1); }
-        body.theme-pokemon .card { border-width: 2px; border-color: #ffcad4; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        body.theme-pokemon .card { border-width: 2px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         body.theme-pokemon .card:hover { transform: translateY(-10px) scale(1.05) rotate(2deg); box-shadow: 0 15px 35px rgba(255, 133, 162, 0.3); }
         body.theme-pokemon .search-input, body.theme-pokemon .select-input { border: 1px solid #ffcad4; background: #fff; color: #4a4a4a; }
         body.theme-pokemon #loadingOverlay { background: rgba(255, 240, 243, 0.9); }
         body.theme-pokemon .modal { border: 2px solid #ff85a2; background: #fff; }
         body.theme-pokemon .btn-get { background: #ff85a2; }
-
-        body.theme-pokemon .card { animation: float 6s ease-in-out infinite; }
-        @keyframes float {
-            0%, 100% { transform: translateY(0) rotate(0); }
-            50% { transform: translateY(-5px) rotate(1deg); }
-        }
 
         .theme-dot { width: 20px; height: 20px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 10px; border: 1px solid #444; }
         /* Two-Column Comparison Layout */
@@ -436,22 +426,27 @@
             const bg = document.getElementById('parallaxBg');
             if (!bg) return;
             bg.innerHTML = '';
-            for (let i = 0; i < 20; i++) {
-                const card = document.createElement('div');
-                card.className = 'falling-card';
-                card.style.left = Math.random() * 100 + '%';
-                card.style.top = (Math.random() * -100) + 'px';
-                card.style.animationDuration = (Math.random() * 15 + 15) + 's';
-                card.style.animationDelay = (Math.random() * 10) + 's';
+            
+            // Cute pink pokemon assets
+            const pinkPokemon = [
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/151.png', // Mew
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/35.png',  // Clefairy
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/39.png',  // Jigglypuff
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/36.png'   // Clefable
+            ];
+
+            for (let i = 0; i < 15; i++) {
+                const sprite = document.createElement('div');
+                sprite.className = 'falling-pokemon';
+                sprite.style.left = Math.random() * 100 + '%';
+                sprite.style.top = (Math.random() * -100) + 'px';
+                sprite.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                sprite.style.animationDelay = (Math.random() * 8) + 's';
                 
-                // Use random cards from the current dataset for the background
-                const randomCard = DATA[Math.floor(Math.random() * DATA.length)];
-                if (randomCard) {
-                    card.style.backgroundImage = `url(${randomCard.image})`;
-                    card.style.backgroundPosition = 'center';
-                    card.style.backgroundSize = 'cover';
-                }
-                bg.appendChild(card);
+                const randomPkmn = pinkPokemon[Math.floor(Math.random() * pinkPokemon.length)];
+                sprite.style.backgroundImage = `url(${randomPkmn})`;
+                
+                bg.appendChild(sprite);
             }
         }
 
@@ -519,8 +514,7 @@
             const p = prices[d.name + d.rarity + d.variant] || ({0:0.25, 1:0.50, 2:1.00, 5:5.00, 6:15.00, 7:20.00, 8:40.00, 9:80.00}[d.rarity_rank] || 1.00);
             const isM = d.owned === 0;
             const s = isM && (shade || view === 'calc');
-            const randomDelay = (Math.random() * 5).toFixed(2) + 's';
-            return `<div class="card ${getB(d)} ${s ? 'missing shaded' : ''} ${isSel ? 'selected' : ''}" style="animation-delay: ${randomDelay}" onclick="handleCardClick(${d.uid})">
+            return `<div class="card ${getB(d)} ${s ? 'missing shaded' : ''} ${isSel ? 'selected' : ''}" onclick="handleCardClick(${d.uid})">
                     <div class="sheen ${getS(d)}"></div>
                     <div class="qty">×${d.owned}</div>
                     <img src="${d.image}" onerror="this.src='${d.fallbackImage}'" loading="lazy">
