@@ -123,20 +123,27 @@
         }
 
         .layer-0 { background-image: url('assets/parallax/Ocean/0oceanskyandsun.png'); background-size: cover; z-index: 10; }
-        .layer-1 { background-image: url('assets/parallax/Ocean/1oceansea.png'); z-index: 20; filter: hue-rotate(220deg) brightness(0.4); }
+        .layer-1 { background-image: url('assets/parallax/Ocean/1oceansea.png'); z-index: 20; }
         .layer-2 { background-image: url('assets/parallax/Ocean/2oceansunlight.png'); z-index: 25; mix-blend-mode: screen; opacity: 0.5; }
         .layer-3 { background-image: url('assets/parallax/Ocean/3oceanclouds.png'); z-index: 30; opacity: 0.3; filter: blur(2px); }
-        .layer-4 { background-image: url('assets/parallax/Ocean/4oceanbackmountain.png'); z-index: 40; filter: hue-rotate(240deg) brightness(0.3); }
-        .layer-5 { background-image: url('assets/parallax/Ocean/5oceansand.png'); z-index: 50; filter: hue-rotate(220deg) brightness(0.2); }
-        .layer-6 { background-image: url('assets/parallax/Ocean/6oceanwave.png'); z-index: 60; filter: hue-rotate(220deg) brightness(0.15); }
+        .layer-4 { 
+            background-image: url('assets/parallax/Ocean/4oceanbackmountain.png'); 
+            z-index: 15; /* Behind ocean sea */
+            background-size: auto 150%; /* Make them much bigger */
+            background-position: center 20%; /* Shift position down */
+        }
+        .layer-5 { background-image: url('assets/parallax/Ocean/5oceansand.png'); z-index: 50; }
+        .layer-6 { background-image: url('assets/parallax/Ocean/6oceanwave.png'); z-index: 60; }
 
         .scene-ground-fill {
             position: absolute; 
-            bottom: -5px; /* Slight overlap to prevent seam */
+            bottom: -2px;
             left: 0;
             width: 100%; 
             height: 1000vh; 
-            background: #020105; /* Deepest ocean color */
+            background-image: url('assets/parallax/Ocean/5oceansand.png');
+            background-repeat: repeat;
+            background-size: auto 200px;
             transform: translateY(100%);
             z-index: 55;
         }
