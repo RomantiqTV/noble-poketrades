@@ -226,31 +226,43 @@
         }
 
         /* Tutorial Overlay */
+        /* Tutorial System */
         #tutorial-overlay {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5);
-            backdrop-filter: blur(8px);
-            z-index: 9998; /* Just below highlight and card */
+            background: transparent;
+            z-index: 10000;
             display: none;
+            pointer-events: none;
+        }
+
+        .tutorial-mask {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.6);
+            backdrop-filter: blur(8px);
+            z-index: 10001;
             pointer-events: auto;
+            mask: radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent var(--r, 0px), black calc(var(--r, 0px) + 5px));
+            -webkit-mask: radial-gradient(circle at var(--x, 50%) var(--y, 50%), transparent var(--r, 0px), black calc(var(--r, 0px) + 5px));
         }
 
         .tutorial-card {
-            background: rgba(20, 20, 25, 0.98);
+            background: #1a1d27;
             border: 2px solid var(--accent);
             border-radius: 20px;
             padding: 30px;
-            max-width: 500px;
+            max-width: 450px;
             width: 90%;
-            box-shadow: 0 0 50px rgba(0,0,0,1);
-            position: fixed; /* Fixed position for the card too */
+            box-shadow: 0 10px 40px rgba(0,0,0,0.8);
+            position: fixed;
+            z-index: 10005;
+            color: white;
+            text-align: center;
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            z-index: 10002; /* Top-most */
-            color: white;
-            text-align: center;
+            pointer-events: auto;
         }
 
         .tutorial-spotlight {
@@ -904,13 +916,15 @@
         <button class="modal-btn btn-cancel" style="width: 100%; font-size: 0.8em; margin-top: 10px;" onclick="toggleDevMode()">CLOSE</button>
     </div>
 
-    <div id="tutorial-overlay"></div>
-    <div class="tutorial-card" id="tutorial-card" style="display: none;">
-        <h2 id="tutorial-title" style="font-family: 'Cinzel'; color: var(--accent); margin-bottom: 15px;">Welcome!</h2>
-        <div id="tutorial-content" style="font-size: 1em; line-height: 1.6; margin-bottom: 25px;"></div>
-        <div style="display: flex; gap: 10px; justify-content: center;">
-            <button class="modal-btn btn-cancel" onclick="skipTutorial()">Skip</button>
-            <button class="modal-btn btn-get" id="tutorial-next" onclick="nextTutorialStep()">Next Step</button>
+    <div id="tutorial-overlay">
+        <div id="tutorial-mask" class="tutorial-mask"></div>
+        <div class="tutorial-card" id="tutorial-card">
+            <h2 id="tutorial-title" style="font-family: 'Cinzel'; color: var(--accent); margin-bottom: 15px;">Welcome!</h2>
+            <div id="tutorial-content" style="font-size: 1em; line-height: 1.6; margin-bottom: 25px;"></div>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button class="modal-btn btn-cancel" onclick="skipTutorial()">Skip</button>
+                <button class="modal-btn btn-get" id="tutorial-next" onclick="nextTutorialStep()">Next Step</button>
+            </div>
         </div>
     </div>
     <div id="tutorial-highlight" class="tutorial-highlight-box"></div>
@@ -1194,18 +1208,8 @@
         function startTutorial() {
             currentStep = 0;
             document.getElementById('tutorial-overlay').style.display = 'block';
-            document.getElementById('tutorial-card').style.display = 'block';
             document.getElementById('settingsModal').style.display = 'none';
             updateTutorialUI();
-        }
-
-        function nextTutorialStep() {
-            currentStep++;
-            if (currentStep >= tutorialSteps.length) {
-                finishTutorial();
-            } else {
-                updateTutorialUI();
-            }
         }
 
         function updateTutorialUI() {
@@ -1214,28 +1218,40 @@
             document.getElementById('tutorial-content').innerHTML = step.content;
             document.getElementById('tutorial-next').innerText = currentStep === tutorialSteps.length - 1 ? "Get Started!" : "Next Step";
 
-            // Remove old spotlight
-            document.querySelectorAll('.tutorial-spotlight').forEach(el => {
-                el.classList.remove('tutorial-spotlight');
-            });
+            const mask = document.getElementById('tutorial-mask');
+            const card = document.getElementById('tutorial-card');
 
             if (step.target) {
                 const targetEl = document.querySelector(step.target);
                 if (targetEl) {
-                    targetEl.classList.add('tutorial-spotlight');
                     targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            }
-        }
+                    
+                    setTimeout(() => {
+                        const rect = targetEl.getBoundingClientRect();
+                        const x = rect.left + rect.width / 2;
+                        const y = rect.top + rect.height / 2;
+                        const r = Math.max(rect.width, rect.height) / 1.5 + 20;
 
-        function skipTutorial() {
-            finishTutorial();
+                        mask.style.setProperty('--x', `${x}px`);
+                        mask.style.setProperty('--y', `${y}px`);
+                        mask.style.setProperty('--r', `${r}px`);
+
+                        // Move card away from target if overlapping
+                        if (y > window.innerHeight / 2) {
+                            card.style.top = '25%';
+                        } else {
+                            card.style.top = '75%';
+                        }
+                    }, 500);
+                }
+            } else {
+                mask.style.setProperty('--r', '0px');
+                card.style.top = '50%';
+            }
         }
 
         function finishTutorial() {
             document.getElementById('tutorial-overlay').style.display = 'none';
-            document.getElementById('tutorial-card').style.display = 'none';
-            document.querySelectorAll('.tutorial-spotlight').forEach(el => el.classList.remove('tutorial-spotlight'));
             localStorage.setItem('por_tutorial_done', 'true');
         }
 
