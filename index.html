@@ -122,10 +122,14 @@
         /* Star Animations */
         .star {
             position: fixed; background: white; border-radius: 50%;
-            pointer-events: none; z-index: -1; opacity: 0;
+            pointer-events: none; opacity: 0;
             display: none;
         }
-        body.theme-pokemon .star { display: block; z-index: -1 !important; }
+        body.theme-pokemon .star { display: block; z-index: 100 !important; }
+        
+        body.theme-pokemon .sticky-controls { z-index: 1000; }
+        body.theme-pokemon #content { position: relative; z-index: 200; }
+        body.theme-pokemon .parallax-bg { z-index: 50; }
         
         .shining-star {
             width: 2px; height: 2px;
@@ -140,15 +144,15 @@
         }
         
         @keyframes twinkle {
-            0%, 100% { opacity: 0; transform: scale(0.5); }
-            50% { opacity: 0.8; transform: scale(1.2); box-shadow: 0 0 5px white; }
+            0%, 100% { opacity: 0.1; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 10px white, 0 0 20px white; }
         }
         
         @keyframes shoot {
             0% { transform: translateX(-100px) translateY(0) rotate(-45deg) scaleX(0); opacity: 0; }
-            10% { opacity: 1; scaleX(10); }
+            5% { opacity: 1; transform: translateX(0) translateY(0) rotate(-45deg) scaleX(20); }
             50% { opacity: 1; }
-            100% { transform: translateX(120vw) translateY(120vh) rotate(-45deg) scaleX(10); opacity: 0; }
+            100% { transform: translateX(120vw) translateY(120vh) rotate(-45deg) scaleX(20); opacity: 0; }
         }
 
         .theme-dot { width: 20px; height: 20px; border-radius: 50%; display: inline-block; vertical-align: middle; margin-right: 10px; border: 1px solid #444; }
