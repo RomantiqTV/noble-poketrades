@@ -253,11 +253,12 @@
         }
 
         .tutorial-spotlight {
-            position: relative;
-            z-index: 10001;
+            z-index: 10001 !important;
             box-shadow: 0 0 0 9999px rgba(0,0,0,0.7);
+            position: relative;
             pointer-events: auto !important;
-            border-radius: 10px;
+            border: 2px solid var(--accent);
+            background: rgba(255,255,255,0.05);
         }
 
         .tutorial-highlight-box {
@@ -1214,10 +1215,16 @@
             document.getElementById('tutorial-content').innerHTML = step.content;
             document.getElementById('tutorial-next').innerText = currentStep === tutorialSteps.length - 1 ? "Get Started!" : "Next Step";
 
+            // Remove old spotlight
+            document.querySelectorAll('.tutorial-spotlight').forEach(el => {
+                el.classList.remove('tutorial-spotlight');
+            });
+
             const highlight = document.getElementById('tutorial-highlight');
             if (step.target) {
                 const targetEl = document.querySelector(step.target);
                 if (targetEl) {
+                    targetEl.classList.add('tutorial-spotlight');
                     const rect = targetEl.getBoundingClientRect();
                     highlight.style.display = 'block';
                     highlight.style.top = (rect.top - 10) + 'px';
