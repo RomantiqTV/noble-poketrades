@@ -156,7 +156,7 @@
         /* 4. Sand Layer - Fixed at the bottom (0 speed) */
         .layer-5 { background-image: url('assets/parallax/Ocean/5oceansand.png'); z-index: 50; }
 
-        /* 5. Wave Layer - Moves slightly for depth */
+        /* Wave Layer - Slower movement to keep it low on screen */
         .layer-6 { background-image: url('assets/parallax/Ocean/6oceanwave.png'); z-index: 60; }
 
         .scene-ground-fill {
@@ -493,24 +493,24 @@
         <!-- Distant mountains move very slowly -->
         <div class="scene-layer layer-4" data-speed="0.03"></div>
         
-        <!-- Main scenery block moving at a unified speed to prevent gap separation -->
-        <div class="scene-layer layer-1" data-speed="0.05"></div>
-        <div class="scene-layer layer-2" data-speed="0.05"></div>
-        <div class="scene-layer layer-3" data-speed="0.05"></div>
+        <!-- Main scenery block moving slower -->
+        <div class="scene-layer layer-1" data-speed="0.04"></div>
+        <div class="scene-layer layer-2" data-speed="0.04"></div>
+        <div class="scene-layer layer-3" data-speed="0.04"></div>
         
-        <!-- Sand Layer - Pinned at the bottom of the screen (Speed 0) -->
-        <div class="scene-layer layer-5" data-speed="0">
+        <!-- Sand Layer - Moves but is repeated for continuity -->
+        <div class="scene-layer layer-5" data-speed="0.06">
             <div class="scene-ground-fill"></div>
         </div>
         
-        <div class="scene-layer" id="scene-mew-layer" data-speed="0.08" style="z-index:55;">
+        <div class="scene-layer" id="scene-mew-layer" data-speed="0.05" style="z-index:55;">
             <div class="scene-mew-container" style="left: 30%; top: 35%;">
                 <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
             </div>
         </div>
         
-        <!-- Waves move slightly for depth but slower than before -->
-        <div class="scene-layer layer-6" data-speed="0.1">
+        <!-- Wave layer: Very slow speed to keep it from rising too high -->
+        <div class="scene-layer layer-6" data-speed="0.03">
             <!-- Pokemon GIFs on the waves/front -->
             <!-- Jigglypuff -->
             <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:12%; --d:3.1s; z-index: 70;">
