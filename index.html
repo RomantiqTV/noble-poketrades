@@ -309,12 +309,12 @@
             .nav-tabs > div { display: flex; gap: 5px; justify-content: center; }
             .tab-btn { padding: 6px 12px; font-size: 0.8em; flex: 1; text-align: center; }
             
-            /* High Density Grid for Mobile (9+ per row) */
-            .grid { grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 3px; }
-            .card { padding: 2px; border-width: 1px; border-radius: 4px; }
-            .card:hover { transform: translateY(-5px) scale(2); z-index: 2000; }
+            /* Optimized Grid for Mobile (Max 6 per row) */
+            .grid { grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 4px; }
+            .card { padding: 3px; border-width: 1.5px; border-radius: 5px; }
+            .card:hover { transform: translateY(-8px) scale(1.8); z-index: 2000; }
             .card-name, .card-price, .variant-label, .qty, .card div[style*="font-size:0.6em"] { display: none !important; }
-            .card img { border-radius: 2px; }
+            .card img { border-radius: 3px; }
             
             .calc-summary-bar { padding: 10px; gap: 15px; }
             .calc-total-box .value { font-size: 1.1em; }
