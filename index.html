@@ -92,54 +92,72 @@
             position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
             z-index: -1; overflow: hidden; pointer-events: none;
             display: none;
+            background: #04030a; /* Ensure a base color matches the deep ocean */
         }
         body.theme-mew-nighttime #scene-background { display: block; z-index: -1; }
         body.theme-mew-nighttime .parallax-bg { display: none !important; }
-        .scene-layer { position: absolute; width: 100%; height: 120%; left: 0; top: 0; will-change: transform; background-position: bottom; }
+        
+        /* Set base height to fill screen and center the parallax focus */
+        .scene-layer { 
+            position: absolute; 
+            width: 100%; 
+            height: 100vh; 
+            left: 0; 
+            top: 0; 
+            will-change: transform; 
+            background-position: bottom; 
+            background-repeat: repeat-x;
+        }
         
         /* Ocean Parallax Dusk Vibe */
         .scene-sky {
             background: url('assets/parallax/Ocean/0oceanskyandsun.png') center/cover no-repeat;
             filter: hue-rotate(20deg) brightness(0.8) saturate(1.2);
+            height: 100vh;
         }
         .scene-sun-light {
-            background: url('assets/parallax/Ocean/2oceansunlight.png') repeat-x bottom;
+            background-image: url('assets/parallax/Ocean/2oceansunlight.png');
             background-size: auto 100%;
             mix-blend-mode: screen;
             opacity: 0.6;
         }
         .scene-ocean-clouds {
-            background: url('assets/parallax/Ocean/3oceanclouds.png') repeat-x 20%;
+            background-image: url('assets/parallax/Ocean/3oceanclouds.png');
             background-size: auto 50%;
             opacity: 0.4;
             filter: blur(1px) brightness(0.8);
         }
         .scene-ocean-mountains {
-            background: url('assets/parallax/Ocean/4oceanbackmountain.png') repeat-x bottom;
+            background-image: url('assets/parallax/Ocean/4oceanbackmountain.png');
             background-size: auto 60%;
             filter: hue-rotate(240deg) brightness(0.4);
         }
         .scene-sea {
-            background: url('assets/parallax/Ocean/1oceansea.png') repeat-x bottom;
+            background-image: url('assets/parallax/Ocean/1oceansea.png');
             background-size: auto 70%;
             filter: hue-rotate(220deg) brightness(0.3);
         }
         .scene-sand {
-            background: url('assets/parallax/Ocean/5oceansand.png') repeat-x bottom;
+            background-image: url('assets/parallax/Ocean/5oceansand.png');
             background-size: auto 80%;
             filter: hue-rotate(220deg) brightness(0.25);
         }
         .scene-wave {
-            background: url('assets/parallax/Ocean/6oceanwave.png') repeat-x bottom;
+            background-image: url('assets/parallax/Ocean/6oceanwave.png');
             background-size: auto 100%;
             filter: hue-rotate(220deg) brightness(0.2);
         }
 
+        /* The Ground Fill: Ensure it covers everything below the ocean layers */
         .scene-ground-fill {
-            position: absolute; bottom: 0; width: 100%; height: 500vh;
+            position: absolute; 
+            bottom: 0; 
+            left: 0;
+            width: 100%; 
+            height: 1000vh; /* Extremely long to cover all content */
             background: #04030a;
             transform: translateY(100%);
-            z-index: 45;
+            z-index: -1;
         }
         
         .scene-star-particle {
