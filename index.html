@@ -23,8 +23,8 @@
         .select-input { background: #111; border: 1px solid #333; color: white; padding: 8px 10px; border-radius: 8px; }
         .section-title { margin: 40px 0 15px; padding-bottom: 8px; border-bottom: 1px solid #222; font-size: 1.3em; color: #fff; }
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(170px, 1fr)); gap: 20px; }
-        .card { background: var(--card-bg); border-radius: 10px; padding: 8px; text-align: center; position: relative; border: 2px solid var(--border-none); overflow: hidden; cursor: pointer; transition: transform 0.2s; }
-        .card:hover { transform: translateY(-5px); z-index: 10; }
+        .card { background: var(--card-bg); border-radius: 10px; padding: 8px; text-align: center; position: relative; border: 2px solid var(--border-none); overflow: hidden; cursor: pointer; transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); }
+        .card:hover { transform: translateY(-12px) scale(1.1); z-index: 10; box-shadow: 0 10px 20px rgba(0,0,0,0.4); }
         .card.selected { border-color: var(--accent) !important; box-shadow: 0 0 15px var(--accent); }
         .variant-reverse { border-color: var(--border-reverse); }
         .variant-holo { border-color: var(--border-holo); }
@@ -112,8 +112,8 @@
         body.theme-pokemon .tab-btn.active { background: #ff85a2; color: #fff; border-color: #ff85a2; font-weight: bold; box-shadow: 0 0 15px rgba(255, 133, 162, 0.3); }
         body.theme-pokemon .section-title { border-bottom: 2px solid #ff85a2; color: #ff85a2; text-transform: uppercase; letter-spacing: 2px; }
         body.theme-pokemon .calc-summary-bar { background: #ffffff; border: 1px solid #ffcad4; color: #4a4a4a; box-shadow: 0 8px 25px rgba(255, 133, 162, 0.1); }
-        body.theme-pokemon .card { border-width: 2px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-        body.theme-pokemon .card:hover { transform: translateY(-10px) scale(1.05) rotate(2deg); box-shadow: 0 15px 35px rgba(255, 133, 162, 0.3); }
+        body.theme-pokemon .card { border-width: 2px; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.2); }
+        body.theme-pokemon .card:hover { transform: translateY(-15px) scale(1.12); box-shadow: 0 15px 35px rgba(255, 133, 162, 0.3); }
         body.theme-pokemon .search-input, body.theme-pokemon .select-input { border: 1px solid #ffcad4; background: #fff; color: #4a4a4a; }
         body.theme-pokemon #loadingOverlay { background: rgba(255, 240, 243, 0.9); }
         body.theme-pokemon .modal { border: 2px solid #ff85a2; background: #fff; }
