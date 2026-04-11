@@ -1000,7 +1000,7 @@
                     background: #ffffff;
                     color: #334155;
                     font-family: 'Inter', sans-serif;
-                    padding: 0;
+                    padding: 40px 0; /* Vertical padding */
                     margin: 0;
                 `;
                 
@@ -1201,7 +1201,18 @@
                 await new Promise(r => setTimeout(r, 2000));
                 
                 // Using the most basic, stable call pattern for html2pdf
-                await html2pdf().from(container).set(opt).save();
+                const pdf = html2pdf().from(container).set(opt);
+                
+                // Add Page Numbers using jsPDF's internal API
+                await pdf.toPdf().get('pdf').then(function (pdf) {
+                    const totalPages = pdf.internal.getNumberOfPages();
+                    for (let i = 1; i <= totalPages; i++) {
+                        pdf.setPage(i);
+                        pdf.setFontSize(10);
+                        pdf.setTextColor(150);
+                        pdf.text('Page ' + i + ' of ' + totalPages, 730, 1100, { align: 'right' });
+                    }
+                }).save();
                 
                 document.body.removeChild(overlay);
 
