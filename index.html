@@ -1192,23 +1192,32 @@
                     filename: `Noble_Needs_${currentSet}_${new Date().toISOString().slice(0,10)}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
-                        scale: 1, 
+                        scale: 1.5, 
                         useCORS: true, 
                         backgroundColor: '#ffffff',
                         logging: true,
                         width: 750,
-                        windowWidth: 750
+                        windowWidth: 750,
+                        onclone: (clonedDoc) => {
+                            // Ensure the container is visible in the clone
+                            const clonedContainer = clonedDoc.getElementById('pdf-export-container');
+                            if (clonedContainer) {
+                                clonedContainer.style.position = 'static';
+                                clonedContainer.style.transform = 'none';
+                                clonedContainer.style.opacity = '1';
+                                clonedContainer.style.display = 'block';
+                            }
+                        }
                     },
                     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
                     pagebreak: { mode: ['css', 'legacy'] }
                 };
 
                 // Added small delay to ensure DOM is fully painted before capture
-                await new Promise(r => setTimeout(r, 1000));
+                await new Promise(r => setTimeout(r, 2000));
                 
-                // Use a manual worker-based approach to ensure content is fully processed
-                const worker = html2pdf().set(opt).from(container).toPdf();
-                await worker.save();
+                // Use a manual worker-based approach with explicit steps
+                await html2pdf().set(opt).from(container).toContainer().toCanvas().toPdf().save();
                 
                 document.body.removeChild(container);
                 document.body.removeChild(overlay);
