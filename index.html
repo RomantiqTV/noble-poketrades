@@ -1083,10 +1083,7 @@
 
                 // 3. VISUAL GALLERY GROUPED BY RARITY
                 const galleryHeader = document.createElement('div');
-                galleryHeader.style.cssText = `
-                    break-before: page;
-                    page-break-before: always;
-                `;
+                galleryHeader.className = 'html2pdf__page-break';
                 galleryHeader.innerHTML = sectionHeader('Visual Gallery (By Rarity)');
                 container.appendChild(galleryHeader);
 
@@ -1174,7 +1171,7 @@
                 container.appendChild(footer);
 
                 const opt = {
-                    margin: [0.5, 0.5],
+                    margin: 0.5,
                     filename: `Noble_Needs_${currentSet}_${new Date().toISOString().slice(0,10)}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
@@ -1183,12 +1180,10 @@
                         backgroundColor: '#ffffff',
                         logging: true,
                         width: 750,
-                        windowWidth: 750,
-                        scrollX: 0,
-                        scrollY: 0
+                        windowWidth: 750
                     },
                     jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait', compress: true },
-                    pagebreak: { mode: ['css', 'legacy'] }
+                    pagebreak: { mode: 'css' }
                 };
 
                 await html2pdf().set(opt).from(container).save();
