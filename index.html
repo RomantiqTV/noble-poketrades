@@ -153,8 +153,10 @@
         .layer-2 { background-image: url('assets/parallax/Ocean/2oceansunlight.png'); z-index: 25; mix-blend-mode: screen; opacity: 0.5; }
         .layer-3 { background-image: url('assets/parallax/Ocean/3oceanclouds.png'); z-index: 30; opacity: 0.3; filter: blur(2px); }
 
-        /* Foreground anchor layers */
+        /* 4. Sand Layer - Fixed at the bottom (0 speed) */
         .layer-5 { background-image: url('assets/parallax/Ocean/5oceansand.png'); z-index: 50; }
+
+        /* 5. Wave Layer - Moves slightly for depth */
         .layer-6 { background-image: url('assets/parallax/Ocean/6oceanwave.png'); z-index: 60; }
 
         .scene-ground-fill {
@@ -492,19 +494,23 @@
         <div class="scene-layer layer-4" data-speed="0.03"></div>
         
         <!-- Main scenery block moving at a unified speed to prevent gap separation -->
-        <div class="scene-layer layer-1" data-speed="0.08"></div>
-        <div class="scene-layer layer-2" data-speed="0.08"></div>
-        <div class="scene-layer layer-3" data-speed="0.08"></div>
-        <div class="scene-layer layer-5" data-speed="0.08"></div>
+        <div class="scene-layer layer-1" data-speed="0.05"></div>
+        <div class="scene-layer layer-2" data-speed="0.05"></div>
+        <div class="scene-layer layer-3" data-speed="0.05"></div>
         
-        <div class="scene-layer" id="scene-mew-layer" data-speed="0.15" style="z-index:55;">
+        <!-- Sand Layer - Pinned at the bottom of the screen (Speed 0) -->
+        <div class="scene-layer layer-5" data-speed="0">
+            <div class="scene-ground-fill"></div>
+        </div>
+        
+        <div class="scene-layer" id="scene-mew-layer" data-speed="0.08" style="z-index:55;">
             <div class="scene-mew-container" style="left: 30%; top: 35%;">
                 <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
             </div>
         </div>
         
-        <!-- The Wave and Sand Floor move together as the foreground anchor -->
-        <div class="scene-layer layer-6" data-speed="0.15">
+        <!-- Waves move slightly for depth but slower than before -->
+        <div class="scene-layer layer-6" data-speed="0.1">
             <!-- Pokemon GIFs on the waves/front -->
             <!-- Jigglypuff -->
             <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:12%; --d:3.1s; z-index: 70;">
@@ -518,7 +524,6 @@
             <div class="scene-pokemon-idle" style="position:absolute; bottom:10%; right:15%; --d:3.5s; z-index: 70;">
                 <img src="https://projectpokemon.org/images/normal-sprite/chansey.gif" class="scene-pokemon-gif" style="width: 70px;">
             </div>
-            <div class="scene-ground-fill"></div>
         </div>
     </div>
     <div class="parallax-bg" id="parallaxBg"></div>
