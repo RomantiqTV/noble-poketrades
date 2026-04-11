@@ -998,6 +998,69 @@
             }
         }
 
+        function startTutorial() {
+            currentStep = 0;
+            document.getElementById('tutorial-overlay').style.display = 'block';
+            document.getElementById('settingsModal').style.display = 'none';
+            updateTutorialUI();
+        }
+
+        function nextTutorialStep() {
+            currentStep++;
+            if (currentStep >= tutorialSteps.length) {
+                finishTutorial();
+            } else {
+                updateTutorialUI();
+            }
+        }
+
+        function updateTutorialUI() {
+            const step = tutorialSteps[currentStep];
+            document.getElementById('tutorial-title').innerText = step.title;
+            document.getElementById('tutorial-content').innerHTML = step.content;
+            document.getElementById('tutorial-next').innerText = currentStep === tutorialSteps.length - 1 ? "Get Started!" : "Next Step";
+
+            const mask = document.getElementById('tutorial-mask');
+            const card = document.getElementById('tutorial-card');
+
+            if (step.target) {
+                const targetEl = document.querySelector(step.target);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    setTimeout(() => {
+                        const rect = targetEl.getBoundingClientRect();
+                        const x = rect.left + rect.width / 2;
+                        const y = rect.top + rect.height / 2;
+                        const r = Math.max(rect.width, rect.height) / 1.5 + 20;
+
+                        mask.style.setProperty('--x', `${x}px`);
+                        mask.style.setProperty('--y', `${y}px`);
+                        mask.style.setProperty('--r', `${r}px`);
+
+                        // Move card away from target if overlapping
+                        if (y > window.innerHeight / 2) {
+                            card.style.top = '25%';
+                        } else {
+                            card.style.top = '75%';
+                        }
+                    }, 500);
+                }
+            } else {
+                mask.style.setProperty('--r', '0px');
+                card.style.top = '50%';
+            }
+        }
+
+        function skipTutorial() {
+            finishTutorial();
+        }
+
+        function finishTutorial() {
+            document.getElementById('tutorial-overlay').style.display = 'none';
+            localStorage.setItem('por_tutorial_done', 'true');
+        }
+
         function initArticunoIce() {
             // Placeholder for theme-specific JS initialization if needed
         }
