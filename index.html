@@ -308,15 +308,22 @@
             .nav-tabs { flex-direction: column; gap: 8px; align-items: stretch; margin-bottom: 10px; }
             .nav-tabs > div { display: flex; gap: 5px; justify-content: center; }
             .tab-btn { padding: 6px 12px; font-size: 0.8em; flex: 1; text-align: center; }
-            .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
-            .card { padding: 5px; }
-            .card-name { font-size: 0.75em; }
+            
+            /* High Density Grid for Mobile (9+ per row) */
+            .grid { grid-template-columns: repeat(auto-fill, minmax(38px, 1fr)); gap: 3px; }
+            .card { padding: 2px; border-width: 1px; border-radius: 4px; }
+            .card:hover { transform: translateY(-5px) scale(2); z-index: 2000; }
+            .card-name, .card-price, .variant-label, .qty, .card div[style*="font-size:0.6em"] { display: none !important; }
+            .card img { border-radius: 2px; }
+            
             .calc-summary-bar { padding: 10px; gap: 15px; }
             .calc-total-box .value { font-size: 1.1em; }
             .search-sort-bar { gap: 8px; }
             .search-input { width: 100%; }
             .comparison-layout { flex-direction: column; height: auto; overflow: visible; }
             .scroll-sync-container { height: 400px; }
+            .comp-grid { grid-template-columns: repeat(auto-fill, minmax(35px, 1fr)); gap: 2px; }
+            .comp-card { padding: 2px; font-size: 0; }
             .modal { width: 98%; padding: 15px; }
             .large-preview-container { padding: 10px; }
         }
