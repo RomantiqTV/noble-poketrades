@@ -97,51 +97,42 @@
         body.theme-mew-nighttime .parallax-bg { display: none !important; }
         .scene-layer { position: absolute; width: 100%; height: 120%; left: 0; top: 0; will-change: transform; background-position: bottom; }
         
-        /* Rural Parallax Dusk Vibe */
+        /* Ocean Parallax Dusk Vibe */
         .scene-sky {
-            background: url('assets/parallax/ruralparallaxsky.png') center/cover no-repeat;
-            filter: hue-rotate(20deg) brightness(0.7) saturate(1.4);
+            background: url('assets/parallax/Ocean/0 ocean sky and sun.png') center/cover no-repeat;
+            filter: hue-rotate(20deg) brightness(0.8) saturate(1.2);
         }
-        .scene-moon-img {
-            position: absolute; top: 15%; right: 20%; width: 150px;
-            filter: drop-shadow(0 0 30px rgba(255, 230, 200, 0.5)) brightness(1.2);
-            mix-blend-mode: screen;
-        }
-        .scene-mountains-back {
-            background: url('assets/parallax/ruralparallaxmountainback.png') repeat-x bottom;
-            background-size: auto 60%;
-            filter: hue-rotate(260deg) brightness(0.4) saturate(0.7);
-        }
-        .scene-mountains-back2 {
-            background: url('assets/parallax/ruralparallaxmountainback2.png') repeat-x bottom;
-            background-size: auto 65%;
-            filter: hue-rotate(260deg) brightness(0.35) saturate(0.8);
-        }
-        .scene-clouds-img {
-            background: url('assets/parallax/ruralparallaxclouds.png') repeat-x 20%;
-            background-size: auto 40%;
-            opacity: 0.4;
-            filter: hue-rotate(260deg) brightness(0.6) blur(1px);
-        }
-        .scene-mountains-mid {
-            background: url('assets/parallax/ruralparallaxmountain.png') repeat-x bottom;
-            background-size: auto 75%;
-            filter: hue-rotate(260deg) brightness(0.3) saturate(0.9);
-        }
-        .scene-village {
-            background: url('assets/parallax/ruralparallaxvillage.png') repeat-x bottom;
-            background-size: auto 85%;
-            filter: hue-rotate(260deg) brightness(0.25) saturate(1);
-        }
-        .scene-river {
-            background: url('assets/parallax/ruralparallaxriver.png') repeat-x bottom;
-            background-size: auto 95%;
-            filter: hue-rotate(260deg) brightness(0.2) saturate(1.1);
-        }
-        .scene-river-front {
-            background: url('assets/parallax/ruralparallaxriverfront.png') repeat-x bottom;
+        .scene-sun-light {
+            background: url('assets/parallax/Ocean/2 ocean sun light.png') repeat-x bottom;
             background-size: auto 100%;
-            filter: hue-rotate(260deg) brightness(0.15) saturate(1.2);
+            mix-blend-mode: screen;
+            opacity: 0.6;
+        }
+        .scene-ocean-clouds {
+            background: url('assets/parallax/Ocean/3 ocean clouds.png') repeat-x 20%;
+            background-size: auto 50%;
+            opacity: 0.4;
+            filter: blur(1px) brightness(0.8);
+        }
+        .scene-ocean-mountains {
+            background: url('assets/parallax/Ocean/4 ocean back mountain.png') repeat-x bottom;
+            background-size: auto 60%;
+            filter: hue-rotate(240deg) brightness(0.4);
+        }
+        .scene-sea {
+            background: url('assets/parallax/Ocean/1 ocean sea.png') repeat-x bottom;
+            background-size: auto 70%;
+            filter: hue-rotate(220deg) brightness(0.3);
+        }
+        .scene-sand {
+            background: url('assets/parallax/Ocean/5 ocean sand.png') repeat-x bottom;
+            background-size: auto 80%;
+            filter: hue-rotate(220deg) brightness(0.25);
+        }
+        .scene-wave {
+            background: url('assets/parallax/Ocean/6 ocean wave.png') repeat-x bottom;
+            background-size: auto 100%;
+            filter: hue-rotate(220deg) brightness(0.2);
         }
 
         .scene-ground-fill {
@@ -469,34 +460,28 @@
     <div id="scene-background">
         <div class="scene-layer scene-sky" data-speed="0"></div>
         <div class="scene-layer" id="scene-stars" data-speed="0.02"></div>
-        <div class="scene-layer" id="scene-moon" data-speed="0.04">
-            <img src="assets/parallax/ruralparalaxmoon.png" class="scene-moon-img">
+        <div class="scene-layer" id="scene-sun-light" data-speed="0.03">
+            <div class="scene-layer scene-sun-light"></div>
         </div>
-        <div class="scene-layer" id="scene-mountains-back" data-speed="0.06">
-            <div class="scene-layer scene-mountains-back"></div>
+        <div class="scene-layer" id="scene-mountains-back" data-speed="0.05">
+            <div class="scene-layer scene-ocean-mountains"></div>
         </div>
-        <div class="scene-layer" id="scene-mountains-back2" data-speed="0.08">
-            <div class="scene-layer scene-mountains-back2"></div>
+        <div class="scene-layer" id="scene-clouds" data-speed="0.08">
+            <div class="scene-layer scene-ocean-clouds"></div>
         </div>
-        <div class="scene-layer" id="scene-clouds" data-speed="0.1">
-            <div class="scene-layer scene-clouds-img"></div>
+        <div class="scene-layer" id="scene-sea" data-speed="0.12">
+            <div class="scene-layer scene-sea"></div>
         </div>
-        <div class="scene-layer" id="scene-mountains-mid" data-speed="0.15">
-            <div class="scene-layer scene-mountains-mid"></div>
-        </div>
-        <div class="scene-layer" id="scene-village" data-speed="0.2">
-            <div class="scene-layer scene-village"></div>
+        <div class="scene-layer" id="scene-sand" data-speed="0.2">
+            <div class="scene-layer scene-sand"></div>
         </div>
         <div class="scene-layer" id="scene-mew-layer" data-speed="0.25">
             <div class="scene-mew-container" style="left: 30%; top: 35%;">
                 <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
             </div>
         </div>
-        <div class="scene-layer" id="scene-river" data-speed="0.3">
-            <div class="scene-layer scene-river"></div>
-        </div>
         <div class="scene-layer" id="scene-ground" data-speed="0.5">
-            <div class="scene-layer scene-river-front"></div>
+            <div class="scene-layer scene-wave"></div>
             <!-- Pokemon GIFs -->
             <!-- Jigglypuff -->
             <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:12%; --d:3.1s; z-index: 60;">
