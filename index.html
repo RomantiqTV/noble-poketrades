@@ -1073,6 +1073,10 @@
 
                 // 3. VISUAL GALLERY GROUPED BY RARITY
                 const galleryHeader = document.createElement('div');
+                galleryHeader.style.cssText = `
+                    break-before: page;
+                    page-break-before: always;
+                `;
                 galleryHeader.innerHTML = sectionHeader('Visual Gallery (By Rarity)');
                 container.appendChild(galleryHeader);
 
@@ -1164,13 +1168,14 @@
                     filename: `Noble_Needs_${currentSet}_${new Date().toISOString().slice(0,10)}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
                     html2canvas: { 
-                        scale: 2, 
+                        scale: 1, 
                         useCORS: true, 
                         backgroundColor: '#ffffff',
                         logging: false,
-                        width: 750
+                        width: 750,
+                        windowWidth: 750
                     },
-                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait' },
+                    jsPDF: { unit: 'in', format: 'letter', orientation: 'portrait', compress: true },
                     pagebreak: { mode: ['css', 'legacy'] }
                 };
 
