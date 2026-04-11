@@ -126,26 +126,22 @@
             display: none;
         }
         body.theme-pokemon .star { display: block; z-index: 100 !important; }
-        
-        body.theme-pokemon .sticky-controls { z-index: 1000; }
-        body.theme-pokemon #content { position: relative; z-index: 200; }
-        body.theme-pokemon .parallax-bg { z-index: 50; }
-        
         .shining-star {
-            width: 2px; height: 2px;
+            width: 3px; height: 3px;
+            background: #ff85a2;
             animation: twinkle var(--duration) ease-in-out infinite;
         }
         
         .shooting-star {
-            width: 3px; height: 3px;
-            background: linear-gradient(to right, rgba(255,255,255,0), rgba(255,255,255,1));
-            box-shadow: 0 0 10px white, 0 0 20px #ff85a2;
+            width: 4px; height: 4px;
+            background: linear-gradient(to right, rgba(255,133,162,0), rgba(255,133,162,1));
+            box-shadow: 0 0 10px #ff85a2, 0 0 20px white;
             animation: shoot var(--duration) linear infinite;
         }
         
         @keyframes twinkle {
-            0%, 100% { opacity: 0.1; transform: scale(0.5); }
-            50% { opacity: 1; transform: scale(1.5); box-shadow: 0 0 10px white, 0 0 20px white; }
+            0%, 100% { opacity: 0.2; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(2); box-shadow: 0 0 8px #ff85a2; }
         }
         
         @keyframes shoot {
@@ -302,9 +298,25 @@
         }
 
         @media (max-width: 800px) {
-            .logo-container { justify-content: center; margin-bottom: 10px; }
-            .sticky-controls { padding-top: 10px; }
-            .header-top { flex-direction: column; gap: 15px; }
+            body { padding: 10px; }
+            .logo-container { justify-content: center; margin-bottom: 5px; }
+            .sticky-controls { padding: 10px 0; }
+            .header-top { flex-direction: column; gap: 10px; padding: 0 10px 10px; }
+            .set-switcher { width: 100%; justify-content: center; }
+            .nav-tabs { flex-direction: column; gap: 8px; align-items: stretch; margin-bottom: 10px; }
+            .nav-tabs > div { display: flex; gap: 5px; justify-content: center; }
+            .tab-btn { padding: 6px 12px; font-size: 0.8em; flex: 1; text-align: center; }
+            .grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+            .card { padding: 5px; }
+            .card-name { font-size: 0.75em; }
+            .calc-summary-bar { padding: 10px; gap: 15px; }
+            .calc-total-box .value { font-size: 1.1em; }
+            .search-sort-bar { gap: 8px; }
+            .search-input { width: 100%; }
+            .comparison-layout { flex-direction: column; height: auto; overflow: visible; }
+            .scroll-sync-container { height: 400px; }
+            .modal { width: 98%; padding: 15px; }
+            .large-preview-container { padding: 10px; }
         }
     </style>
 </head>
@@ -489,16 +501,15 @@
             }
 
             // 2. Twinkling Stars
-            for (let i = 0; i < 80; i++) {
+            for (let i = 0; i < 100; i++) {
                 const star = document.createElement('div');
                 star.className = 'star shining-star';
                 star.style.left = Math.random() * 100 + 'vw';
                 star.style.top = Math.random() * 100 + 'vh';
-                star.style.setProperty('--duration', (Math.random() * 3 + 2) + 's');
+                star.style.setProperty('--duration', (Math.random() * 3 + 1.5) + 's');
                 star.style.animationDelay = Math.random() * 5 + 's';
                 
-                // Ensure stars are visible size-wise
-                const starSize = Math.random() * 2 + 1;
+                const starSize = Math.random() * 3 + 2;
                 star.style.width = starSize + 'px';
                 star.style.height = starSize + 'px';
                 
