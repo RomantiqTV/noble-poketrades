@@ -639,9 +639,9 @@
             width: 100%; height: 50%; border-bottom: 4px solid #000; top: 0; left: 0;
         }
         .pokeball::after { 
-            content: ""; position: absolute; top: 50%; left: 50%; width: 15px; height: 15px; 
+            content: ""; position: absolute; top: 44%; left: 44%; width: 15px; height: 15px; 
             background: #fff; border: 4px solid #000; border-radius: 50%; 
-            transform: translate(-50%, -50%); z-index: 10;
+            z-index: 10;
             box-shadow: 0 0 0 2px #fff;
         }
         
@@ -743,11 +743,54 @@
             body { padding: 10px; }
             .logo-container { justify-content: center; margin-bottom: 5px; }
             .sticky-controls { padding: 10px 0; }
-            .header-top { flex-direction: column; gap: 10px; padding: 0 10px 10px; }
-            .set-switcher { width: 100%; justify-content: center; }
-            .nav-tabs { flex-direction: column; gap: 8px; align-items: stretch; margin-bottom: 10px; }
-            .nav-tabs > div { display: flex; gap: 5px; justify-content: center; }
-            .tab-btn { padding: 6px 12px; font-size: 0.8em; flex: 1; text-align: center; }
+            .header-top { 
+                flex-wrap: wrap; 
+                gap: 10px; 
+                padding: 0 10px 10px; 
+                position: relative;
+            }
+            .set-switcher { 
+                width: 100%; 
+                justify-content: center; 
+                display: none !important; /* Hide by default on mobile */
+                flex-direction: column;
+                gap: 15px;
+                padding: 20px 0;
+                background: rgba(0,0,0,0.8);
+                border-radius: 15px;
+                margin-top: 10px;
+            }
+            .set-switcher.mobile-active {
+                display: flex !important;
+            }
+            .nav-tabs { 
+                display: none !important; /* Hide by default on mobile */
+                flex-direction: column; 
+                gap: 8px; 
+                align-items: stretch; 
+                margin-bottom: 10px; 
+                background: rgba(0,0,0,0.8);
+                padding: 20px;
+                border-radius: 15px;
+            }
+            .nav-tabs.mobile-active {
+                display: flex !important;
+            }
+            .nav-tabs > div { flex-direction: column; gap: 8px; }
+            .hamburger-btn {
+                display: block !important;
+                background: none;
+                border: 2px solid var(--accent);
+                color: var(--accent);
+                padding: 5px 10px;
+                border-radius: 8px;
+                font-size: 1.2em;
+                cursor: pointer;
+                position: absolute;
+                right: 15px;
+                top: 0;
+            }
+            .tab-btn { padding: 10px; font-size: 0.9em; flex: none; text-align: center; }
             
             /* Optimized Grid for Mobile (Max 6 per row) */
             .grid { grid-template-columns: repeat(auto-fill, minmax(58px, 1fr)); gap: 4px; }
@@ -849,6 +892,7 @@
     </div>
 
     <div class="sticky-controls">
+        <button class="hamburger-btn" style="display:none;" onclick="toggleMobileMenu()">☰</button>
         <div class="header-top" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px 15px; max-width: 1000px; margin: 0 auto;">
             <div class="logo-container">
                 <img src="assets/logo.jpg" class="logo-img" alt="Noble Poketrades">
@@ -1128,6 +1172,29 @@
                 initArticunoIce();
             }
         }
+
+        function toggleMobileMenu() {
+            const switcher = document.querySelector('.set-switcher');
+            const tabs = document.querySelector('.nav-tabs');
+            switcher.classList.toggle('mobile-active');
+            tabs.classList.toggle('mobile-active');
+            
+            const btn = document.querySelector('.hamburger-btn');
+            btn.innerText = switcher.classList.contains('mobile-active') ? '✕' : '☰';
+        }
+
+        // Auto-close menu on tab switch
+        const originalSwitchView = window.switchView;
+        window.switchView = async function(v) {
+            if (window.innerWidth <= 800) {
+                const switcher = document.querySelector('.set-switcher');
+                const tabs = document.querySelector('.nav-tabs');
+                switcher.classList.remove('mobile-active');
+                tabs.classList.remove('mobile-active');
+                document.querySelector('.hamburger-btn').innerText = '☰';
+            }
+            await originalSwitchView(v);
+        };
 
         function initArticunoIce() {
             // Placeholder for theme-specific JS initialization if needed
