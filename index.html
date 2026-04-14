@@ -14,7 +14,7 @@
             --border-ex: #4fc3f7; --border-sir: #ff8a65; --border-mhr: #b388ff;
         }
         body { background-color: var(--bg); color: var(--text); font-family: sans-serif; margin: 0; padding: 20px; }
-        .sticky-controls { position: sticky; top: 0; z-index: 1000; background: rgba(5, 5, 7, 0.95); backdrop-filter: blur(20px); padding: 15px 0; border-bottom: 1px solid #222; }
+        .sticky-controls { position: sticky; top: 0; z-index: 1000; background: rgba(5, 5, 7, 0.95); backdrop-filter: blur(20px); padding: 15px 20px; border-bottom: 1px solid #222; }
         .nav-tabs { display: flex; justify-content: center; gap: 10px; margin-bottom: 15px; }
         .tab-btn { background: #1a1a1e; border: 1px solid #333; color: #888; padding: 8px 20px; border-radius: 20px; cursor: pointer; border: 1px solid transparent; }
         .tab-btn.active { background: var(--accent); color: white; border-color: var(--accent); }
@@ -742,12 +742,27 @@
         @media (max-width: 800px) {
             body { padding: 10px; }
             .logo-container { justify-content: center; margin-bottom: 5px; }
-            .sticky-controls { padding: 10px 0; }
+            .sticky-controls { padding: 10px 20px; }
             .header-top { 
-                flex-wrap: wrap; 
+                flex-wrap: nowrap; 
                 gap: 10px; 
-                padding: 0 10px 10px; 
+                padding: 0; 
                 position: relative;
+                justify-content: space-between;
+                align-items: center;
+            }
+            .hamburger-btn {
+                display: block !important;
+                background: rgba(255,255,255,0.05);
+                border: 1px solid rgba(255,255,255,0.1);
+                color: var(--accent);
+                padding: 8px 12px;
+                border-radius: 12px;
+                font-size: 1.1em;
+                cursor: pointer;
+                position: relative;
+                z-index: 2001;
+                margin-left: auto;
             }
             .set-switcher { 
                 width: 100%; 
@@ -1493,11 +1508,11 @@
             return `<div class="card ${getB(d)} ${s ? 'missing shaded' : ''} ${isSel ? 'selected' : ''}" onclick="window.handleCardClick(${d.uid})">
                     <div class="sheen ${getS(d)}"></div>
                     <div class="qty">×${d.owned}</div>
-                    <img src="${d.image}" onerror="this.src='${d.fallbackImage}'" loading="lazy">
-                    <div class="card-name">${d.name}</div>
-                    <div class="card-price">${c.symbol}${p}</div>
-                    <div style="font-size:0.6em;color:#555">#${d.id} · ${d.rarity}</div>
-                    <div class="variant-label">${d.variant}</div>
+                    <img src="${d.image}" onerror="this.src='${d.fallbackImage}'" loading="lazy" style="pointer-events:none;">
+                    <div class="card-name" style="pointer-events:none;">${d.name}</div>
+                    <div class="card-price" style="pointer-events:none;">${c.symbol}${p}</div>
+                    <div style="font-size:0.6em;color:#555;pointer-events:none;">#${d.id} · ${d.rarity}</div>
+                    <div class="variant-label" style="pointer-events:none;">${d.variant}</div>
                 </div>`;
         };
 
@@ -2697,6 +2712,9 @@
                 const switcher = document.querySelector('.set-switcher');
                 if (switcher && !switcher.classList.contains('mobile-active')) {
                     toggleMobileMenu();
+                    // Wait for layout shift then recalculate
+                    setTimeout(updateTutorialUI, 300);
+                    return;
                 }
             }
 
