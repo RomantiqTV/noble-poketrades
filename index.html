@@ -310,6 +310,7 @@
                     <button onclick="logout()" style="background: none; border: 1px solid #444; color: #888; border-radius: 4px; padding: 2px 8px; margin-left: 8px; cursor: pointer; font-size: 0.9em;">Logout</button>
                 </div>
                 <button id="loginBtn" onclick="openLoginModal()" style="background: var(--accent); color: white; border: none; border-radius: 20px; padding: 6px 15px; cursor: pointer; font-weight: bold; font-size: 0.8em;">Login / Sign Up</button>
+                <button onclick="openSettingsModal()" style="background: #222; color: #888; border: 1px solid #444; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.9em;" title="Settings">⚙️</button>
                 <select id="setSelect" class="select-input" onchange="window.changeSet(this.value)" style="border-color: #ffd700; color: #ffd700; font-family: 'Cinzel', serif; font-size: 0.8em; letter-spacing: 1px;">
                     <option value="po">Perfect Order</option>
                     <option value="151">S&V: 151</option>
@@ -402,6 +403,33 @@
         </div>
     </div>
 
+    <div id="settingsModal" class="modal-overlay">
+        <div class="modal" style="max-width: 400px;">
+            <h2 style="font-family: 'Cinzel'; font-size: 1.2em;">Settings</h2>
+            <div style="text-align: left; margin-top: 20px;">
+                <div style="font-size: 0.8em; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Theme Selection</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('dark')">
+                        <span class="theme-dot" style="background: #050507;"></span> Dark Theme (Default)
+                    </button>
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('light')">
+                        <span class="theme-dot" style="background: #f5f7f9;"></span> Light Theme
+                    </button>
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('pokemon')">
+                        <span class="theme-dot" style="background: #ff85a2;"></span> Pokémon Theme (Mew/Pink)
+                    </button>
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('mew-nighttime')">
+                        <span class="theme-dot" style="background: #0a0520; border-color: #ff85a2;"></span> Mew Nighttime (Animated)
+                    </button>
+                    <button class="tab-btn theme-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('articuno-ice')">
+                        <span class="theme-dot" style="background: #0f172a; border-color: #38bdf8;"></span> Articuno Ice (New!)
+                    </button>
+                </div>
+            </div>
+            <button class="modal-btn btn-cancel" style="width:100%; margin-top:30px;" onclick="closeSettingsModal()">Close</button>
+        </div>
+    </div>
+
     <script src="data.js"></script>
     <script src="data-151.js"></script>
     <script>
@@ -421,8 +449,100 @@
         }
         document.addEventListener('DOMContentLoaded', () => { 
             if(document.getElementById('setSelect')) document.getElementById('setSelect').value = currentSet; 
+            const savedTheme = localStorage.getItem('por_theme') || 'dark';
+            setTheme(savedTheme);
             updateUserUI();
             initData();
+        });
+
+        window.setTheme = function(theme) {
+            document.body.classList.remove('theme-light', 'theme-pokemon', 'theme-mew-nighttime', 'theme-articuno-ice');
+            if (theme !== 'dark') {
+                document.body.classList.add('theme-' + theme);
+            }
+            localStorage.setItem('por_theme', theme);
+
+            // Update Highlight in Settings
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.remove('active-theme');
+                if (btn.getAttribute('onclick').includes(`'${theme}'`)) {
+                    btn.classList.add('active-theme');
+                }
+            });
+            
+            // Background systems
+            const sceneBg = document.getElementById('scene-background');
+            const iceBg = document.getElementById('ice-background');
+            const parallaxBg = document.getElementById('parallaxBg');
+            
+            if (sceneBg) sceneBg.style.display = (theme === 'mew-nighttime' ? 'block' : 'none');
+            if (iceBg) iceBg.style.display = (theme === 'articuno-ice' ? 'block' : 'none');
+            
+            if (theme === 'pokemon') {
+                initPokemonTheme();
+            } else if (theme === 'mew-nighttime') {
+                initMewNighttime();
+            }
+        };
+
+        window.openSettingsModal = function() { document.getElementById('settingsModal').style.display = 'flex'; };
+        window.closeSettingsModal = function() { document.getElementById('settingsModal').style.display = 'none'; };
+
+        function initMewNighttime() {
+            const starLayer = document.getElementById('scene-stars');
+            if (starLayer && !starLayer.children.length) {
+                for (let i = 0; i < 150; i++) {
+                    const isSparkle = Math.random() > 0.7;
+                    const el = document.createElement("div");
+                    const x = Math.random() * 100;
+                    const y = Math.random() * 200;
+                    const dur = (Math.random() * 3 + 2) + "s";
+                    const del = (Math.random() * 10) + "s";
+
+                    el.className = isSparkle ? "scene-star-sparkle" : "scene-star-particle";
+                    if (!isSparkle) {
+                        el.style.width = (Math.random() * 3 + 1) + "px";
+                        el.style.height = el.style.width;
+                    }
+                    el.style.left = x + "%";
+                    el.style.top = y + "%";
+                    el.style.setProperty("--d", dur);
+                    el.style.animationDelay = del;
+                    starLayer.appendChild(el);
+                }
+            }
+        }
+
+        function initPokemonTheme() {
+            const bg = document.getElementById('parallaxBg') || document.createElement('div');
+            if (!bg.id) {
+                bg.id = 'parallaxBg';
+                bg.className = 'parallax-bg';
+                document.body.appendChild(bg);
+            }
+            bg.innerHTML = '';
+            const pinkPokemon = [
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/151.png',
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/35.png',
+                'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/39.png'
+            ];
+            for (let i = 0; i < 8; i++) {
+                const sprite = document.createElement('div');
+                sprite.className = 'falling-pokemon';
+                sprite.style.left = Math.random() * 100 + '%';
+                sprite.style.animationDuration = (Math.random() * 10 + 12) + 's';
+                sprite.style.backgroundImage = `url(${pinkPokemon[Math.floor(Math.random() * pinkPokemon.length)]})`;
+                bg.appendChild(sprite);
+            }
+        }
+
+        window.addEventListener('scroll', () => {
+            const scrollY = window.pageYOffset;
+            const layers = document.querySelectorAll('.scene-layer[data-speed], .ice-layer[data-speed]');
+            layers.forEach(layer => {
+                const speed = parseFloat(layer.getAttribute('data-speed'));
+                layer.style.transform = `translateY(${-scrollY * speed}px)`;
+            });
         });
 
         async function initData() {
