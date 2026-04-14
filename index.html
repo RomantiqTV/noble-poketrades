@@ -116,13 +116,13 @@
             border-radius: 12px; 
             border: 1px solid #333; 
             margin: 15px auto; 
-            display: inline-flex; 
+            display: flex; 
             align-items: center; 
             justify-content: center; 
             gap: 30px; 
             flex-wrap: wrap; 
             box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-            width: auto;
+            width: fit-content;
             min-width: 300px;
         }
         .calc-summary-container {
@@ -757,9 +757,6 @@
                 justify-content: space-between;
                 align-items: center;
             }
-            .header-main-actions {
-                gap: 5px !important;
-            }
             .auth-btn { padding: 4px 6px; font-size: 0.6em; }
             .completion-container { padding: 3px 8px; }
             #completion-text { font-size: 0.7em; }
@@ -776,6 +773,7 @@
                 z-index: 2001;
                 margin-left: 0;
             }
+            .mobile-only-nav { display: block !important; }
             .set-switcher { 
                 width: 100%; 
                 justify-content: center; 
@@ -918,7 +916,7 @@
     </div>
 
     <div class="sticky-controls">
-        <div class="header-top" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px 15px; max-width: 1000px; margin: 0 auto; position: relative; gap: 15px;">
+        <div class="header-top" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px 10px; max-width: 1000px; margin: 0 auto; position: relative;">
             <div class="logo-container">
                 <img src="assets/logo.jpg" class="logo-img" alt="Noble Poketrades">
                 <div class="logo-text">
@@ -927,19 +925,7 @@
                 </div>
             </div>
 
-            <div class="header-main-actions" style="display: flex; align-items: center; gap: 10px; flex-wrap: nowrap;">
-                <button class="tutorial-btn" onclick="startTutorial()" title="Help">?</button>
-                <div id="authButtons" style="display: flex; gap: 5px;">
-                    <button class="auth-btn" onclick="showAuthModal('login')">Login</button>
-                    <button class="auth-btn" onclick="showAuthModal('signup')">Sign Up</button>
-                </div>
-                <div class="completion-container" style="display: flex; align-items: center; gap: 5px; background: rgba(0,0,0,0.3); padding: 5px 10px; border-radius: 20px; border: 1px solid rgba(255,255,255,0.1);">
-                    <div class="progress-ring-mini" style="width: 20px; height: 20px; border: 2px solid var(--accent); border-radius: 50%; border-top-color: transparent; animation: rotate 2s linear infinite; display: none;" id="sync-spinner"></div>
-                    <span id="completion-text" style="font-size: 0.8em; font-weight: bold; color: var(--accent);">0%</span>
-                </div>
-                <button class="settings-btn" onclick="openSettings()" title="Settings" style="background:none; border:none; color:var(--text); cursor:pointer; font-size:1.2em; padding:5px;">⚙️</button>
-                <button class="hamburger-btn" style="display:none;" onclick="toggleMobileMenu()">☰</button>
-            </div>
+            <button class="hamburger-btn" style="display:none;" onclick="toggleMobileMenu()">☰</button>
 
             <div class="set-switcher" style="display: flex; gap: 10px; align-items: center;">
                 <div id="userDisplay" style="font-size: 0.8em; color: #888; display: none;">
@@ -970,14 +956,28 @@
                 <button class="tab-btn" id="btn-missing" onclick="switchView('missing')">Missing</button>
                 <button class="tab-btn" id="btn-calc" onclick="switchView('calc')">Trading</button>
                 <button class="tab-btn" id="btn-dashboard" onclick="switchView('dashboard')">Stats</button>
+                
+                <div class="mobile-only-nav" style="display:none;">
+                    <div style="height:1px; background:rgba(255,255,255,0.1); margin:10px 0;"></div>
+                    <div style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; padding:10px;">
+                        <button class="tab-btn" onclick="startTutorial()" style="flex:1;">Help (?)</button>
+                        <button class="tab-btn" id="loginBtnMobile" onclick="openLoginModal()" style="flex:1;">Login / Sign Up</button>
+                        <button class="tab-btn" onclick="openSettingsModal()" style="flex:none; width:45px;">⚙️</button>
+                        <div class="completion-container" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(0,0,0,0.3); padding:8px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);">
+                            <span id="completion-text-mobile" style="font-size:0.9em; font-weight:bold; color:var(--accent);">0%</span>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <button class="tab-btn" id="btn-import" onclick="switchView('import')" style="background: #1e293b; color: #94a3b8; border: 1px solid #334155;">Import</button>
                 <button class="tab-btn" style="background: var(--accent); color: white; border: none; font-weight: bold;" onclick="generateMissingReport()" id="exportBtn">Export Missing</button>
             </div>
         </div>
-        <div class="search-sort-bar">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search..." oninput="handleRefresh()">
+        <div class="search-sort-bar" style="max-width: 960px; margin: 0 auto; width: 95%;">
+            <input type="text" id="searchInput" class="search-input" placeholder="Search cards..." oninput="handleRefresh()" style="flex: 2;">
+            
+            <select id="typeSelect" class="select-input" onchange="handleRefresh()" style="display:none">
             
             <select id="typeSelect" class="select-input" onchange="handleRefresh()" style="display:none">
                 <option value="">All Types</option>
@@ -1847,52 +1847,71 @@
         };
 
         let currentModalCard = null;
+        // Modal Logic
+        let currentModalCard = null;
         let isPartnerModal = false;
+
         function showModal(d, isPartner) {
             currentModalCard = d;
             isPartnerModal = isPartner;
-            document.getElementById('modalCardName').innerText = d.name;
-            document.getElementById('modalCardDetails').innerText = `${d.variant} · ${d.rarity}`;
-            document.getElementById('modalQty').innerText = d.owned;
+            
+            // Check for existence of modal elements
+            const modal = document.getElementById('tradeModal');
+            if (!modal) return;
+
+            const nameEl = document.getElementById('modalCardName');
+            const detailsEl = document.getElementById('modalCardDetails');
+            const qtyEl = document.getElementById('modalQty');
+            
+            if (nameEl) nameEl.innerText = d.name;
+            if (detailsEl) detailsEl.innerText = `${d.variant} · ${d.rarity}`;
+            if (qtyEl) qtyEl.innerText = d.owned;
             
             // Add Large Preview
             const previewContainer = document.getElementById('qtyControls');
+            if (!previewContainer) return;
+
             if (!document.getElementById('largeCardPreview')) {
                 const preview = document.createElement('div');
                 preview.className = 'large-preview-container';
                 preview.id = 'largeCardPreview';
                 previewContainer.parentNode.insertBefore(preview, previewContainer);
             }
-            document.getElementById('largeCardPreview').innerHTML = `<img src="${d.image}" onerror="this.src='${d.fallbackImage}'">`;
+            const largePreview = document.getElementById('largeCardPreview');
+            if (largePreview) largePreview.innerHTML = `<img src="${d.image}" onerror="this.src='${d.fallbackImage}'">`;
 
             // Adjust buttons for Trade view vs Normal view
             const isTradeView = (view === 'calc' || view === 'trade');
             const btns = document.getElementById('tradeBtns');
-            btns.style.display = isTradeView ? 'flex' : 'none';
+            if (btns) {
+                btns.style.display = isTradeView ? 'flex' : 'none';
+                
+                // If in calculator mode, only show the relevant button (Give vs Get)
+                if (view === 'calc') {
+                    btns.innerHTML = isPartner 
+                        ? `<button class="modal-btn btn-get" style="width:100%" onclick="addToTrade('get')">${want.some(i => i.uid === d.uid) ? 'Remove from Wants' : 'I Get This'}</button>`
+                        : `<button class="modal-btn btn-give" style="width:100%" onclick="addToTrade('give')">${trade.some(i => i.uid === d.uid) ? 'Remove from Trade-ins' : 'I Give This'}</button>`;
+                } else {
+                    btns.innerHTML = `
+                        <button class="modal-btn btn-give" onclick="addToTrade('give')">I Give This</button>
+                        <button class="modal-btn btn-get" onclick="addToTrade('get')">I Get This</button>
+                    `;
+                }
+            }
             
             // Deck Selection
             const deckContainer = document.getElementById('deckSelectContainer');
-            if (decks.length > 0 && !isReadOnly && !isPartnerModal) {
-                deckContainer.style.display = 'block';
-                const select = document.getElementById('deckSelect');
-                select.innerHTML = decks.map((deck, i) => `<option value="${i}">${deck.name}</option>`).join('');
-            } else {
-                deckContainer.style.display = 'none';
+            if (deckContainer) {
+                if (typeof decks !== 'undefined' && decks.length > 0 && !isReadOnly && !isPartnerModal) {
+                    deckContainer.style.display = 'block';
+                    const select = document.getElementById('deckSelect');
+                    if (select) select.innerHTML = decks.map((deck, i) => `<option value="${i}">${deck.name}</option>`).join('');
+                } else {
+                    deckContainer.style.display = 'none';
+                }
             }
             
-            // If in calculator mode, only show the relevant button (Give vs Get)
-            if (view === 'calc') {
-                btns.innerHTML = isPartner 
-                    ? `<button class="modal-btn btn-get" style="width:100%" onclick="addToTrade('get')">${want.some(i => i.uid === d.uid) ? 'Remove from Wants' : 'I Get This'}</button>`
-                    : `<button class="modal-btn btn-give" style="width:100%" onclick="addToTrade('give')">${trade.some(i => i.uid === d.uid) ? 'Remove from Trade-ins' : 'I Give This'}</button>`;
-            } else {
-                btns.innerHTML = `
-                    <button class="modal-btn btn-give" onclick="addToTrade('give')">I Give This</button>
-                    <button class="modal-btn btn-get" onclick="addToTrade('get')">I Get This</button>
-                `;
-            }
-            
-            document.getElementById('tradeModal').style.display = 'flex';
+            modal.style.display = 'flex';
         }
 
         window.updateQty = async function(delta) {
@@ -2562,12 +2581,17 @@
             
             const ring = document.getElementById('progressRing');
             const txt = document.getElementById('progressPercent');
+            const txtMain = document.getElementById('completion-text');
+            const txtMobile = document.getElementById('completion-text-mobile');
             
             if (ring && txt) {
                 const offset = 88 - (88 * (percent / 100));
                 ring.style.strokeDashoffset = offset;
                 txt.innerText = percent + '%';
             }
+
+            if (txtMain) txtMain.innerText = percent + '%';
+            if (txtMobile) txtMobile.innerText = percent + '%';
         }
 
         function renderDashboard() {
