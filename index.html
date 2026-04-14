@@ -639,7 +639,7 @@
             width: 100%; height: 50%; border-bottom: 4px solid #000; top: 0; left: 0;
         }
         .pokeball::after { 
-            content: ""; position: absolute; top: 44%; left: 44%; width: 15px; height: 15px; 
+            content: ""; position: absolute; top: 40%; left: 40%; width: 15px; height: 15px; 
             background: #fff; border: 4px solid #000; border-radius: 50%; 
             z-index: 10;
             box-shadow: 0 0 0 2px #fff;
@@ -786,9 +786,8 @@
                 border-radius: 8px;
                 font-size: 1.2em;
                 cursor: pointer;
-                position: absolute;
-                right: 15px;
-                top: 0;
+                position: relative;
+                z-index: 2001;
             }
             .tab-btn { padding: 10px; font-size: 0.9em; flex: none; text-align: center; }
             
@@ -892,8 +891,7 @@
     </div>
 
     <div class="sticky-controls">
-        <button class="hamburger-btn" style="display:none;" onclick="toggleMobileMenu()">☰</button>
-        <div class="header-top" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px 15px; max-width: 1000px; margin: 0 auto;">
+        <div class="header-top" style="display: flex; align-items: center; justify-content: space-between; padding: 0 20px 15px; max-width: 1000px; margin: 0 auto; position: relative;">
             <div class="logo-container">
                 <img src="assets/logo.jpg" class="logo-img" alt="Noble Poketrades">
                 <div class="logo-text">
@@ -901,6 +899,7 @@
                     <span class="logo-sub">Poketrades</span>
                 </div>
             </div>
+            <button class="hamburger-btn" style="display:none;" onclick="toggleMobileMenu()">☰</button>
             <div class="set-switcher" style="display: flex; gap: 10px; align-items: center;">
                 <div id="userDisplay" style="font-size: 0.8em; color: #888; display: none;">
                     Hello,&nbsp;<span id="currentUserName" style="color: var(--accent); font-weight: bold;"></span>
@@ -929,7 +928,7 @@
                 <button class="tab-btn active" id="btn-collection" onclick="switchView('collection')">Collection</button>
                 <button class="tab-btn" id="btn-missing" onclick="switchView('missing')">Missing</button>
                 <button class="tab-btn" id="btn-calc" onclick="switchView('calc')">Trading</button>
-                <button class="tab-btn" id="btn-dashboard" onclick="switchView('dashboard')">📊 Stats</button>
+                <button class="tab-btn" id="btn-dashboard" onclick="switchView('dashboard')">Stats</button>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <button class="tab-btn" id="btn-import" onclick="switchView('import')" style="background: #1e293b; color: #94a3b8; border: 1px solid #334155;">Import</button>
@@ -1180,7 +1179,11 @@
             tabs.classList.toggle('mobile-active');
             
             const btn = document.querySelector('.hamburger-btn');
-            btn.innerText = switcher.classList.contains('mobile-active') ? '✕' : '☰';
+            const isOpened = switcher.classList.contains('mobile-active');
+            btn.innerText = isOpened ? '✕' : '☰';
+            
+            // Adjust overlay z-index if menu is open
+            document.querySelector('.sticky-controls').style.zIndex = isOpened ? "10000" : "1000";
         }
 
         // Auto-close menu on tab switch
@@ -1189,9 +1192,12 @@
             if (window.innerWidth <= 800) {
                 const switcher = document.querySelector('.set-switcher');
                 const tabs = document.querySelector('.nav-tabs');
-                switcher.classList.remove('mobile-active');
-                tabs.classList.remove('mobile-active');
-                document.querySelector('.hamburger-btn').innerText = '☰';
+                if (switcher && switcher.classList.contains('mobile-active')) {
+                    switcher.classList.remove('mobile-active');
+                    tabs.classList.remove('mobile-active');
+                    document.querySelector('.hamburger-btn').innerText = '☰';
+                    document.querySelector('.sticky-controls').style.zIndex = "1000";
+                }
             }
             await originalSwitchView(v);
         };
@@ -1484,7 +1490,7 @@
             
             const isM = d.owned === 0;
             const s = isM && (shade || view === 'calc');
-            return `<div class="card ${getB(d)} ${s ? 'missing shaded' : ''} ${isSel ? 'selected' : ''}" onclick="handleCardClick(${d.uid})">
+            return `<div class="card ${getB(d)} ${s ? 'missing shaded' : ''} ${isSel ? 'selected' : ''}" onclick="window.handleCardClick(${d.uid})">
                     <div class="sheen ${getS(d)}"></div>
                     <div class="qty">×${d.owned}</div>
                     <img src="${d.image}" onerror="this.src='${d.fallbackImage}'" loading="lazy">
@@ -1785,6 +1791,7 @@
         };
 
         window.handleCardClick = function(uid) {
+            console.log("Card clicked:", uid);
             const d = DATA.find(i => i.uid === uid);
             // If we are in calc mode and have a partner's collection loaded,
             // show the partner's ownership in the modal instead of the user's
@@ -2683,6 +2690,16 @@
 
         function updateTutorialUI() {
             const step = tutorialSteps[currentTutorialStep];
+            if (!step) return;
+
+            // If menu is closed and target is inside it, open menu for mobile users
+            if (window.innerWidth <= 800 && step.target && (step.target.includes('.set-switcher') || step.target.includes('.nav-tabs'))) {
+                const switcher = document.querySelector('.set-switcher');
+                if (switcher && !switcher.classList.contains('mobile-active')) {
+                    toggleMobileMenu();
+                }
+            }
+
             document.getElementById('tutorial-title').innerText = step.title;
             document.getElementById('tutorial-content').innerHTML = step.content;
             document.getElementById('tutorial-next').innerText = currentTutorialStep === tutorialSteps.length - 1 ? "Start Building!" : "Next Step";
