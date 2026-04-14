@@ -543,6 +543,90 @@
             display: none; flex-direction: column; justify-content: center; 
             align-items: center; z-index: 3000; color: white; 
         }
+        
+        /* Tutorial System - Pro Grade */
+        #tutorial-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5000;
+            display: none;
+            pointer-events: none;
+        }
+        
+        .tutorial-backdrop {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.75);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 5001;
+            pointer-events: auto;
+            mask: url(#pro-mask);
+            -webkit-mask: url(#pro-mask);
+        }
+
+        #tutorial-svg-mask {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            z-index: 5002;
+            pointer-events: none;
+        }
+
+        .tutorial-card {
+            background: #1a1a1e;
+            border: 2px solid var(--accent);
+            border-radius: 20px;
+            padding: 25px;
+            max-width: 400px;
+            width: 85%;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+            position: fixed;
+            z-index: 5010;
+            color: white;
+            text-align: center;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: auto;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .tutorial-highlight-box {
+            position: fixed;
+            border: 3px solid var(--accent);
+            border-radius: 12px;
+            box-shadow: 0 0 25px var(--accent);
+            pointer-events: none;
+            z-index: 5005;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: none;
+        }
+
+        .tutorial-btn-container {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .tutorial-dot-container {
+            display: flex;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 15px;
+        }
+
+        .tutorial-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #444;
+            transition: background 0.3s;
+        }
+
+        .tutorial-dot.active {
+            background: var(--accent);
+            transform: scale(1.2);
+        }
         .pokeball {
             width: 60px; height: 60px; background: #fff; border: 3px solid #000;
             border-radius: 50%; position: relative; overflow: hidden;
@@ -729,6 +813,7 @@
                     <option value="po">Perfect Order</option>
                     <option value="151">S&V: 151</option>
                 </select>
+                <button onclick="startTutorial()" style="background: rgba(255,255,255,0.05); border: 1px solid #444; color: #888; width: 30px; height: 30px; border-radius: 50%; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 0.8em;" title="Restart Tutorial">?</button>
             </div>
         </div>
         <div class="nav-tabs" style="justify-content: space-between; max-width: 1000px; margin: 0 auto 15px;">
@@ -754,6 +839,29 @@
         </div>
     </div>
     <div id="content"></div>
+
+    <!-- Tutorial UI -->
+    <div id="tutorial-overlay">
+        <div id="tutorial-blur" class="tutorial-backdrop"></div>
+        <svg id="tutorial-svg-mask" width="0" height="0">
+            <defs>
+                <mask id="pro-mask">
+                    <rect width="100%" height="100%" fill="white"/>
+                    <path id="mask-path" fill="black" fill-rule="evenodd"></path>
+                </mask>
+            </defs>
+        </svg>
+        <div class="tutorial-card" id="tutorial-card">
+            <div class="tutorial-dot-container" id="tutorial-dots"></div>
+            <h2 id="tutorial-title" style="font-family: 'Cinzel'; color: var(--accent); margin: 0 0 10px;">Welcome!</h2>
+            <div id="tutorial-content" style="font-size: 0.95em; line-height: 1.5; color: #ccc; margin-bottom: 20px;"></div>
+            <div class="tutorial-btn-container">
+                <button class="modal-btn btn-cancel" onclick="finishTutorial()">Skip</button>
+                <button class="modal-btn btn-get" id="tutorial-next" onclick="nextTutorialStep()">Next Step</button>
+            </div>
+        </div>
+    </div>
+    <div id="tutorial-highlight" class="tutorial-highlight-box"></div>
 
     <div id="tradeModal" class="modal-overlay">
         <div class="modal">
@@ -2138,6 +2246,146 @@
         }
 
         window.handleRefresh();
+
+        // --- Tutorial Logic (Pro Overhaul) ---
+        let currentTutorialStep = 0;
+        const tutorialSteps = [
+            {
+                title: "Welcome, Trainer!",
+                content: "Noble Poketrades is your ultimate companion for tracking Pokémon TCG collections and balancing trades with live market data.",
+                target: null
+            },
+            {
+                title: "Switch Sets",
+                content: "Easily jump between 'Perfect Order' and 'Scarlet & Violet 151' to manage different parts of your collection.",
+                target: ".set-switcher"
+            },
+            {
+                title: "Navigation",
+                content: "View your current collection, see what's missing, or head to the Calculator to plan your next trade.",
+                target: ".nav-tabs"
+            },
+            {
+                title: "Find Your Favorites",
+                content: "Use the search bar to filter by name, number, or rarity. Sort your cards to organize your view.",
+                target: ".search-sort-bar"
+            },
+            {
+                title: "Quick Collection",
+                content: "<b>Pro Tip:</b> Tap any card in the grid to open the manager. You can adjust quantities and see live market prices!",
+                target: ".grid .card:first-child"
+            },
+            {
+                title: "Export & Share",
+                content: "Generate a beautiful PDF report of your missing cards to share with trading partners or keep for your records.",
+                target: "#exportBtn"
+            },
+            {
+                title: "You're All Set!",
+                content: "Start building your dream collection today. If you have an Excel checklist, don't forget the 'Import' tab!",
+                target: null
+            }
+        ];
+
+        window.startTutorial = function() {
+            currentTutorialStep = 0;
+            document.getElementById('tutorial-overlay').style.display = 'block';
+            
+            // Create dots
+            const dotContainer = document.getElementById('tutorial-dots');
+            dotContainer.innerHTML = tutorialSteps.map((_, i) => `<div class="tutorial-dot ${i === 0 ? 'active' : ''}"></div>`).join('');
+            
+            window.addEventListener('resize', updateTutorialUI);
+            updateTutorialUI();
+        };
+
+        window.nextTutorialStep = function() {
+            currentTutorialStep++;
+            if (currentTutorialStep >= tutorialSteps.length) {
+                finishTutorial();
+            } else {
+                updateTutorialUI();
+            }
+        };
+
+        function updateTutorialUI() {
+            const step = tutorialSteps[currentTutorialStep];
+            document.getElementById('tutorial-title').innerText = step.title;
+            document.getElementById('tutorial-content').innerHTML = step.content;
+            document.getElementById('tutorial-next').innerText = currentTutorialStep === tutorialSteps.length - 1 ? "Start Building!" : "Next Step";
+
+            // Update dots
+            document.querySelectorAll('.tutorial-dot').forEach((dot, i) => {
+                dot.classList.toggle('active', i === currentTutorialStep);
+            });
+
+            const maskPath = document.getElementById('mask-path');
+            const highlight = document.getElementById('tutorial-highlight');
+            const card = document.getElementById('tutorial-card');
+
+            const w = window.innerWidth;
+            const h = window.innerHeight;
+
+            if (step.target) {
+                const targetEl = document.querySelector(step.target);
+                if (targetEl) {
+                    targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    
+                    setTimeout(() => {
+                        const rect = targetEl.getBoundingClientRect();
+                        const padding = 12;
+                        const x = rect.left - padding;
+                        const y = rect.top - padding;
+                        const rw = rect.width + (padding * 2);
+                        const rh = rect.height + (padding * 2);
+                        const radius = 15;
+
+                        // Create hole path for the mask (Black cuts through white)
+                        const d = `M ${x + radius} ${y} 
+                            h ${rw - radius * 2} 
+                            a ${radius},${radius} 0 0 1 ${radius},${radius} 
+                            v ${rh - radius * 2} 
+                            a ${radius},${radius} 0 0 1 -${radius},${radius} 
+                            h -${rw - radius * 2} 
+                            a ${radius},${radius} 0 0 1 -${radius},-${radius} 
+                            v -${rh - radius * 2} 
+                            a ${radius},${radius} 0 0 1 ${radius},-${radius} z`;
+                        
+                        maskPath.setAttribute('d', d);
+
+                        highlight.style.display = 'block';
+                        highlight.style.left = x + 'px';
+                        highlight.style.top = y + 'px';
+                        highlight.style.width = rw + 'px';
+                        highlight.style.height = rh + 'px';
+
+                        // Position card
+                        const cardRect = card.getBoundingClientRect();
+                        if (y > h / 2) {
+                            card.style.top = Math.max(cardRect.height / 2 + 20, y - cardRect.height / 2 - 40) + 'px';
+                        } else {
+                            card.style.top = Math.min(h - cardRect.height / 2 - 20, y + rh + cardRect.height / 2 + 40) + 'px';
+                        }
+                    }, 300);
+                }
+            } else {
+                maskPath.setAttribute('d', '');
+                highlight.style.display = 'none';
+                card.style.top = '50%';
+            }
+        }
+
+        window.finishTutorial = function() {
+            document.getElementById('tutorial-overlay').style.display = 'none';
+            document.getElementById('tutorial-highlight').style.display = 'none';
+            localStorage.setItem('por_tutorial_done', 'true');
+            window.removeEventListener('resize', updateTutorialUI);
+        };
+
+        // Trigger on first load
+        if (!localStorage.getItem('por_tutorial_done')) {
+            setTimeout(startTutorial, 1500);
+        }
     </script>
 </body>
 </html>
