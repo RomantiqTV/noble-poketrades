@@ -854,8 +854,7 @@
                 <button class="tab-btn active" id="btn-collection" onclick="switchView('collection')">Collection</button>
                 <button class="tab-btn" id="btn-missing" onclick="switchView('missing')">Missing</button>
                 <button class="tab-btn" id="btn-calc" onclick="switchView('calc')">Trading</button>
-                <button class="tab-btn" id="btn-dashboard" onclick="switchView('dashboard')">📊 Pulse</button>
-                <button class="tab-btn" id="btn-deck" onclick="switchView('deck')">⚔️ Decks</button>
+                <button class="tab-btn" id="btn-dashboard" onclick="switchView('dashboard')">📊 Stats</button>
             </div>
             <div style="display: flex; gap: 10px; align-items: center;">
                 <button class="tab-btn" id="btn-import" onclick="switchView('import')" style="background: #1e293b; color: #94a3b8; border: 1px solid #334155;">Import</button>
@@ -888,11 +887,6 @@
                 <option value="name">Name</option>
             </select>
             
-            <div style="display: flex; gap: 5px; align-items: center;">
-                <button id="viewModeBtn" class="tab-btn" style="padding: 8px; width: 36px; height: 36px;" onclick="toggleViewMode()" title="Toggle Binder View">📖</button>
-                <button id="currencyBtn" class="tab-btn" style="padding: 8px; min-width: 36px; font-size: 0.7em;" onclick="toggleCurrency()" title="Switch Currency">A$</button>
-            </div>
-
             <label style="font-size: 0.8em;"><input type="checkbox" id="shadeToggle" checked onchange="handleRefresh()"> Shade</label>
         </div>
     </div>
@@ -940,14 +934,6 @@
                 <button class="modal-btn btn-get" onclick="addToTrade('get')">I Get This</button>
             </div>
             
-            <div id="deckSelectContainer" style="margin-top: 15px; border-top: 1px solid #333; padding-top: 15px; display: none;">
-                <div style="font-size: 0.7em; color: #888; margin-bottom: 8px; text-transform: uppercase;">Theorycrafting: Add to Deck</div>
-                <div style="display: flex; gap: 10px;">
-                    <select id="deckSelect" class="select-input" style="flex: 1; font-size: 0.8em;"></select>
-                    <button class="tab-btn" style="padding: 0 15px;" onclick="addCardToDeck()">Add</button>
-                </div>
-            </div>
-
             <button class="modal-btn btn-cancel" style="width:100%; margin-top:10px;" onclick="closeModal()">Close</button>
         </div>
     </div>
@@ -975,7 +961,17 @@
         <div class="modal" style="max-width: 400px;">
             <h2 style="font-family: 'Cinzel'; font-size: 1.2em;">Settings</h2>
             <div style="text-align: left; margin-top: 20px;">
-                <div style="font-size: 0.8em; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">Theme Selection</div>
+                <div style="font-size: 0.8em; color: #888; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 1px;">View Options</div>
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="toggleViewMode()">
+                        <span id="viewModeSettingsLabel" style="margin-right: 10px;">📖</span> <span id="viewModeText">Enable Binder View</span>
+                    </button>
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="toggleCurrency()">
+                        <span id="currencySettingsLabel" style="width: 20px; text-align: center; margin-right: 10px; font-size: 0.8em; font-weight: bold;">A$</span> Change Currency
+                    </button>
+                </div>
+
+                <div style="font-size: 0.8em; color: #888; margin-bottom: 10px; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px;">Theme Selection</div>
                 <div style="display: flex; flex-direction: column; gap: 10px;">
                     <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center;" onclick="setTheme('dark')">
                         <span class="theme-dot" style="background: #050507;"></span> Dark Theme (Default)
@@ -1046,7 +1042,6 @@
         };
         let currentCurrency = localStorage.getItem('por_currency') || 'AUD';
         let viewMode = localStorage.getItem('por_view_mode') || 'grid';
-        let decks = JSON.parse(localStorage.getItem('por_decks') || '[]');
 
         const currentSet = localStorage.getItem('por_current_set') || 'po';
         
@@ -1267,7 +1262,18 @@
             }
         });
 
-        function openSettingsModal() { document.getElementById('settingsModal').style.display = 'flex'; }
+        function openSettingsModal() { 
+            // Update settings labels before opening
+            const currencyLabel = document.getElementById('currencySettingsLabel');
+            if (currencyLabel) currencyLabel.innerText = currencies[currentCurrency].symbol;
+            
+            const viewModeLabel = document.getElementById('viewModeSettingsLabel');
+            const viewModeText = document.getElementById('viewModeText');
+            if (viewModeLabel) viewModeLabel.innerText = viewMode === 'grid' ? '📖' : '🖼️';
+            if (viewModeText) viewModeText.innerText = viewMode === 'grid' ? 'Enable Binder View' : 'Disable Binder View';
+
+            document.getElementById('settingsModal').style.display = 'flex'; 
+        }
         function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
 
         // Parallax Dev Mode
@@ -1471,10 +1477,6 @@
 
                 if (view === 'dashboard') {
                     renderDashboard();
-                    return;
-                }
-                if (view === 'deck') {
-                    renderDeckBuilder();
                     return;
                 }
 
@@ -2387,14 +2389,22 @@
             let idx = keys.indexOf(currentCurrency);
             currentCurrency = keys[(idx + 1) % keys.length];
             localStorage.setItem('por_currency', currentCurrency);
-            document.getElementById('currencyBtn').innerText = currencies[currentCurrency].symbol;
+            
+            const label = document.getElementById('currencySettingsLabel');
+            if (label) label.innerText = currencies[currentCurrency].symbol;
+            
             window.handleRefresh();
         }
 
         function toggleViewMode() {
             viewMode = viewMode === 'grid' ? 'binder' : 'grid';
             localStorage.setItem('por_view_mode', viewMode);
-            document.getElementById('viewModeBtn').innerText = viewMode === 'grid' ? '📖' : '🖼️';
+            
+            const label = document.getElementById('viewModeSettingsLabel');
+            const text = document.getElementById('viewModeText');
+            if (label) label.innerText = viewMode === 'grid' ? '📖' : '🖼️';
+            if (text) text.innerText = viewMode === 'grid' ? 'Enable Binder View' : 'Disable Binder View';
+            
             window.handleRefresh();
         }
 
@@ -2450,7 +2460,7 @@
 
             container.innerHTML = `
                 <div style="text-align: center; margin-bottom: 30px;">
-                    <div style="font-family: 'Cinzel'; font-size: 1.5em; color: #fff;">${loggedInUser}'s Collection</div>
+                    <div style="font-family: 'Cinzel'; font-size: 1.5em; color: #fff;">${loggedInUser}'s Stats</div>
                     ${shareBtn}
                 </div>
                 <div class="pulse-grid">
@@ -2506,72 +2516,13 @@
             `;
         }
 
-        function renderDeckBuilder() {
-            const container = document.getElementById('content');
-            container.innerHTML = `
-                <div class="calc-column" style="max-width: 600px; margin: 0 auto;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
-                        <h3 style="color: var(--accent); margin: 0;">Your Decks</h3>
-                        <button class="tab-btn" onclick="createNewDeck()" style="background: var(--accent); color: white; border: none;">+ New Deck</button>
-                    </div>
-                    <div class="deck-list" id="deckList">
-                        ${decks.length === 0 ? '<div style="color: #666; text-align: center; padding: 40px;">No decks yet. Create one to start theorycrafting!</div>' : ''}
-                        ${decks.map((deck, idx) => `
-                            <div class="deck-item">
-                                <div>
-                                    <div style="font-weight: bold;">${deck.name}</div>
-                                    <div style="display: flex; gap: 5px; margin-top: 5px;">
-                                        <span class="deck-badge">${deck.cards.length} Cards</span>
-                                        <span class="deck-badge" style="background: ${deck.missing === 0 ? '#2e7d32' : '#7c2d12'}">${deck.missing === 0 ? 'READY' : deck.missing + ' NEEDED'}</span>
-                                    </div>
-                                </div>
-                                <div style="display: flex; gap: 10px;">
-                                    <button class="tab-btn" style="padding: 5px 10px;" onclick="editDeck(${idx})">Edit</button>
-                                    <button class="tab-btn" style="padding: 5px 10px; color: #ef5350;" onclick="deleteDeck(${idx})">Delete</button>
-                                </div>
-                            </div>
-                        `).join('')}
-                    </div>
-                </div>
-            `;
-        }
-
-        function createNewDeck() {
-            const name = prompt("Enter deck name:");
-            if (!name) return;
-            decks.push({ name, cards: [], missing: 0 });
-            localStorage.setItem('por_decks', JSON.stringify(decks));
-            renderDeckBuilder();
-        }
-
         function copyShareLink() {
             const url = window.location.origin + window.location.pathname + "?u=" + loggedInUser;
             navigator.clipboard.writeText(url).then(() => {
                 alert("Public link copied to clipboard!\n\n" + url);
             });
         }
-
-        function addCardToDeck() {
-            const deckIdx = document.getElementById('deckSelect').value;
-            const deck = decks[deckIdx];
-            if (deck.cards.includes(currentModalCard.uid)) {
-                alert("Card already in deck!");
-                return;
-            }
-            deck.cards.push(currentModalCard.uid);
-            
-            // Calculate missing
-            const deckCards = DATA.filter(d => deck.cards.includes(d.uid));
-            deck.missing = deckCards.filter(d => d.owned === 0).length;
-            
-            localStorage.setItem('por_decks', JSON.stringify(decks));
-            alert(`Added ${currentModalCard.name} to ${deck.name}`);
-            closeModal();
-        }
         
-        function editDeck(idx) {
-            alert("Deck editing coming soon! This involves selecting cards from the collection to build a 60-card list.");
-        }
         let currentTutorialStep = 0;
         const tutorialSteps = [
             {
