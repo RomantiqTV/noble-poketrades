@@ -979,7 +979,7 @@
         }
         document.addEventListener('DOMContentLoaded', () => { 
             if(document.getElementById('setSelect')) document.getElementById('setSelect').value = currentSet; 
-            const savedTheme = localStorage.getItem('por_theme') || 'dark';
+            const savedTheme = localStorage.getItem('por_theme') || 'articuno-ice';
             setTheme(savedTheme);
             if (savedTheme === 'pokemon') initPokemonTheme();
             updateUserUI();
