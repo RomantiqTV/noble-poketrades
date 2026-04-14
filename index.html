@@ -1510,7 +1510,7 @@
         };
         const DATA = currentSet === 'po' ? window.CARD_DATA : window.DATA_151;
         const KEY = '11c6293ca7mshbb68d5707f1a726p1d1b24jsnc63b06003475';
-        let view = 'collection', trade = [], want = [], prices = JSON.parse(localStorage.getItem('por_prices_' + currentSet) || '{}');
+        let view = 'collection', trade = [], want = [], decks = [], prices = JSON.parse(localStorage.getItem('por_prices_' + currentSet) || '{}');
         const overrides = JSON.parse(localStorage.getItem('por_qty_' + currentSet) || '{}');
         DATA.forEach(d => { if (overrides[d.uid] !== undefined) d.owned = overrides[d.uid]; });
 
