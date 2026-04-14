@@ -1845,16 +1845,6 @@
                 showModal(d);
             }
         };
-            // If we are in calc mode and have a partner's collection loaded,
-            // show the partner's ownership in the modal instead of the user's
-            if (view === 'calc' && partnerCollection) {
-                const partnerOwned = partnerCollection[d.uid] || 0;
-                const tempCard = {...d, owned: partnerOwned};
-                showModal(tempCard);
-            } else {
-                showModal(d);
-            }
-        };
 
         let currentModalCard = null;
         let isPartnerModal = false;
