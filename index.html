@@ -2819,6 +2819,13 @@
                         const radius = 15;
 
                         // Create hole path for the mask (Black cuts through white)
+                        // Rounded rectangle hole: Ensure all math result in absolute numbers
+                        const rx = Math.floor(x);
+                        const ry = Math.floor(y);
+                        const rw_r = Math.floor(rw);
+                        const rh_r = Math.floor(rh);
+                        const r_rad = Math.floor(radius);
+
                         // Create hole path for the mask using absolute coordinates to avoid negative h/v values
                         const d = `M 0 0 h ${w} v ${h} h -${w} Z 
                                    M ${rx + r_rad} ${ry} 
