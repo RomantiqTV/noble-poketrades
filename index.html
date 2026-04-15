@@ -2037,16 +2037,42 @@
         window.updateUserUI = function() {
             const userDisplay = document.getElementById('userDisplay');
             const loginBtn = document.getElementById('loginBtn');
+            const loginBtnMobile = document.getElementById('loginBtnMobile');
+            
             if (isReadOnly) {
-                userDisplay.style.display = 'flex';
-                userDisplay.style.alignItems = 'center';
-                document.getElementById('currentUserName').innerText = loggedInUser + " (Public)";
-                loginBtn.style.display = 'none';
+                if (userDisplay) {
+                    userDisplay.style.display = 'flex';
+                    userDisplay.style.alignItems = 'center';
+                    const nameSpan = document.getElementById('currentUserName');
+                    if (nameSpan) nameSpan.innerText = loggedInUser + " (Public)";
+                }
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (loginBtnMobile) {
+                    loginBtnMobile.innerText = "Viewing: " + loggedInUser;
+                    loginBtnMobile.onclick = null;
+                }
                 return;
             }
+            
             if (loggedInUser) {
-                userDisplay.style.display = 'none';
-                loginBtn.style.display = 'block';
+                if (userDisplay) {
+                    userDisplay.style.display = 'flex';
+                    userDisplay.style.alignItems = 'center';
+                    const nameSpan = document.getElementById('currentUserName');
+                    if (nameSpan) nameSpan.innerText = loggedInUser;
+                }
+                if (loginBtn) loginBtn.style.display = 'none';
+                if (loginBtnMobile) {
+                    loginBtnMobile.innerText = "Logout (" + loggedInUser + ")";
+                    loginBtnMobile.onclick = function() { logout(); toggleMobileMenu(); };
+                }
+            } else {
+                if (userDisplay) userDisplay.style.display = 'none';
+                if (loginBtn) loginBtn.style.display = 'block';
+                if (loginBtnMobile) {
+                    loginBtnMobile.innerText = "Login / Sign Up";
+                    loginBtnMobile.onclick = function() { openLoginModal(); toggleMobileMenu(); };
+                }
             }
         };
 
