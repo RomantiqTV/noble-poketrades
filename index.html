@@ -962,7 +962,7 @@
                     <div style="height:1px; background:rgba(255,255,255,0.1); margin:10px 0;"></div>
                     <div style="display:flex; flex-direction:column; gap:10px; padding:10px;">
                         <div style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; width:100%;">
-                            <button class="tab-btn" onclick="document.getElementById('setSelect').focus(); toggleMobileMenu();" style="flex:1; border-color:#ffd700; color:#ffd700;">Switch Set</button>
+                            <button class="tab-btn" onclick="document.getElementById('setSelect').style.display = 'block'; document.getElementById('setSelect').focus(); toggleMobileMenu();" style="flex:1; border-color:#ffd700; color:#ffd700;">Switch Set</button>
                             <button class="tab-btn" onclick="startTutorial(); toggleMobileMenu();" style="flex:1;">Help (?)</button>
                             <button class="tab-btn" onclick="openSettingsModal(); toggleMobileMenu();" style="flex:none; width:45px;">⚙️</button>
                             <div class="completion-container" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(0,0,0,0.3); padding:8px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);">
@@ -2816,13 +2816,17 @@
 
                         // Create hole path for the mask (Black cuts through white)
                         // Rounded rectangle hole: Ensure all math result in absolute numbers
-                        const rx = Math.round(x);
-                        const ry = Math.round(y);
-                        const rw_r = Math.round(rw);
-                        const rh_r = Math.round(rh);
-                        const r_rad = Math.round(radius);
+                        const rx = Math.floor(x);
+                        const ry = Math.floor(y);
+                        const rw_r = Math.floor(rw);
+                        const rh_r = Math.floor(rh);
+                        const r_rad = Math.floor(radius);
                         
-                        const d = `M ${rx + r_rad} ${ry} h ${rw_r - r_rad * 2} a ${r_rad},${r_rad} 0 0 1 ${r_rad},${r_rad} v ${rh_r - r_rad * 2} a ${r_rad},${r_rad} 0 0 1 -${r_rad},${r_rad} h -${rw_r - r_rad * 2} a ${r_rad},${r_rad} 0 0 1 -${r_rad},-${r_rad} v -${rh_r - r_rad * 2} a ${r_rad},${r_rad} 0 0 1 ${r_rad},-${r_rad} z`;
+                        // Use explicit subtraction to ensure no negative numbers or NaN
+                        const innerW = Math.max(0, rw_r - (r_rad * 2));
+                        const innerH = Math.max(0, rh_r - (r_rad * 2));
+                        
+                        const d = `M ${rx + r_rad} ${ry} h ${innerW} a ${r_rad},${r_rad} 0 0 1 ${r_rad},${r_rad} v ${innerH} a ${r_rad},${r_rad} 0 0 1 -${r_rad},${r_rad} h -${innerW} a ${r_rad},${r_rad} 0 0 1 -${r_rad},-${r_rad} v -${innerH} a ${r_rad},${r_rad} 0 0 1 ${r_rad},-${r_rad} z`;
                         
                         maskPath.setAttribute('d', d);
 
