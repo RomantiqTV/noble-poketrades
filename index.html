@@ -777,7 +777,7 @@
             .set-switcher { 
                 width: 100%; 
                 justify-content: center; 
-                display: none !important; /* Hide by default on mobile */
+                display: none !important; /* Hide on mobile */
                 flex-direction: column;
                 gap: 15px;
                 padding: 20px 0;
@@ -786,7 +786,7 @@
                 margin-top: 10px;
             }
             .set-switcher.mobile-active {
-                display: flex !important;
+                display: none !important; /* Explicitly disabled per user request */
             }
             .nav-tabs { 
                 display: none !important; /* Hide by default on mobile */
@@ -960,9 +960,9 @@
                 <div class="mobile-only-nav" style="display:none;">
                     <div style="height:1px; background:rgba(255,255,255,0.1); margin:10px 0;"></div>
                     <div style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; padding:10px;">
-                        <button class="tab-btn" onclick="startTutorial()" style="flex:1;">Help (?)</button>
-                        <button class="tab-btn" id="loginBtnMobile" onclick="openLoginModal()" style="flex:1;">Login / Sign Up</button>
-                        <button class="tab-btn" onclick="openSettingsModal()" style="flex:none; width:45px;">⚙️</button>
+                        <button class="tab-btn" onclick="startTutorial(); toggleMobileMenu();" style="flex:1;">Help (?)</button>
+                        <button class="tab-btn" id="loginBtnMobile" onclick="openLoginModal(); toggleMobileMenu();" style="flex:1;">Login / Sign Up</button>
+                        <button class="tab-btn" onclick="openSettingsModal(); toggleMobileMenu();" style="flex:none; width:45px;">⚙️</button>
                         <div class="completion-container" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(0,0,0,0.3); padding:8px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);">
                             <span id="completion-text-mobile" style="font-size:0.9em; font-weight:bold; color:var(--accent);">0%</span>
                         </div>
@@ -1212,13 +1212,11 @@
         }
 
         function toggleMobileMenu() {
-            const switcher = document.querySelector('.set-switcher');
             const tabs = document.querySelector('.nav-tabs');
-            switcher.classList.toggle('mobile-active');
             tabs.classList.toggle('mobile-active');
             
             const btn = document.querySelector('.hamburger-btn');
-            const isOpened = switcher.classList.contains('mobile-active');
+            const isOpened = tabs.classList.contains('mobile-active');
             btn.innerText = isOpened ? '✕' : '☰';
             
             // Adjust overlay z-index if menu is open
@@ -1229,13 +1227,9 @@
         const originalSwitchView = window.switchView;
         window.switchView = async function(v) {
             if (window.innerWidth <= 800) {
-                const switcher = document.querySelector('.set-switcher');
                 const tabs = document.querySelector('.nav-tabs');
-                if (switcher && switcher.classList.contains('mobile-active')) {
-                    switcher.classList.remove('mobile-active');
-                    tabs.classList.remove('mobile-active');
-                    document.querySelector('.hamburger-btn').innerText = '☰';
-                    document.querySelector('.sticky-controls').style.zIndex = "1000";
+                if (tabs && tabs.classList.contains('mobile-active')) {
+                    toggleMobileMenu(); // Gracefully close
                 }
             }
             await originalSwitchView(v);
