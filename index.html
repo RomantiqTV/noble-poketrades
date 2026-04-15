@@ -600,6 +600,7 @@
             z-index: 5005;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: none;
+            box-sizing: border-box; /* Ensure border is inside dimensions */
         }
 
         .tutorial-btn-container {
@@ -960,6 +961,7 @@
                 <div class="mobile-only-nav" style="display:none;">
                     <div style="height:1px; background:rgba(255,255,255,0.1); margin:10px 0;"></div>
                     <div style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; padding:10px;">
+                        <button class="tab-btn" onclick="openSetSelect(); toggleMobileMenu();" style="flex:1; border-color:#ffd700; color:#ffd700;">Switch Set</button>
                         <button class="tab-btn" onclick="startTutorial(); toggleMobileMenu();" style="flex:1;">Help (?)</button>
                         <button class="tab-btn" id="loginBtnMobile" onclick="openLoginModal(); toggleMobileMenu();" style="flex:1;">Login / Sign Up</button>
                         <button class="tab-btn" onclick="openSettingsModal(); toggleMobileMenu();" style="flex:none; width:45px;">⚙️</button>
@@ -2715,7 +2717,7 @@
             {
                 title: "Switch Sets",
                 content: "Easily jump between 'Perfect Order' and 'Scarlet & Violet 151' to manage different parts of your collection.",
-                target: ".set-btn"
+                target: ".nav-tabs .tab-btn[onclick*='openSetSelect']"
             },
             {
                 title: "Navigation",
@@ -2811,15 +2813,8 @@
                         const radius = 15;
 
                         // Create hole path for the mask (Black cuts through white)
-                        const d = `M ${x + radius} ${y} 
-                            h ${rw - radius * 2} 
-                            a ${radius},${radius} 0 0 1 ${radius},${radius} 
-                            v ${rh - radius * 2} 
-                            a ${radius},${radius} 0 0 1 -${radius},${radius} 
-                            h -${rw - radius * 2} 
-                            a ${radius},${radius} 0 0 1 -${radius},-${radius} 
-                            v -${rh - radius * 2} 
-                            a ${radius},${radius} 0 0 1 ${radius},-${radius} z`;
+                        // Flattened path to avoid unexpected newlines/parsing errors
+                        const d = `M ${x+radius} ${y} h ${rw-radius*2} a ${radius},${radius} 0 0 1 ${radius},${radius} v ${rh-radius*2} a ${radius},${radius} 0 0 1 -${radius},${radius} h -${rw-radius*2} a ${radius},${radius} 0 0 1 -${radius},-${radius} v -${rh-radius*2} a ${radius},${radius} 0 0 1 ${radius},-${radius} z`;
                         
                         maskPath.setAttribute('d', d);
 
