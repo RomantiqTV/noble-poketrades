@@ -974,33 +974,35 @@
                 <button class="tab-btn" style="background: var(--accent); color: white; border: none; font-weight: bold;" onclick="generateMissingReport()" id="exportBtn">Export Missing</button>
             </div>
         </div>
-        <div class="search-sort-bar" style="max-width: 960px; margin: 0 auto; width: 95%;">
-            <input type="text" id="searchInput" class="search-input" placeholder="Search cards..." oninput="handleRefresh()" style="flex: 2;">
-            
-            <select id="typeSelect" class="select-input" onchange="handleRefresh()" style="display:none">
-                <option value="">All Types</option>
-                <option value="Grass">Grass</option><option value="Fire">Fire</option><option value="Water">Water</option>
-                <option value="Lightning">Lightning</option><option value="Psychic">Psychic</option><option value="Fighting">Fighting</option>
-                <option value="Darkness">Darkness</option><option value="Metal">Metal</option><option value="Colorless">Colorless</option>
-                <option value="Dragon">Dragon</option><option value="Trainer">Trainer</option><option value="Energy">Energy</option>
-            </select>
+        <div class="search-sort-bar" style="max-width: 960px; margin: 0 auto; width: 95%; display: flex; flex-direction: column; gap: 10px;">
+            <div style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
+                <select id="typeSelect" class="select-input" onchange="handleRefresh()" style="display:none; flex: 1;">
+                    <option value="">All Types</option>
+                    <option value="Grass">Grass</option><option value="Fire">Fire</option><option value="Water">Water</option>
+                    <option value="Lightning">Lightning</option><option value="Psychic">Psychic</option><option value="Fighting">Fighting</option>
+                    <option value="Darkness">Darkness</option><option value="Metal">Metal</option><option value="Colorless">Colorless</option>
+                    <option value="Dragon">Dragon</option><option value="Trainer">Trainer</option><option value="Energy">Energy</option>
+                </select>
 
-            <select id="stageSelect" class="select-input" onchange="handleRefresh()" style="display:none">
-                <option value="">All Stages</option>
-                <option value="Basic">Basic</option>
-                <option value="Stage 1">Stage 1</option>
-                <option value="Stage 2">Stage 2</option>
-                <option value="V">V / ex</option>
-            </select>
+                <select id="stageSelect" class="select-input" onchange="handleRefresh()" style="display:none; flex: 1;">
+                    <option value="">All Stages</option>
+                    <option value="Basic">Basic</option>
+                    <option value="Stage 1">Stage 1</option>
+                    <option value="Stage 2">Stage 2</option>
+                    <option value="V">V / ex</option>
+                </select>
 
-            <select id="sortSelect" class="select-input" onchange="handleRefresh()">
-                <option value="rarity">Rarity</option>
-                <option value="number">Number</option>
-                <option value="pokedex">Pokédex</option>
-                <option value="name">Name</option>
-            </select>
+                <select id="sortSelect" class="select-input" onchange="handleRefresh()" style="flex: 1;">
+                    <option value="rarity">Rarity</option>
+                    <option value="number">Number</option>
+                    <option value="pokedex">Pokédex</option>
+                    <option value="name">Name</option>
+                </select>
+                
+                <label style="font-size: 0.8em; display: flex; align-items: center; gap: 5px; white-space: nowrap;"><input type="checkbox" id="shadeToggle" checked onchange="handleRefresh()"> Shade</label>
+            </div>
             
-            <label style="font-size: 0.8em;"><input type="checkbox" id="shadeToggle" checked onchange="handleRefresh()"> Shade</label>
+            <input type="text" id="searchInput" class="search-input" placeholder="Search cards..." oninput="handleRefresh()" style="width: 100%;">
         </div>
     </div>
     <div id="content"></div>
@@ -1210,6 +1212,24 @@
                 initArticunoIce();
             }
         }
+
+        window.addEventListener('click', (e) => {
+            const tabs = document.querySelector('.nav-tabs');
+            const sticky = document.querySelector('.sticky-controls');
+            const btn = document.querySelector('.hamburger-btn');
+            
+            if (tabs && tabs.classList.contains('mobile-active')) {
+                // If click is outside sticky controls OR is a tab-btn inside
+                if (!sticky.contains(e.target) || e.target.classList.contains('tab-btn')) {
+                    // Slight delay for click feedback before closing if it's a button
+                    if (e.target.classList.contains('tab-btn')) {
+                        setTimeout(toggleMobileMenu, 150);
+                    } else {
+                        toggleMobileMenu();
+                    }
+                }
+            }
+        });
 
         function toggleMobileMenu() {
             const tabs = document.querySelector('.nav-tabs');
