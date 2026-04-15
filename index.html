@@ -198,6 +198,24 @@
             background-position: center top 14vh; 
             background-repeat: no-repeat !important;
         }
+        @media (max-width: 800px) {
+            .ice-sky { background-position: center top 36vh; }
+            .ice-water-back { background-position: center bottom 25vh !important; }
+            .ice-reflex-back { background-position: center bottom 51vh !important; }
+            .ice-mountain { background-position: center bottom 49vh !important; }
+            .ice-cloud { background-position: center bottom 54vh !important; }
+            .ice-iceberg-reflex { background-position: center bottom 43vh !important; }
+            .ice-iceberg { background-position: center bottom 43vh !important; }
+            .ice-reflex-front { background-position: center bottom 43vh !important; }
+            
+            #poke-articuno { top: 40% !important; left: 50% !important; }
+            #poke-regice { bottom: auto !important; top: 82% !important; left: 15% !important; }
+            #poke-metagross { bottom: auto !important; right: auto !important; top: 85% !important; left: 80% !important; }
+            #poke-mew { top: 35% !important; left: 70% !important; }
+            #poke-jigglypuff { bottom: auto !important; top: 85% !important; left: 12% !important; }
+            #poke-clefairy { bottom: auto !important; top: 88% !important; left: 28% !important; }
+            #poke-chansey { bottom: auto !important; right: auto !important; top: 90% !important; left: 85% !important; }
+        }
         .ice-water-back { background-image: url('assets/parallax/Iceberg/0-water.png'); z-index: 10; opacity: 0.8; background-position: center bottom -23vh; }
         .ice-reflex-back { background-image: url('assets/parallax/Iceberg/2-2-water-reflex-back.png'); z-index: 12; mix-blend-mode: screen; opacity: 0.4; background-position: center bottom 19vh; }
         .ice-mountain { background-image: url('assets/parallax/Iceberg/3-mountains.png'); z-index: 15; opacity: 1; background-position: center bottom 20vh; }
@@ -1469,12 +1487,15 @@
                 // Parallax Dev Mode
         let isMobileDev = false;
         let devOffsets = {
-            'ice-sky': 0, 'ice-water-back': 15, 'ice-reflex-back': 15, 'ice-mountain': 15,
-            'ice-cloud': 25, 'ice-iceberg-reflex': 15, 'ice-iceberg': 15, 'ice-reflex-front': 15
+            'ice-sky': 14, 'ice-water-back': -23, 'ice-reflex-back': 19, 'ice-mountain': 20,
+            'ice-cloud': 33, 'ice-iceberg-reflex': 15, 'ice-iceberg': 15, 'ice-reflex-front': 15
         };
-        let mobileDevOffsets = { ...devOffsets };
+        let mobileDevOffsets = {
+            'ice-sky': 36, 'ice-water-back': 25, 'ice-reflex-back': 51, 'ice-mountain': 49,
+            'ice-cloud': 54, 'ice-iceberg-reflex': 43, 'ice-iceberg': 43, 'ice-reflex-front': 43
+        };
         let pkmnPositions = {
-            'poke-articuno': { top: 15, left: 50 },
+            'poke-articuno': { top: 40, left: 50 },
             'poke-regice': { top: 82, left: 15 },
             'poke-metagross': { top: 85, left: 80 },
             'poke-mew': { top: 35, left: 70 },
