@@ -960,14 +960,16 @@
                 
                 <div class="mobile-only-nav" style="display:none;">
                     <div style="height:1px; background:rgba(255,255,255,0.1); margin:10px 0;"></div>
-                    <div style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; padding:10px;">
-                        <button class="tab-btn" onclick="openSetSelect(); toggleMobileMenu();" style="flex:1; border-color:#ffd700; color:#ffd700;">Switch Set</button>
-                        <button class="tab-btn" onclick="startTutorial(); toggleMobileMenu();" style="flex:1;">Help (?)</button>
-                        <button class="tab-btn" id="loginBtnMobile" onclick="openLoginModal(); toggleMobileMenu();" style="flex:1;">Login / Sign Up</button>
-                        <button class="tab-btn" onclick="openSettingsModal(); toggleMobileMenu();" style="flex:none; width:45px;">⚙️</button>
-                        <div class="completion-container" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(0,0,0,0.3); padding:8px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);">
-                            <span id="completion-text-mobile" style="font-size:0.9em; font-weight:bold; color:var(--accent);">0%</span>
+                    <div style="display:flex; flex-direction:column; gap:10px; padding:10px;">
+                        <div style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; width:100%;">
+                            <button class="tab-btn" onclick="document.getElementById('setSelect').focus(); toggleMobileMenu();" style="flex:1; border-color:#ffd700; color:#ffd700;">Switch Set</button>
+                            <button class="tab-btn" onclick="startTutorial(); toggleMobileMenu();" style="flex:1;">Help (?)</button>
+                            <button class="tab-btn" onclick="openSettingsModal(); toggleMobileMenu();" style="flex:none; width:45px;">⚙️</button>
+                            <div class="completion-container" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(0,0,0,0.3); padding:8px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);">
+                                <span id="completion-text-mobile" style="font-size:0.9em; font-weight:bold; color:var(--accent);">0%</span>
+                            </div>
                         </div>
+                        <button class="tab-btn" id="loginBtnMobile" onclick="openLoginModal(); toggleMobileMenu();" style="width:100%; border: 2px solid var(--accent); padding: 12px; font-size: 1em;">Login / Sign Up</button>
                     </div>
                 </div>
             </div>
@@ -2813,8 +2815,14 @@
                         const radius = 15;
 
                         // Create hole path for the mask (Black cuts through white)
-                        // Flattened path to avoid unexpected newlines/parsing errors
-                        const d = `M ${x+radius} ${y} h ${rw-radius*2} a ${radius},${radius} 0 0 1 ${radius},${radius} v ${rh-radius*2} a ${radius},${radius} 0 0 1 -${radius},${radius} h -${rw-radius*2} a ${radius},${radius} 0 0 1 -${radius},-${radius} v -${rh-radius*2} a ${radius},${radius} 0 0 1 ${radius},-${radius} z`;
+                        // Rounded rectangle hole: Ensure all math result in absolute numbers
+                        const rx = Math.round(x);
+                        const ry = Math.round(y);
+                        const rw_r = Math.round(rw);
+                        const rh_r = Math.round(rh);
+                        const r_rad = Math.round(radius);
+                        
+                        const d = `M ${rx + r_rad} ${ry} h ${rw_r - r_rad * 2} a ${r_rad},${r_rad} 0 0 1 ${r_rad},${r_rad} v ${rh_r - r_rad * 2} a ${r_rad},${r_rad} 0 0 1 -${r_rad},${r_rad} h -${rw_r - r_rad * 2} a ${r_rad},${r_rad} 0 0 1 -${r_rad},-${r_rad} v -${rh_r - r_rad * 2} a ${r_rad},${r_rad} 0 0 1 ${r_rad},-${r_rad} z`;
                         
                         maskPath.setAttribute('d', d);
 
