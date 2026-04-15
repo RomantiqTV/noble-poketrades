@@ -597,7 +597,7 @@
             border-radius: 12px;
             box-shadow: 0 0 25px var(--accent);
             pointer-events: none;
-            z-index: 5005;
+            z-index: 16000;
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             display: none;
             box-sizing: border-box; /* Ensure border is inside dimensions */
@@ -962,7 +962,7 @@
                     <div style="height:1px; background:rgba(255,255,255,0.1); margin:10px 0;"></div>
                     <div style="display:flex; flex-direction:column; gap:10px; padding:10px;">
                         <div style="display:flex; justify-content:center; align-items:center; gap:10px; flex-wrap:wrap; width:100%;">
-                            <button class="tab-btn" onclick="document.getElementById('setSelect').style.display = 'block'; document.getElementById('setSelect').focus(); toggleMobileMenu();" style="flex:1; border-color:#ffd700; color:#ffd700;">Switch Set</button>
+                            <button class="tab-btn" onclick="window.toggleSet()" style="flex:1; border-color:#ffd700; color:#ffd700;">Switch Set</button>
                             <button class="tab-btn" onclick="startTutorial(); toggleMobileMenu();" style="flex:1;">Help (?)</button>
                             <button class="tab-btn" onclick="openSettingsModal(); toggleMobileMenu();" style="flex:none; width:45px;">⚙️</button>
                             <div class="completion-container" style="flex:1; display:flex; align-items:center; justify-content:center; gap:8px; background:rgba(0,0,0,0.3); padding:8px 15px; border-radius:20px; border:1px solid rgba(255,255,255,0.1);">
@@ -1523,6 +1523,10 @@
         window.changeSet = function(s) { 
             localStorage.setItem('por_current_set', s); 
             location.reload(); 
+        };
+        window.toggleSet = function() {
+            const next = currentSet === 'po' ? '151' : 'po';
+            window.changeSet(next);
         };
         const DATA = currentSet === 'po' ? window.CARD_DATA : window.DATA_151;
         const KEY = '11c6293ca7mshbb68d5707f1a726p1d1b24jsnc63b06003475';
@@ -2719,7 +2723,7 @@
             {
                 title: "Switch Sets",
                 content: "Easily jump between 'Perfect Order' and 'Scarlet & Violet 151' to manage different parts of your collection.",
-                target: ".nav-tabs .tab-btn[onclick*='openSetSelect']"
+                target: ".nav-tabs .tab-btn[onclick*='toggleSet']"
             },
             {
                 title: "Navigation",
@@ -2815,18 +2819,17 @@
                         const radius = 15;
 
                         // Create hole path for the mask (Black cuts through white)
-                        // Rounded rectangle hole: Ensure all math result in absolute numbers
-                        const rx = Math.floor(x);
-                        const ry = Math.floor(y);
-                        const rw_r = Math.floor(rw);
-                        const rh_r = Math.floor(rh);
-                        const r_rad = Math.floor(radius);
-                        
-                        // Use explicit subtraction to ensure no negative numbers or NaN
-                        const innerW = Math.max(0, rw_r - (r_rad * 2));
-                        const innerH = Math.max(0, rh_r - (r_rad * 2));
-                        
-                        const d = `M ${rx + r_rad} ${ry} h ${innerW} a ${r_rad},${r_rad} 0 0 1 ${r_rad},${r_rad} v ${innerH} a ${r_rad},${r_rad} 0 0 1 -${r_rad},${r_rad} h -${innerW} a ${r_rad},${r_rad} 0 0 1 -${r_rad},-${r_rad} v -${innerH} a ${r_rad},${r_rad} 0 0 1 ${r_rad},-${r_rad} z`;
+                        // Create hole path for the mask using absolute coordinates to avoid negative h/v values
+                        const d = `M 0 0 h ${w} v ${h} h -${w} Z 
+                                   M ${rx + r_rad} ${ry} 
+                                   L ${rx + rw_r - r_rad} ${ry} 
+                                   A ${r_rad} ${r_rad} 0 0 1 ${rx + rw_r} ${ry + r_rad} 
+                                   L ${rx + rw_r} ${ry + rh_r - r_rad} 
+                                   A ${r_rad} ${r_rad} 0 0 1 ${rx + rw_r - r_rad} ${ry + rh_r} 
+                                   L ${rx + r_rad} ${ry + rh_r} 
+                                   A ${r_rad} ${r_rad} 0 0 1 ${rx} ${ry + rh_r - r_rad} 
+                                   L ${rx} ${ry + r_rad} 
+                                   A ${r_rad} ${r_rad} 0 0 1 ${rx + r_rad} ${ry} Z`;
                         
                         maskPath.setAttribute('d', d);
 
