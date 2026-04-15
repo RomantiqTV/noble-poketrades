@@ -845,18 +845,18 @@
         <div class="ice-layer ice-mountain" data-speed="0.01"></div>
         <div class="ice-layer ice-cloud" data-speed="0.015"></div>
         <div class="ice-layer" data-speed="0.025" style="z-index:35;">
-            <div class="articuno-container">
+            <div class="articuno-container" id="poke-articuno">
                 <img src="https://projectpokemon.org/images/normal-sprite/articuno.gif" class="ice-pokemon-gif" style="width: 120px;">
             </div>
         </div>
         <div class="ice-layer ice-iceberg-reflex" data-speed="0.04"></div>
         <div class="ice-layer ice-iceberg" data-speed="0.04">
             <!-- Regice on the left iceberg -->
-            <div class="scene-pokemon-idle" style="position:absolute; bottom:18%; left:15%; --d:3.5s; z-index: 50;">
+            <div class="scene-pokemon-idle" id="poke-regice" style="position:absolute; bottom:18%; left:15%; --d:3.5s; z-index: 50;">
                 <img src="https://projectpokemon.org/images/normal-sprite/regice.gif" class="ice-pokemon-gif" style="width: 70px;">
             </div>
             <!-- Metagross on the right iceberg -->
-            <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; right:20%; --d:4s; z-index: 50;">
+            <div class="scene-pokemon-idle" id="poke-metagross" style="position:absolute; bottom:15%; right:20%; --d:4s; z-index: 50;">
                 <img src="https://projectpokemon.org/images/normal-sprite/metagross.gif" class="ice-pokemon-gif" style="width: 90px; transform: scaleX(-1);">
             </div>
             <div class="ice-ground-fill"></div>
@@ -886,15 +886,15 @@
         <div class="scene-layer layer-6" data-speed="0.12">
             <!-- Pokemon GIFs on the waves/front -->
             <!-- Jigglypuff -->
-            <div class="scene-pokemon-idle" style="position:absolute; bottom:15%; left:12%; --d:3.1s; z-index: 70;">
+            <div class="scene-pokemon-idle" id="poke-jigglypuff" style="position:absolute; bottom:15%; left:12%; --d:3.1s; z-index: 70;">
                 <img src="https://projectpokemon.org/images/normal-sprite/jigglypuff.gif" class="scene-pokemon-gif" style="width: 50px;">
             </div>
             <!-- Clefairy -->
-            <div class="scene-pokemon-idle" style="position:absolute; bottom:12%; left:28%; --d:2.8s; z-index: 70;">
+            <div class="scene-pokemon-idle" id="poke-clefairy" style="position:absolute; bottom:12%; left:28%; --d:2.8s; z-index: 70;">
                 <img src="https://projectpokemon.org/images/normal-sprite/clefairy.gif" class="scene-pokemon-gif" style="width: 55px;">
             </div>
             <!-- Chansey -->
-            <div class="scene-pokemon-idle" style="position:absolute; bottom:10%; right:15%; --d:3.5s; z-index: 70;">
+            <div class="scene-pokemon-idle" id="poke-chansey" style="position:absolute; bottom:10%; right:15%; --d:3.5s; z-index: 70;">
                 <img src="https://projectpokemon.org/images/normal-sprite/chansey.gif" class="scene-pokemon-gif" style="width: 70px;">
             </div>
         </div>
@@ -905,7 +905,7 @@
         </div>
         
         <div class="scene-layer" id="scene-mew-layer" data-speed="0.05" style="z-index:55;">
-            <div class="scene-mew-container" style="left: 70%; top: 35%;">
+            <div class="scene-mew-container" id="poke-mew" style="left: 70%; top: 35%;">
                 <img src="https://projectpokemon.org/images/normal-sprite/mew.gif" class="scene-pokemon-gif" style="width: 80px; height: 80px;">
             </div>
         </div>
@@ -1110,6 +1110,9 @@
                     <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center; border-color: #ffd700;" onclick="toggleDevMode()">
                         🛠️ Parallax Dev Mode
                     </button>
+                    <button class="tab-btn" style="width: 100%; text-align: left; justify-content: flex-start; display: flex; align-items: center; border-color: #ffd700;" onclick="toggleDevMode(true)">
+                        📱 Mobile Dev Mode
+                    </button>
                 </div>
             </div>
             <button class="modal-btn btn-cancel" style="width:100%; margin-top:30px;" onclick="closeSettingsModal()">Close</button>
@@ -1117,26 +1120,52 @@
     </div>
 
     <div id="devModeControls" style="display: none; position: fixed; bottom: 20px; right: 20px; background: rgba(0,0,0,0.9); border: 2px solid #ffd700; padding: 20px; border-radius: 15px; z-index: 9999; color: white; width: 250px; box-shadow: 0 0 30px rgba(0,0,0,0.5);">
-        <div style="font-family: 'Cinzel'; font-size: 0.9em; margin-bottom: 15px; color: #ffd700; border-bottom: 1px solid #333; padding-bottom: 10px;">Parallax Dev Tools</div>
+        <div style="font-family: 'Cinzel'; font-size: 0.9em; margin-bottom: 15px; color: #ffd700; border-bottom: 1px solid #333; padding-bottom: 10px;">Parallax Dev Tools <span id="devModeLabel"></span></div>
         <div style="margin-bottom: 15px;">
-            <label style="font-size: 0.7em; color: #888; display: block; margin-bottom: 5px;">SELECT LAYER</label>
+            <label style="font-size: 0.7em; color: #888; display: block; margin-bottom: 5px;">SELECT LAYER / PKMN</label>
             <select id="devLayerSelect" class="select-input" style="width: 100%; font-size: 0.8em; background: #111;">
-                <option value="ice-sky">1-Sky</option>
-                <option value="ice-water-back">0-water</option>
-                <option value="ice-reflex-back">2-2-reflex-back</option>
-                <option value="ice-mountain">3-mountains</option>
-                <option value="ice-cloud">2-cloud</option>
-                <option value="ice-iceberg-reflex">4-icebergreflex</option>
-                <option value="ice-iceberg">5-iceberg</option>
-                <option value="ice-reflex-front">2-1-reflex-front</option>
+                <optgroup label="Parallax Layers">
+                    <option value="ice-sky">1-Sky</option>
+                    <option value="ice-water-back">0-water</option>
+                    <option value="ice-reflex-back">2-2-reflex-back</option>
+                    <option value="ice-mountain">3-mountains</option>
+                    <option value="ice-cloud">2-cloud</option>
+                    <option value="ice-iceberg-reflex">4-icebergreflex</option>
+                    <option value="ice-iceberg">5-iceberg</option>
+                    <option value="ice-reflex-front">2-1-reflex-front</option>
+                </optgroup>
+                <optgroup label="Pokémon">
+                    <option value="poke-articuno">Articuno</option>
+                    <option value="poke-regice">Regice</option>
+                    <option value="poke-metagross">Metagross</option>
+                    <option value="poke-mew">Mew</option>
+                    <option value="poke-jigglypuff">Jigglypuff</option>
+                    <option value="poke-clefairy">Clefairy</option>
+                    <option value="poke-chansey">Chansey</option>
+                </optgroup>
             </select>
         </div>
-        <div style="display: flex; gap: 10px; margin-bottom: 15px;">
-            <button class="tab-btn" style="flex: 1;" onclick="adjustLayer(-1)">DOWN</button>
-            <button class="tab-btn" style="flex: 1;" onclick="adjustLayer(1)">UP</button>
+        
+        <div id="devLayerControls">
+            <label style="font-size: 0.7em; color: #888; display: block; margin-bottom: 5px;">ADJUST OFFSET (VH)</label>
+            <div style="display: flex; gap: 10px; margin-bottom: 15px;">
+                <button class="tab-btn" style="flex: 1;" onclick="adjustLayer(-1)">DOWN</button>
+                <button class="tab-btn" style="flex: 1;" onclick="adjustLayer(1)">UP</button>
+            </div>
         </div>
+
+        <div id="devPkmnControls" style="display: none;">
+            <label style="font-size: 0.7em; color: #888; display: block; margin-bottom: 5px;">ADJUST POSITION</label>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px;">
+                <button class="tab-btn" onclick="adjustPkmn('top', -1)">↑ TOP</button>
+                <button class="tab-btn" onclick="adjustPkmn('top', 1)">↓ BTM</button>
+                <button class="tab-btn" onclick="adjustPkmn('left', -1)">← LFT</button>
+                <button class="tab-btn" onclick="adjustPkmn('left', 1)">→ RGT</button>
+            </div>
+        </div>
+
         <div id="devLayerInfo" style="font-size: 0.7em; color: #aaa; margin-bottom: 15px; background: #1a1a1a; padding: 10px; border-radius: 5px;">
-            Offset: <span id="devOffsetVal">0</span>vh
+            Value: <span id="devOffsetVal">0</span>
         </div>
         <button class="modal-btn btn-get" style="width: 100%; font-size: 0.8em;" onclick="exportDevSettings()">EXPORT SETTINGS</button>
         <button class="modal-btn btn-cancel" style="width: 100%; font-size: 0.8em; margin-top: 10px;" onclick="toggleDevMode()">CLOSE</button>
@@ -1437,24 +1466,33 @@
         }
         function closeSettingsModal() { document.getElementById('settingsModal').style.display = 'none'; }
 
-        // Parallax Dev Mode
+                // Parallax Dev Mode
+        let isMobileDev = false;
         let devOffsets = {
-            'ice-sky': 0,
-            'ice-water-back': 15,
-            'ice-reflex-back': 15,
-            'ice-mountain': 15,
-            'ice-cloud': 25,
-            'ice-iceberg-reflex': 15,
-            'ice-iceberg': 15,
-            'ice-reflex-front': 15
+            'ice-sky': 0, 'ice-water-back': 15, 'ice-reflex-back': 15, 'ice-mountain': 15,
+            'ice-cloud': 25, 'ice-iceberg-reflex': 15, 'ice-iceberg': 15, 'ice-reflex-front': 15
+        };
+        let mobileDevOffsets = { ...devOffsets };
+        let pkmnPositions = {
+            'poke-articuno': { top: 15, left: 50 },
+            'poke-regice': { top: 82, left: 15 },
+            'poke-metagross': { top: 85, left: 80 },
+            'poke-mew': { top: 35, left: 70 },
+            'poke-jigglypuff': { top: 85, left: 12 },
+            'poke-clefairy': { top: 88, left: 28 },
+            'poke-chansey': { top: 90, left: 85 }
         };
 
-        function toggleDevMode() {
+        function toggleDevMode(isMobile = false) {
+            isMobileDev = isMobile;
             const controls = document.getElementById('devModeControls');
             const isVisible = controls.style.display === 'block';
             controls.style.display = isVisible ? 'none' : 'block';
+            
+            document.getElementById('devModeLabel').innerText = isMobile ? "(MOBILE)" : "(DESKTOP)";
+            
             if (!isVisible) {
-                setTheme('articuno-ice');
+                if (currentSet === 'po') setTheme('articuno-ice');
                 closeSettingsModal();
                 updateDevUI();
             }
@@ -1462,29 +1500,69 @@
 
         function adjustLayer(delta) {
             const layer = document.getElementById('devLayerSelect').value;
-            devOffsets[layer] += delta;
+            const targetOffsets = isMobileDev ? mobileDevOffsets : devOffsets;
+            targetOffsets[layer] += delta;
             
             const el = document.querySelector('.' + layer);
             if (el) {
                 const basePos = layer === 'ice-sky' ? 'center top' : 'center bottom';
-                el.style.backgroundPosition = `${basePos} ${devOffsets[layer]}vh`;
+                el.style.backgroundPosition = `${basePos} ${targetOffsets[layer]}vh`;
+            }
+            updateDevUI();
+        }
+
+        function adjustPkmn(axis, delta) {
+            const pkmn = document.getElementById('devLayerSelect').value;
+            if (!pkmnPositions[pkmn]) return;
+            
+            pkmnPositions[pkmn][axis] += delta;
+            const el = document.getElementById(pkmn);
+            if (el) {
+                if (axis === 'top') {
+                    // Handle both top and bottom based themes
+                    if (el.style.bottom) el.style.bottom = (100 - pkmnPositions[pkmn].top) + '%';
+                    else el.style.top = pkmnPositions[pkmn].top + '%';
+                } else {
+                    if (el.style.right) el.style.right = (100 - pkmnPositions[pkmn].left) + '%';
+                    else el.style.left = pkmnPositions[pkmn].left + '%';
+                }
             }
             updateDevUI();
         }
 
         function updateDevUI() {
             const layer = document.getElementById('devLayerSelect').value;
-            document.getElementById('devOffsetVal').innerText = devOffsets[layer];
+            const isPkmn = layer.startsWith('poke-');
+            
+            document.getElementById('devLayerControls').style.display = isPkmn ? 'none' : 'block';
+            document.getElementById('devPkmnControls').style.display = isPkmn ? 'block' : 'none';
+            
+            if (isPkmn) {
+                const pos = pkmnPositions[layer];
+                document.getElementById('devOffsetVal').innerText = `T:${pos.top}% L:${pos.left}%`;
+            } else {
+                const targetOffsets = isMobileDev ? mobileDevOffsets : devOffsets;
+                document.getElementById('devOffsetVal').innerText = targetOffsets[layer] + 'vh';
+            }
         }
 
         document.getElementById('devLayerSelect').addEventListener('change', updateDevUI);
 
         function exportDevSettings() {
-            let output = "PARALLAX CONFIG EXPORT:\n\n";
-            for (const [layer, offset] of Object.entries(devOffsets)) {
+            let output = `DEV CONFIG EXPORT (${isMobileDev ? 'MOBILE' : 'DESKTOP'}):\n\n`;
+            
+            output += "--- PARALLAX LAYERS ---\n";
+            const targetOffsets = isMobileDev ? mobileDevOffsets : devOffsets;
+            for (const [layer, offset] of Object.entries(targetOffsets)) {
                 output += `${layer}: ${offset}vh\n`;
             }
-            output += "\nSend this back to Claude to update!";
+            
+            output += "\n--- POKEMON POSITIONS ---\n";
+            for (const [id, pos] of Object.entries(pkmnPositions)) {
+                output += `${id}: top ${pos.top}%, left ${pos.left}%\n`;
+            }
+            
+            output += "\nSend this back to Claude to update the code!";
             console.log(output);
             alert("Settings exported to Console (F12)!\n\nCheck the console and copy the block to send back.");
         }
