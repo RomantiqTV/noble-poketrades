@@ -2723,7 +2723,7 @@
             {
                 title: "Switch Sets",
                 content: "Easily jump between 'Perfect Order' and 'Scarlet & Violet 151' to manage different parts of your collection.",
-                target: ".nav-tabs .tab-btn[onclick*='toggleSet']"
+                target: window.innerWidth <= 800 ? ".nav-tabs .tab-btn[onclick*='toggleSet']" : "#setSelect"
             },
             {
                 title: "Navigation",
