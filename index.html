@@ -2777,13 +2777,13 @@
             const step = tutorialSteps[currentTutorialStep];
             if (!step) return;
 
-            // If menu is closed and target is inside nav-tabs (mobile only), open menu
-            if (window.innerWidth <= 800 && step.target && step.target.includes('.nav-tabs')) {
+            // Auto-open menu on mobile if target is hidden inside it
+            if (window.innerWidth <= 800 && step.target) {
+                const targetEl = document.querySelector(step.target);
                 const tabs = document.querySelector('.nav-tabs');
-                if (tabs && !tabs.classList.contains('mobile-active')) {
+                if (tabs && targetEl && tabs.contains(targetEl) && !tabs.classList.contains('mobile-active')) {
                     toggleMobileMenu();
-                    // Wait for layout shift then recalculate
-                    setTimeout(updateTutorialUI, 300);
+                    setTimeout(updateTutorialUI, 400);
                     return;
                 }
             }
@@ -2812,23 +2812,16 @@
                     setTimeout(() => {
                         const rect = targetEl.getBoundingClientRect();
                         const padding = 12;
-                        const x = rect.left - padding;
-                        const y = rect.top - padding;
-                        const rw = rect.width + (padding * 2);
-                        const rh = rect.height + (padding * 2);
-                        const radius = 15;
+                        const rx = Math.floor(rect.left - padding);
+                        const ry = Math.floor(rect.top - padding);
+                        const rw_r = Math.floor(rect.width + (padding * 2));
+                        const rh_r = Math.floor(rect.height + (padding * 2));
+                        const r_rad = 15;
 
                         // Create hole path for the mask (Black cuts through white)
                         // Rounded rectangle hole: Ensure all math result in absolute numbers
-                        const rx = Math.floor(x);
-                        const ry = Math.floor(y);
-                        const rw_r = Math.floor(rw);
-                        const rh_r = Math.floor(rh);
-                        const r_rad = Math.floor(radius);
-
-                        // Create hole path for the mask using absolute coordinates to avoid negative h/v values
-                        const d = `M 0 0 h ${w} v ${h} h -${w} Z 
-                                   M ${rx + r_rad} ${ry} 
+                        // Removed the screen-filling loop to fix mask inversion
+                        const d = `M ${rx + r_rad} ${ry} 
                                    L ${rx + rw_r - r_rad} ${ry} 
                                    A ${r_rad} ${r_rad} 0 0 1 ${rx + rw_r} ${ry + r_rad} 
                                    L ${rx + rw_r} ${ry + rh_r - r_rad} 
@@ -2841,17 +2834,17 @@
                         maskPath.setAttribute('d', d);
 
                         highlight.style.display = 'block';
-                        highlight.style.left = x + 'px';
-                        highlight.style.top = y + 'px';
-                        highlight.style.width = rw + 'px';
-                        highlight.style.height = rh + 'px';
+                        highlight.style.left = rx + 'px';
+                        highlight.style.top = ry + 'px';
+                        highlight.style.width = rw_r + 'px';
+                        highlight.style.height = rh_r + 'px';
 
                         // Position card
                         const cardRect = card.getBoundingClientRect();
-                        if (y > h / 2) {
-                            card.style.top = Math.max(cardRect.height / 2 + 20, y - cardRect.height / 2 - 40) + 'px';
+                        if (ry > h / 2) {
+                            card.style.top = Math.max(cardRect.height / 2 + 20, ry - cardRect.height / 2 - 40) + 'px';
                         } else {
-                            card.style.top = Math.min(h - cardRect.height / 2 - 20, y + rh + cardRect.height / 2 + 40) + 'px';
+                            card.style.top = Math.min(h - cardRect.height / 2 - 20, ry + rh_r + cardRect.height / 2 + 40) + 'px';
                         }
                     }, 300);
                 }
