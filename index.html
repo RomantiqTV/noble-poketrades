@@ -974,7 +974,7 @@
                 <button class="tab-btn" style="background: var(--accent); color: white; border: none; font-weight: bold;" onclick="generateMissingReport()" id="exportBtn">Export Missing</button>
             </div>
         </div>
-        <div class="search-sort-bar" style="max-width: 960px; margin: 0 auto; width: 95%; display: flex; flex-direction: column; gap: 10px;">
+        <div class="search-sort-bar" style="max-width: 960px; margin: 0 auto; width: 100%; display: flex; flex-direction: column; gap: 10px; box-sizing: border-box; padding: 0 20px;">
             <div style="display: flex; gap: 10px; flex-wrap: wrap; width: 100%;">
                 <select id="typeSelect" class="select-input" onchange="handleRefresh()" style="display:none; flex: 1;">
                     <option value="">All Types</option>
@@ -2715,12 +2715,12 @@
             {
                 title: "Switch Sets",
                 content: "Easily jump between 'Perfect Order' and 'Scarlet & Violet 151' to manage different parts of your collection.",
-                target: ".set-switcher"
+                target: ".set-btn"
             },
             {
                 title: "Navigation",
                 content: "View your current collection, see what's missing, or head to the Calculator to plan your next trade.",
-                target: ".nav-tabs"
+                target: ".nav-tabs > div:first-child"
             },
             {
                 title: "Find Your Favorites",
@@ -2769,10 +2769,10 @@
             const step = tutorialSteps[currentTutorialStep];
             if (!step) return;
 
-            // If menu is closed and target is inside it, open menu for mobile users
-            if (window.innerWidth <= 800 && step.target && (step.target.includes('.set-switcher') || step.target.includes('.nav-tabs'))) {
-                const switcher = document.querySelector('.set-switcher');
-                if (switcher && !switcher.classList.contains('mobile-active')) {
+            // If menu is closed and target is inside nav-tabs (mobile only), open menu
+            if (window.innerWidth <= 800 && step.target && step.target.includes('.nav-tabs')) {
+                const tabs = document.querySelector('.nav-tabs');
+                if (tabs && !tabs.classList.contains('mobile-active')) {
                     toggleMobileMenu();
                     // Wait for layout shift then recalculate
                     setTimeout(updateTutorialUI, 300);
